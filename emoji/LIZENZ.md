@@ -18,10 +18,10 @@ Die Dateien sind gegenüber dem Original verändert:
 - umbenannt: aus `emoji_u1f34e.svg` wird `1f34e.svg`
 - mit SVGO 4.1.0 verkleinert (Einstellungen in `tools/svgo.config.js`): Kommentare, Editor-Angaben und überflüssige Genauigkeit entfernt, IDs je Datei mit Präfix versehen. Zusammen 1,0 MB statt 2,3 MB.
 
-Das Aussehen ist gleich geblieben; geprüft durch Bildvergleich aller 283 Dateien mit dem Original bei 128 px.
+Das Aussehen ist gleich geblieben; geprüft durch Bildvergleich aller Dateien mit dem Original bei 128 px.
 
 ## Auswahl
 
 Es liegen nur die Zeichen im Repo, die die Tabelle `EMO` in `app.js` benutzt. `tools/bildzeichen.py <Pfad zu noto-emoji/2D/svg>` gleicht den Ordner mit der Tabelle ab; neu kopierte Dateien danach mit `npx svgo@4 --config tools/svgo.config.js -f emoji` verkleinern.
 
-Die fünf eigenen Zeichnungen (Brötchen, Becher, Wurst, Tüte, Folienrolle) in `index.html` gehören nicht zu Noto Emoji.
+Die eigenen Zeichnungen (Symbole `x-…` in `index.html`) gehören nicht zu Noto Emoji; sie sind für dieses Projekt entstanden.
