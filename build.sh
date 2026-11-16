@@ -22,4 +22,5 @@ s = open("index.html", encoding="utf-8").read()
 open("build/app.js", "w", encoding="utf-8").write(re.search(r"<script>(.*)</script>", s, re.S).group(1))
 PY
 node --check build/app.js && echo "Skript in Ordnung"
+python3 tools/bildzeichen.py | head -n 1
 node tools/pruefen.js
