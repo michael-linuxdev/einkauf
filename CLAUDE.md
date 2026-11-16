@@ -11,6 +11,8 @@ Dieser Stand ist ein Prototyp aus einer Chat-Vorschau: eine einzige `index.html`
 - `src/gen.py` – Katalog-Generator: Artikellisten je Abteilung, Marken, Alltagsartikel (Rangfolge), Synonyme. Liest zusätzlich `src/add1.py` bis `add3.py`.
 - `src/sprite_base.html`, `src/sprite_new.html` – Linien-Symbole (werden nur noch für Plus und Haken gebraucht).
 - `src/sprite_own.html` – vier eigene farbige Zeichnungen: Brötchen, Becher, Wurst, Tüte.
+- `emoji/` – Noto-Emoji-Grafiken als einzelne SVG-Dateien (unverändert, Apache-Lizenz 2.0; Herkunft und Lizenz in `emoji/LIZENZ.md`). Dateiname = Codepunkte in Hex ohne FE0F, z. B. `1f34e.svg`.
+- `tools/bildzeichen.py` – gleicht `emoji/` mit der Tabelle `EMO` ab: `tools/bildzeichen.py <Pfad zu noto-emoji/2D/svg>` kopiert fehlende Dateien und entfernt nicht mehr benutzte. Ohne Pfad prüft es nur.
 - `build.sh` – baut `index.html` und startet `tools/pruefen.js` (Logiktest ohne Browser). Braucht Python 3 und Node.
 
 Bauen: `./build.sh`
@@ -29,12 +31,12 @@ Bauen: `./build.sh`
 - Bedienung: ein Bildschirm, zwei Gesten. Keine Werbung, keine Angebote, keine Rezepte, kein Kontozwang.
 - Raster durchgehend 3 Spalten, nach Abteilung sortiert, ohne Zwischenüberschriften.
 - Kein Hinweistext am Seitenende.
-- Bildzeichen: farbig im Stil von Noto Color Emoji; keine Kombinationen aus Grundform und Zusatzzeichen.
+- Bildzeichen: Noto-Emoji-Grafiken als SVG-Dateien aus `emoji/`, nicht aus einer Schrift; nur wenn eine Datei nicht lädt, springt die Emoji-Schrift des Geräts ein. Farbig im Stil von Noto Color Emoji; keine Kombinationen aus Grundform und Zusatzzeichen.
 - Lücken im Set werden durch eigene Zeichnungen im gleichen Look gefüllt.
 
 ## Offene Punkte, in dieser Reihenfolge
 
-1. **Bildzeichen als Dateien.** Die Vorschau nutzt die Emoji-Schrift des Geräts, weil die nachgeladene Google-Schrift auf manchen Geräten leer blieb. Für die App die Noto-Emoji-Grafiken als einzelne SVG-Dateien ins Repo legen und über die Tabelle `EMO` in `src/template.html` zuordnen. Vorher die Lizenz der Grafiken prüfen und im Repo vermerken.
+1. **Bildzeichen als Dateien.** Erledigt: 283 Grafiken in `emoji/`, Zuordnung über `EMO` und `emoFile()` in `src/template.html`, Lizenz in `emoji/LIZENZ.md`. Offen bleibt: Die Dateien sind unverkleinert (zusammen 2,9 MB, einzelne bis 70 kB); bei Bedarf mit SVGO verkleinern und das in `LIZENZ.md` als Änderung vermerken.
 2. **Zuordnung durchsehen.** Bekannte Fehlgriffe: „Thunfisch in Öl“ zeigt eine Flasche, „Frischhaltefolie“ eine Einkaufstüte, Windeln eine Sicherheitsnadel. 286 Motive für 8550 Artikel; viele Artikel teilen sich ein Motiv (Pflegeflasche, Tüte).
 3. **Eigene Zeichnungen.** Die vier vorhandenen wirken flacher als das Set. Kandidaten für neue: Windel, Chipstüte, Konservenglas mit Inhalt, Waschmittel, Blumenerde.
 4. **PWA.** Manifest, App-Symbole, Service Worker für Offline-Nutzung. Schriften (Bricolage Grotesque, Figtree) lokal einbinden statt von Google laden.

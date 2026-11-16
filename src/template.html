@@ -82,16 +82,20 @@ h2 .link{text-transform:none;letter-spacing:0;font-size:14px;padding:0}
   .badge{background:color-mix(in srgb,var(--c) var(--tint),var(--surface));color:color-mix(in srgb,var(--c),#fff var(--inkmix))}
 }
 .badge.pic{background:none;width:48px;height:46px;border-radius:0}
-/* Bildzeichen kommen aus der Emoji-Schrift des Geräts; eine nachgeladene Farbschrift blieb auf manchen Geräten leer */
-.emo{font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji","Segoe UI Symbol",sans-serif;font-size:37px;line-height:1.15;font-weight:400}
+/* Bildzeichen sind Noto-Emoji-Grafiken aus emoji/ (Lizenz: emoji/LIZENZ.md).
+   Lässt sich eine Datei nicht laden, springt die Emoji-Schrift des Geräts ein (.emot). */
+.emo{width:40px;height:40px;display:block;pointer-events:none;-webkit-user-drag:none}
+.emot{font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji","Segoe UI Symbol",sans-serif;font-size:37px;line-height:1.15;font-weight:400}
 .ex{width:44px;height:44px}
 .tile.done .badge.pic{background:none}
-.tile.done .emo,.tile.done .ex{filter:grayscale(1);opacity:.5}
+.tile.done .emo,.tile.done .emot,.tile.done .ex{filter:grayscale(1);opacity:.5}
 #sug .badge.pic{width:42px;height:40px}
-#sug .emo{font-size:31px}
+#sug .emo{width:34px;height:34px}
+#sug .emot{font-size:31px}
 #sug .ex{width:38px;height:38px}
 .sheet-head .badge.pic{width:56px;height:56px}
-.sheet-head .emo{font-size:44px}
+.sheet-head .emo{width:48px;height:48px}
+.sheet-head .emot{font-size:44px}
 .sheet-head .ex{width:52px;height:52px}
 .ic{width:30px;height:30px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 .chk{position:absolute;right:-4px;bottom:-3px;width:20px;height:20px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;box-shadow:0 0 0 2.500px var(--surface)}
@@ -406,7 +410,8 @@ function ruleIcon(cat, n) {
 }
 /* ---------- Farbige Bildzeichen (Stil E) ----------
    Je Abteilung: Regeln (erste passende gewinnt), danach das Standardzeichen.
-   Ein Wert mit "#" ist eine eigene Zeichnung aus dem Sprite, alles andere ein Zeichen aus Noto Color Emoji. */
+   Ein Wert mit "#" ist eine eigene Zeichnung aus dem Sprite, alles andere ein Emoji-Zeichen, zu dem emoji/<Codepunkte>.svg gehört
+   (Noto Emoji; nach Änderungen an der Tabelle tools/bildzeichen.py laufen lassen). */
 var EMO = {
   "Obst & Gemüse": ["🥬", [
     ["granny", "🍏"], ["apfelringe|getrocknet|datteln|feigen|rosine|sultanine|korinthe|kandiert", "🌰"], ["apfel|\\bobst", "🍎"], ["birne|nashi|quitte", "🍐"],
@@ -725,7 +730,17 @@ function svgUse(id, cls) {
   s.appendChild(e);
   return s;
 }
-/* Bildzeichen: eigene Zeichnung ("#name"), Linien-Symbol (plus) oder Zeichen aus der Emoji-Schrift */
+/* Dateiname zu einem Emoji-Zeichen: Codepunkte in Hex, mit "_" verbunden, ohne Variantenwähler FE0F */
+function emoFile(z) {
+  var a = [];
+  for (var i = 0; i < z.length; i++) {
+    var c = z.codePointAt(i);
+    if (c > 0xffff) i++;
+    if (c !== 0xfe0f) a.push(c.toString(16));
+  }
+  return "emoji/" + a.join("_") + ".svg";
+}
+/* Bildzeichen: eigene Zeichnung ("#name"), Linien-Symbol (plus) oder Noto-Emoji-Grafik aus emoji/ */
 function glyph(icon) {
   if (icon === "plus") return svgUse("plus", "ic");
   if (icon.charAt(0) === "#") {
@@ -734,7 +749,11 @@ function glyph(icon) {
     u.setAttribute("href", "#x-" + icon.slice(1)); s.appendChild(u);
     return s;
   }
-  return el("span", { class: "emo", "aria-hidden": "true", text: icon });
+  var img = el("img", { class: "emo", src: emoFile(icon), alt: "", "aria-hidden": "true", width: "40", height: "40", decoding: "async", draggable: "false" });
+  img.addEventListener("error", function () {
+    if (img.parentNode) img.parentNode.replaceChild(el("span", { class: "emot", "aria-hidden": "true", text: icon }), img);
+  });
+  return img;
 }
 function badge(icon, checked) {
   return el("span", { class: "badge" + (icon === "plus" ? "" : " pic") }, glyph(icon), checked ? el("span", { class: "chk" }, svgUse("check")) : null);
