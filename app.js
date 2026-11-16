@@ -201,6 +201,7 @@ function ruleHit(cat, n) {
    (Noto Emoji; nach Änderungen an der Tabelle tools/bildzeichen.py laufen lassen). */
 var EMO = {
   "Obst & Gemüse": ["🥬", [
+    ["satsuma", "🍊"], ["^cranberrys$", "🫐"], ["pitahaya|cherimoya", "🥭"], ["paprika orange", "🫑"],
     ["cranberrys frisch", "🫐"], ["wurzelspinat", "🥬"], ["kaktusfeige|jackfruit", "🥭"],
     ["granny", "🍏"], ["pilz|champignon|pfifferling|seitling|shiitake|portobello|enoki|shimeji|morchel|truffel|rohrling", "🍄"], ["tomate", "🍅"],
     ["petersilie|schnittlauch|basilikum|dill|koriander|minze|rosmarin|thymian|salbei|oregano|majoran|estragon|kerbel|liebstock|barlauch|melisse|krauter|bohnenkraut|kresse|suppengrun|zitronengras|blatter|lorbeer|waldmeister|lavendel|sprossen", "🌿"],
@@ -216,6 +217,7 @@ var EMO = {
     ["bohne|erbse|schote|edamame", "🫘"], ["kurbis|hokkaido|butternut|patisson", "🎃"],
     ["salat|coleslaw", "🥗"]]],
   "Brot & Backwaren": ["🍞", [
+    ["teilchen|kopenhagener|datschi|osterlamm|stutenkerl", "🍰"], ["quarkini", "🍩"],
     ["pizza", "🍕"], ["reiswaffel|maiswaffel|dinkelwaffel", "🍘"],
     ["croissant|hornchen|franzbrotchen", "🥐"], ["brezel|laugen", "🥨"], ["bagel", "🥯"], ["donut|berliner(?! landbrot)|krapfen|quarkballchen|mutzen|schmalzkuchen", "🍩"],
     ["brotchen|semmel|schrippe|wecken|seelen|schusterjungen|knuppel|buns|toasties|brioche", "#bun"],
@@ -224,6 +226,7 @@ var EMO = {
     ["schnecke", "🍰"], ["cookie|macarons|florentiner|nussecken|schweineohren|amerikaner", "🍪"],
     ["kuchen|stollen|strudel|schnecke|tasche|streusel|brownie|biskuit|schecke|donauwelle|bienenstich|eclair|windbeutel|plunder|boden|zopf|kranz|baklava|cannoli|churros|pastel|kalter hund|petit|keulchen|puddingbrezel|osterbrot|weckmann", "🍰"]]],
   "Milch, Käse & Eier": ["🥛", [
+    ["chester|leicester|parmigiano|bufala|harzer|scheibletten|sandwichscheiben", "🧀"], ["zaziki", "#cup"], ["taboule", "🥗"], ["bratfett", "🧈"], ["soleier", "🥚"], ["lasagneblatter", "🍝"], ["flammkuchenboden|quark-ol-teig", "#bag"],
     ["ostereier", "🥚"], ["kichererbsen", "🌱"], ["ghanoush|muhammara|tirokafteri", "#cup"], ["pingui|milchschnitte", "🍫"],
     ["kase|gouda|edamer|emmentaler|tilsiter|maasdamer|appenzeller|gruyere|cheddar|parmesan|grana|pecorino|manchego|mozzarella|burrata|feta|halloumi|camembert|brie\\b|gorgonzola|roquefort|limburger|romadur|obazda|provolone|scamorza|taleggio|fontina|havarti|esrom|jarlsberg|paneer|ricotta|mascarpone|babybel|leerdammer|geramont|philadelphia|exquisa|bresso|almette|kiri|raclette|fondue|comte|reblochon|munster|chaumes|cambozola|bavaria blu|stilton|danablu|morbier|vacherin|old amsterdam|mimolette|quargel|weisslacker|tete de moine", "🧀"],
     ["\\beier|eiweiss|wachtelei|vollei|eigelb", "🥚"], ["butter(?!milch)|margarine|schmalz|streichfett|\\brama\\b|latta|kerrygold", "🧈"],
@@ -233,12 +236,14 @@ var EMO = {
     ["maultaschen|knodel|klosse|schupfnudeln|germknodel|dampfnudeln", "🥟"], ["nudeln|tortellini|ravioli|gnocchi|spatzle|pasta|pesto", "🍝"], ["suppe", "🍲"], ["salat", "🥗"],
     ["sushi", "🍣"], ["sandwich|wrap", "🥪"], ["oliven|antipasti", "🫒"], ["pizzateig|flammkuchenteig|teig|hefe", "#bag"], ["kaiserschmarrn|reibekuchen", "🥞"]]],
   "Fleisch, Wurst & Fisch": ["🥩", [
+    ["krainer|kabanos", "#sausage"], ["heilbutt", "🐟"], ["prawns", "🦐"],
     ["sushi|sashimi", "🍣"], ["garnele|krabbe|scampi|gambas|shrimp", "🦐"], ["krebs|hummer|langustinen|kaisergranat", "🦞"], ["muschel|auster", "🦪"], ["tintenfisch|calamari|oktopus|pulpo|sepia", "🦑"],
     ["schinken|prosciutto|coppa|lardo|guanciale|pastrami|haxe|eisbein|keule|schaufele", "🍖"], ["speck|bacon|pancetta", "🥓"], ["(^|[\\s-])burger(?!meister)|lachsburger|patties", "🍔"],
     ["fisch|lachs(?!e$)|forelle|saibling|zander|karpfen|kabeljau|rotbarsch|scholle|seezunge|butt\\b|dorade|barsch|pangasius|tilapia|matjes|hering|rollmops|buckling|makrele|sprotte|aal\\b|schillerlocke|surimi|kaviar|rogen|wels|hecht|schleie|marane|felchen|stor\\b|seeteufel|seehecht|leng|rotzunge|flunder|steinbeisser|knurrhahn|rotbarbe|sardine|sardelle|anchovis|kipper|gabelbissen|algen|wakame", "🐟"],
     ["wurst|salami|wiener|knacker|krakauer|cabanossi|debreziner|landjager|beisser|mettenden|chorizo|fuet|griller|bifi|lyoner|mortadella|salsiccia|merguez|sucuk|regensburger|braunschweiger|gottinger|pinkel|stracke|feldkieker|rauchenden|aufschnitt|leberkase|fleischkase|sulze|presskopf|saumagen", "#sausage"],
     ["hahnchen|huhn|huhner|pute|ente|gans|ganse|geflugel|wachtel|chicken|kuken|fasan", "🍗"], ["spiess(?!braten)|schaschlik|souvlaki|gyros|doner|kebab", "🍢"]]],
   "Tiefkühl": ["❄️", [
+    ["frites|golden longs", "🍟"], ["lahmacun|\\bpide|piadina", "🍕"], ["forelle|dorade", "🐟"], ["shrimps", "🦐"], ["fleischballchen|kofte|sauerbraten|\\blamm", "🥩"], ["risotto", "🍛"], ["kohlroulade|kartoffelsuppe", "🍲"], ["blini|quarkkeulchen|reibekuchen|eierkuchen", "🥞"], ["apfeltaschen", "🍰"], ["calippo", "🍦"], ["tropenfruchte|acai|zwetschgen(?!knodel)", "🫐"],
     ["lasagne|gnocchi", "🍝"], ["sushi", "🍣"], ["minipizzen", "🍕"], ["borek|quiche", "🥧"], ["samosa", "🥟"], ["moussaka|gratin|bauernfruhstuck", "🍲"], ["krauterbutter", "🧈"], ["apfelkuchle", "🍰"], ["cranberr", "🫐"],
     ["eiswurfel|crushed", "🧊"], ["pizza|flammkuchen|piccolinis|ristorante|ofenfrische|pinsa|calzone", "🍕"],
     ["eisbecher|eisbombe|eistorte|sorbet|frozen", "🍨"], ["\\beis|wassereis|stieleis|kindereis|proteineis|fruchteis|milcheis|sahneeis|nuss-eis|magnum|cornetto|langnese|movenpick|haagen|ben & jerry|nogger", "🍦"],
@@ -252,6 +257,7 @@ var EMO = {
     ["brotchen", "#bun"], ["baguette|brot|ciabatta|naan", "🥖"],
     ["tk-|gemuse|spinat|vegan|veggie|falafel", "🥦"], ["gyros|doner|frikadellen|kottbullar|hackballchen|cevapcici|bifteki|schnitzel|cordon|hack|pulled|wild|kaninchen|rehkeule|hirsch", "🥩"]]],
   "Nudeln, Reis & Konserven": ["🥫", [
+    ["schleifchen|eierteigwaren", "🍝"], ["ebly", "🌾"], ["miracel|vinaigrette", "#sauce"], ["tabasco", "🌶️"], ["tahin", "🫙"], ["pindjur|ljutenica", "🫑"], ["artischocke", "🫙"], ["knoblauch in", "🧄"], ["fischklosse", "🐟"],
     ["gurken", "🥒"], ["getrocknete tomaten", "🍅"], ["sossenbinder", "#bag"], ["krabbenchips", "#chips"], ["zitronensaft|limettensaft", "🍋"], ["lokum|helva|halva", "🍬"], ["crostini|taralli|sushki|prjaniki", "🍪"], ["preiselbeer", "🫙"], ["medjool", "🌰"],
     ["thunfisch|sardine|sardelle|makrele|hering|lachs|dorsch|sprotten|saupiquet|hawesta|appel|muscheln\\b|krabben(?!chips)", "🐟"], ["kapern|rotkohl|meerrettich|weinblatter|pesto", "🫙"],
     ["passiert|passata|polpa|pelati|geschalt|gehackte tomaten|stuckige tomaten|tomatenstucke|tomaten dose|dosentomaten|san-marzano", "🥫"], ["ketchup", "🍅"], ["senf", "#sauce"],
@@ -268,7 +274,7 @@ var EMO = {
     ["glas|eingelegt|pesto|aufstrich|chutney|kimchi|paste|mus\\b|mark\\b|kompott|meerrettich|sauerkraut|kraut|dip|tahini|creme|antipasti|kapern|ghee|smetana|tworog|salat(?!wurz|kerne)", "🫙"],
     ["fix\\b|binder|pulver|wurfel|panko|mehl|chips|rostzwiebeln|kit\\b|blatter|papier|glucks|kerne|wurzmischung|tute|mix\\b|flocken|zucker|hefe|fett", "#bag"]]],
   "Backen & Gewürze": ["#bag", [
-    ["backmischung", "#bag"], ["aroma", "🫙"], ["muskat", "🧂"], ["zitronengras|zitronenthymian", "🌿"], ["zitronenpfeffer|zitronensalz", "🧂"], ["formchen|tortenspitze", "🧁"], ["mokkabohnen", "🍫"],
+    ["backmischung", "#bag"], ["dekorbluten|marzipanrosen", "🍬"], ["aromat", "#bag"], ["aroma", "🫙"], ["muskat", "🧂"], ["zitronengras|zitronenthymian", "🌿"], ["zitronenpfeffer|zitronensalz", "🧂"], ["formchen|tortenspitze", "🧁"], ["mokkabohnen", "🍫"],
     ["kerzen", "🕯️"], ["gotterspeise|tortenguss|gelatine", "🍮"], ["puderzucker|zitronensaure", "#bag"], ["lebensmittelfarbe|dekostifte", "🎨"], ["honig|sirup|dicksaft|goldsaft", "🍯"],
     ["kuverture|schoko|kakao|nougat|glasur|callets|cake melts", "🍫"], ["kokos", "🥥"], ["erdnuss|erdnusse", "🥜"],
     ["mandel|haselnuss|walnuss|pistazie|pekan|cashew|nuss|krokant|marzipan", "🌰"], ["zitron|orange", "🍋"], ["kirsch", "🍒"],
@@ -278,6 +284,7 @@ var EMO = {
     ["mehl|griess|starke|kleie|dunst", "🌾"], ["streusel|perlen|zucker(blumen|herzen|augen|schrift)|dekor|nonpareilles|fondant|tortendeko|aufleger|topper", "🍬"],
     ["tortenguss|gelatine|pudding|gotterspeise|gelier|creme|mousse|kaltschale", "🍮"], ["konfiture|fullung|mark\\b|paste|aprikotur|gelee|aroma|extrakt|rosenwasser", "🫙"]]],
   "Frühstück, Kaffee & Tee": ["🫙", [
+    ["keks(?!creme)", "🍪"],
     ["kaffee|espresso|crema|cappuccino|latte\\b|nescafe|jacobs|dallmayr|lavazza|senseo|nespresso|tassimo|mokka|ristretto|cold brew(?!-tee)", "☕"],
     ["riegel|flapjack|fruchtschnitte|brotbelag", "🍫"], ["erdnussbutter|erdnussmus", "🥜"],
     ["flocken|musli|porridge|granola|cornflakes|cerealien|pops|kissen|ringe|flakes|kleie|frosties|smacks|krispies|oats|crunch|haferbrei|puffreis|gepufft|biscuits|weizenkeime|hafermark|\\bchia", "🥣"],
@@ -286,7 +293,7 @@ var EMO = {
     ["nutella|nudossi|nusspli|schoko|nougat", "🍫"],
     ["marmelade|konfiture|gelee|fruchtaufstrich|pflaumenmus|zwetschgenmus|lemon curd|mark\\b", "#jam"]]],
   "Süßes & Snacks": ["🍬", [
-    ["^schokolade|schokokringel|nougatstangen|geleeringe", "🍫"], ["butterringe", "🍪"],
+    ["^schokolade|schokokringel|nougatstangen|geleeringe|schoko-sticks", "🍫"], ["mini-muffins|mini-brownies", "🍪"], ["pom-bar|kracker|puffmais", "#chips"], ["nusskernmischung", "🌰"], ["butterringe", "🍪"],
     ["popcorn", "🍿"], ["lutscher|zuckerstange|schleckmuschel", "🍭"], ["salzstangen|brezel|laugen", "🥨"],
     ["keks|cookie|waffel|biskuit|spekulatius|lebkuchen|pfeffernusse|pfefferkuchen|zimtsterne|kipferl|printen|baumkuchen|amarettini|cantuccini|shortbread|soft cake|kuchen|russisch brot|geback|milchschnitte|prinzenrolle|oreo|pick up|makronen|filinchen|knacke|hanuta|knoppers|platzchen|heidesand|hippen|engelsaugen|husarenkrapfen|spitzbuben|barentatzen|magenbrot|fruchtebrot|stollen", "🍪"],
     ["erdnuss|erdnusse", "🥜"], ["cashew|pistazie|mandeln|macadamia|nussmix|nuss-frucht|studentenfutter|pekannusse|walnusse|kerne|wasabi-nusse", "🌰"],
@@ -294,6 +301,7 @@ var EMO = {
     ["jerky|biltong|trockenfleisch|salami", "🥩"],
     ["schoko|praline|marzipan|nougat|riegel|mozartkugel|domino|advent|milka|ritter sport|kinder |duplo|toffifee|merci|ferrero|raffaello|mon cheri|lindt|after eight|snickers|\\bmars\\b|twix|bounty|milky way|kitkat|\\blion\\b|m&m|smarties|halloren|knusperflocken|bambina|minztafelchen|uberraschungsei|weinbrandbohnen|rumkugeln|krokant|ostereier|-eier", "🍫"]]],
   "Getränke": ["🥤", [
+    ["zwickl|karamalz|malzgetrank|cidre", "🍺"], ["federroter", "🍷"], ["sprizz", "🍹"], ["robby bubble", "🍾"], ["pfeffi|goldkrone|feigling", "🥃"],
     ["ginger ale|ginger beer|bitter lemon|wassermelone", "🥤"], ["kirschwasser|zwetschgenwasser|pastis", "🥃"], ["amarone", "🍷"],
     ["(^|[\\s-])mate", "🧉"], ["wasser|gerolsteiner|volvic|vittel|evian|apollinaris|\\bvio\\b|lichtenauer|margon|brambacher|oppacher", "💧"],
     ["saft|nektar|smoothie|trinkpackchen|shot\\b|hohes c|granini|punica|valensina|rotbackchen|capri|sirup", "🧃"],
@@ -304,7 +312,7 @@ var EMO = {
     ["\\bgin\\b|wodka|\\brum\\b|whisk|tequila|mezcal|pisco|likor|schnaps|korn\\b|brand\\b|geist\\b|obstler|grappa|ouzo|raki|aquavit|amaretto|sambuca|absinth|cachaca|curacao|triple sec|maraschino|barenfang|bitter|fernet|amaro|pastis|genever|cognac|armagnac|calvados|brandy|bourbon|scotch|limoncello|jagermeister|baileys|ramazzotti|berentzen|angostura|spirituose|saurer apfel|rumtopf|kirschwasser|zwetschgenwasser|williamsbirne", "🥃"],
     ["wein|riesling|thurgau|silvaner|burgunder|chardonnay|sauvignon|pinot|traminer|dornfelder|merlot|shiraz|tempranillo|rioja|chianti|primitivo|montepulciano|bordeaux|lambrusco|sherry|wermut|federweisser|veltliner|zweigelt|blaufrankisch|lemberger|trollinger|portugieser|regent|malbec|syrah|zinfandel|sangiovese|barolo|barbera|valpolicella|amarone|avola|rhone|beaujolais|chablis|sancerre|elbling|kerner|bacchus|scheurebe|gutedel|rivaner|muskateller|verdejo|albarino|vinho|soave|lugana|vermentino|rose\\b|weissherbst|rotling|blanc de|spatlese|auslese|kabinett|madeira|marsala|retsina|jagertee|met\\b|sake", "🍷"]]],
   "Drogerie & Gesundheit": ["🧴", [
-    ["kondom", "#condom"], ["ohrenstopsel", "#earplug"], ["inhalator|inhalierstift", "#inhaler"], ["kosmetiktucher|abschminktucher", "🧻"], ["salbe|serum", "🧴"], ["glatteisen|haarturban", "🎀"], ["binden|slipeinlagen|tampon|menstruation|periodenunter", "🩸"], ["handschuhe", "🧤"], ["inkontinenz|bettschutz", "🧻"], ["mundschutz|ffp2", "😷"], ["pinzette|hornhaut|bimsstein|zehentrenner", "💅"], ["duschhaube", "🚿"],
+    ["kondom", "#condom"], ["ohrenstopsel", "#earplug"], ["inhalator|inhalierstift", "#inhaler"], ["kosmetiktucher|abschminktucher", "🧻"], ["salbe|serum", "🧴"], ["glatteisen|haarturban", "🎀"], ["binden|slipeinlagen|tampon|menstruation|perioden", "🩸"], ["trimmer", "🪒"], ["feuchtes toilettenpapier|feuchte waschlappen", "🧻"], ["leukoplast", "🩹"], ["dragees", "💊"], ["kulturtasche", "👝"], ["abdeckstift|puderpinsel", "💄"], ["handschuhe", "🧤"], ["inkontinenz|bettschutz", "🧻"], ["mundschutz|ffp2", "😷"], ["pinzette|hornhaut|bimsstein|zehentrenner", "💅"], ["duschhaube", "🚿"],
     ["zahn|aufsteckburste|interdental|mundspulung|mundwasser|munddusche|zungenreiniger|colgate|odol|elmex|aronal|blend-a-med|sensodyne|oral-b|listerine", "🪥"],
     ["rasier|bart|epilier|scherkopf|haarschneider|gillette|wilkinson", "🪒"], ["nagellack|nagel|feile|manikure|unterlack|uberlack", "💅"],
     ["lippenstift|lipgloss|lipliner|mascara|eyeliner|kajal|lidschatten|make-up|foundation|concealer|rouge|\\bpuder\\b|kompaktpuder|loser puder|bronzer|highlighter|primer|wimpern|augenbrauen|kosmetik|schmink|bb-cream|cc-cream", "💄"],
@@ -316,6 +324,7 @@ var EMO = {
     ["kamm|burste|haarband|haarreif|haarspange|haarnadel|haargummi|haarklammer|scrunchie|lockenwickler|haarnetz|duttkissen|haarschere|fohn|glatteisen|lockenstab", "🎀"],
     ["parfum|eau de|duftset", "🌸"], ["kulturbeutel|kosmetiktasche", "👝"], ["waage", "⚖️"]]],
   "Haushalt & Putzen": ["📦", [
+    ["geschirrspul|regeneriersalz|abflussfrei|urinsteinloser|glasschutz|kalkloser", "#detergent"], ["topfreiniger", "🧽"], ["fusselburste|kehrgarnitur", "🧹"], ["gelber sack", "🗑️"], ["mausekoder", "🪤"], ["lederfett", "👞"], ["kuchentucher|haushaltstucher", "🧻"],
     ["kohlenmonoxid", "🔔"], ["tischfeuerwerk", "🎉"], ["lampenol", "🔥"], ["kuhlakku", "🧊"], ["schneebesen|fleischklopfer|presse|stampfer|dosenoffner|eierschneider|nudelholz|pizzaschneider|portionierer|apfelteiler|entkerner|backpinsel|kuchenzange|trichter|wetzstahl", "🥄"], ["schuhloffel", "👞"], ["einmach|schraubglaser|vorratsglaser|gewurzglaser", "🫙"], ["spulmaschinen", "#detergent"], ["insektenspray|wespenspray", "🪰"], ["spray|glasreiniger|badreiniger|kuchenreiniger|allzweckreiniger|kalkreiniger|schimmelentferner|fleckenentferner|fettloser", "#spray"], ["spulburste|fugenburste|handburste|kleiderburste|scheuerburste", "🧹"], ["kaffeefilter|handfilter", "☕"], ["teefilter|tee-ei|teesieb", "🫖"], ["entsafter|zerkleinerer|bereiter|vakuumierer|allesschneider|luftbefeuchter|dampfglatter|wassersprudler", "🔌"],
     ["toilettenpapier|kuchenrolle|servietten|papierhandtucher|zewa|hakle", "🧻"], ["schwamm|schwamme|scheuerschwamm|schmutzradierer|stahlwolle", "🧽"],
     ["besen|handfeger|kehrschaufel|schrubber|wischmopp|wischer|staubwedel", "🧹"], ["eimer", "🪣"], ["mull|sacke", "🗑️"], ["waschekorb|waschesammler|korb", "🧺"],
@@ -332,21 +341,24 @@ var EMO = {
     ["schussel|schale|sieb|salatschleuder|messbecher", "🥣"], ["eiswurfel|kuhltasche|kuhlakku|eiskugel", "🧊"], ["salz- und pfeffer|muhle|morser|gewurzregal", "🧂"],
     ["kuchenform|springform|kastenform|gugelhupf|muffinform|tarteform|backblech|ausstech|tortenring|spritzbeutel|tortenplatte|tortenhaube|backmatte", "🧁"],
     ["wecker|wanduhr|eieruhr|timer", "⏰"], ["bilderrahmen|fotoalbum", "🖼️"], ["vase", "🏺"], ["thermometer|hygrometer", "🌡️"], ["waage", "⚖️"], ["mausefalle", "🪤"],
-    ["dusch|badvorleger", "🚿"], ["wc-|klo|toiletten|pumpel", "🚽"], ["handschuh|topflappen", "🧤"], ["schuh", "👞"], ["kleiderbugel|hosenbugel|kleidersack|bugel|wasche|textil", "👕"], ["schere", "✂️"],
+    ["dusch|badvorleger", "🚿"], ["wc-|\\bklo|toiletten|pumpel", "🚽"], ["handschuh|topflappen", "🧤"], ["schuh", "👞"], ["kleiderbugel|hosenbugel|kleidersack|bugel|wasche|textil", "👕"], ["schere", "✂️"],
     ["insekt|fliegen|ameisen|motten|wespen|mucken|silberfisch|schaben", "🪰"], ["folie|backpapier|butterbrotpapier|bratschlauch", "#roll"], ["beutel", "#zipbag"], ["tuch\\b|tucher|lappen", "🧽"],
     ["seife", "🧼"], ["mittel|spuler|reiniger|entferner|spray|politur|pflege|entkalker|scheuer|soda|starke|bleich|erfrischer|fleck|schimmel|persil|ariel|spee|weisser riese|lenor|perwoll|pril|fairy|frosch|ajax|meister proper|domestos|bref|cillit|viss|sagrotan|vanish|febreze|tabs|duft|pods|klarspuler", "#detergent"],
     ["maschine|mixer|ruhrgerat|kocher|maker|waffeleisen|fritteuse|mikrowelle|backofen|kochplatte|automat|toaster|sauger|saugroboter|dampfreiniger", "🔌"]]],
   "Baby & Kind": ["🍼", [
+    ["bettschutz", "#diaper"], ["fiebersaft|zapfchen|zahnungs|entschaumer|vitamin|kochsalz", "💊"], ["thermometer", "🌡️"], ["zahnburste|zahnpasta", "🪥"], ["schere", "✂️"], ["kinder-nudeln", "🍝"], ["tomatensosse|ketchup", "🍅"], ["kinderwurst", "#sausage"], ["pudding", "🍮"], ["fruchtpuree|obstmus", "🫙"], ["fruchtgummi", "🍬"], ["maisflips|zwieback", "🍪"], ["body\\b|schlafanzug|sockchen|strumpfhose|krabbelschuhe|sonnenhut|kratzhandschuhe|halstuch", "👶"], ["sonnenbrille", "🕶️"], ["rucksack|kindergartentasche", "🎒"], ["topfchen|toilettensitz", "🚽"], ["badewanne", "🛁"], ["(^|[^l])buch\\b|malblock", "📚"], ["spieluhr|mobile|greifling|rassel|stapelbecher|badeente|kuschel|schmusetuch|hupfball|wasserball|springseil|schwimm(?!windel)|wasserbomben|sand|horspiel|spiel\\b|quartett", "🧸"], ["loffel", "🍴"], ["kinderteller|geschirr", "🍽️"], ["kinderbecher|trinkbecher", "🥤"], ["wundschutzspray|salbe|pflege|sonnenmilch|bauchleinol|schwangerschaftsol", "🧴"],
     ["windel|pants|wickel|pampers", "#diaper"], ["glaschen|quetschie|alete|bebivita", "🫙"], ["brei|flocken|musli", "🥣"], ["keks|stangen|kringel|waffel|riegel", "🍪"],
     ["malbuch|kreide|farben|knete", "🖍️"], ["puzzle", "🧩"], ["sticker|sammelkarten|zeitschrift", "📰"], ["seifenblasen", "🫧"], ["sandspielzeug|spielzeug|beissring", "🧸"],
     ["creme|lotion|shampoo|babyol|babybad|waschgel|puder|bubchen|penaten|sonnencreme", "🧴"], ["feuchttucher|tucher|mullwindeln", "🧻"], ["besteck", "🍴"], ["brotdose", "🍱"], ["trinkflasche|trinklern", "🥤"],
     ["saft", "🧃"], ["tee", "🍵"], ["latzchen", "👶"]]],
   "Tierbedarf": ["🐾", [
+    ["kratzbaum|kratzbrett|kratzmatte", "🐱"], ["welpen", "🐶"], ["futterglocke|erdnussnetz|sepiaschale", "🐦"], ["mause|ratten|chinchilla|degu|knabberholz", "🐹"], ["legekorn|kuken", "🐔"], ["hufkratzer", "🐴"],
     ["pferd", "🐴"],
     ["katze|kitten|whiskas|felix|sheba|kitekat|catsan", "🐱"], ["knochen|kau|ochsenziemer|schweineohren", "🦴"], ["hund|pedigree|frolic|cesar|chappi|leckerli|trainingssnacks", "🐶"],
     ["wellensittich|kanarien|papagei|vogel|meise|kolbenhirse|streufutter|fettfutter", "🐦"], ["fisch|teich|aquarium|filterwatte", "🐟"], ["kaninchen", "🐰"],
     ["hamster|nager|meerschwein|kleintier|heu|stroh|einstreu|salzleckstein", "🐹"], ["huhner|legemehl", "🐔"], ["pferd", "🐴"], ["igel", "🦔"], ["schildkrote", "🐢"], ["zecke|floh", "🦟"]]],
   "Kleidung & Textilien": ["👕", [
+    ["slip\\b", "🩲"], ["badelatschen", "🩴"], ["huttenschuhe", "🥿"], ["schlafanzug|teppich", "👕"], ["zackenschere", "✂️"], ["einkaufskorb", "🧺"], ["stoffbeutel|jutebeutel", "🛍️"], ["uhr", "⌚"],
     ["wachstuch|tischdecke", "🍽️"], ["sockenwolle", "🧶"], ["stoffschere", "✂️"],
     ["handtuch|handtucher|duschtuch|badetuch|saunatuch|strandtuch|waschlappen|waschhandschuh|badematte|vorleger|duschmatte", "🛁"], ["strickjacke", "🧥"],
     ["socken|strumpf|strumpfe|fusslinge", "🧦"], ["handschuh|faustlinge", "🧤"], ["schal\\b|halstuch|tuch\\b", "🧣"], ["sonnenhut|strohhut|fischerhut", "👒"], ["mutze|cap\\b|stirnband|ohrenschutzer", "🧢"],
@@ -358,6 +370,7 @@ var EMO = {
     ["kleid|rock\\b|nachthemd", "👗"], ["hose|jeans|leggings|chino", "👖"], ["hemd|bluse|krawatte|fliege|einstecktuch", "👔"], ["jacke|mantel|weste|anzug|poncho|kittel|overall", "🧥"],
     ["tischdecke|laufer|servietten|wachstuch|tischset", "🍽️"]]],
   "Baumarkt & Werkzeug": ["🧰", [
+    ["fugenkratzer", "🧰"], ["lochband|klavierband|gipskartonschrauben|porenbetondubel", "🔩"], ["hammerschlaglack", "🎨"], ["andruckroller", "🖌️"], ["gehwegplatte", "🧱"], ["schlusselrohling", "🔑"],
     ["spanplattenschrauben|holzschrauben|schlossschrauben|sicherungsmutter|schraubensicherung", "🔩"], ["schlosserhammer", "🔨"], ["heizstrahler", "🔥"], ["ventilator", "🌬️"], ["maske|gehorschutz", "⛑️"], ["tapete|tapezier|winkelschleifer|trennscheiben|schruppscheiben|facherscheiben|schleifscheiben|multitool", "🧰"], ["rostloser", "🧴"], ["sicherungsautomat", "🔌"], ["absenkautomatik", "🚽"], ["bremsflussigkeit", "🚗"],
     ["fahrrad|sattel|pedale|lenker|gepacktrager|reflektor|rucklicht|bremszug|schaltzug", "🚲"], ["reifen", "🛞"], ["motorol|getriebeol|benzin|adblue", "⛽"],
     ["auto|motor|scheibenwisch|scheibenenteiser|scheibenfrost|scheibenreiniger|kuhl|felgen|wischer|eiskratzer|duftbaum|enteiser|wagenheber|radkreuz|starthilfe|abschlepp|warndreieck|zundkerzen|h7|h4|sitzbezuge|kofferraum|schneeketten|bremsen|cockpit|lackstift|kratzer", "🚗"],
@@ -375,6 +388,7 @@ var EMO = {
     ["spiegel", "🪞"], ["regal|mobel|stuhl", "🪑"], ["klingel", "🔔"], ["briefkasten", "📫"], ["karre|roller", "🛒"],
     ["kleber|leim|silikon|acryl|kleister|dicht|schaum|harz|ol\\b|wachs|verdunnung|spiritus|aceton|reiniger|spray|fett|paste|pflege|politur", "🧴"], ["band\\b|tape|krepp", "🩹"]]],
   "Garten & Pflanzen": ["🪴", [
+    ["heidelbeerstrauch", "🌳"], ["sandkasten|mehltau|rasenrechen|rasenlufter", "🪴"], ["streugranulat", "❄️"], ["gasregler|gasschlauch|holzkohle|anzundholz|holzpellets|braunkohle|campingkocher|raucherbox|ollampe", "🔥"], ["lichtschlauch", "💡"], ["tagetes(?!-)|vergissmeinnicht|bellis|ranunkel|margerite|mannertreu|zauberglockchen|lieschen|erika|gerbera|lilien|schleierkraut|flieder|forsythie|clematis|schneeglockchen", "🌷"], ["kirschlorbeer|thuja|liguster|hainbuche|saulenobst|weinrebe", "🌳"], ["nordmanntanne", "🎄"], ["hangesessel|hollywoodschaukel|strandkorb|lounge|balkonset|festzeltgarnitur", "🪑"], ["futterhaus|meisenknodelhalter", "🐦"],
     ["schere", "✂️"], ["rasenmaher|rasentrimmer|rasenkante", "🪴"],
     ["grill|feuer|fackel|gasflasche", "🔥"], ["sonnenschirm|sonnensegel", "⛱️"], ["stuhl|bank|liege|tisch|hangematte", "🪑"],
     ["giess|schlauch|brause|sprenger|bewasser|regentonne|hahnanschluss|pool|planschbecken|teich", "💧"],
@@ -388,6 +402,7 @@ var EMO = {
     ["schnee|streu|winterschutz", "❄️"], ["handschuhe", "🧤"], ["schere", "✂️"], ["solar|leuchten|lichterkette", "💡"],
 ]],
   "Büro & Schule": ["✏️", [
+    ["kugelschreiber|fullerpatronen", "🖊️"], ["wachsmal", "🖍️"], ["heftzange", "📎"], ["holzbuchstaben", "🧩"], ["regenhulle", "🎒"], ["papierschneider", "✂️"], ["geschenk", "🎁"], ["versandkarton", "📦"],
     ["klammer|locher|heftgerat|tacker|enthefter", "📎"], ["schultute|federmappe|mappchen", "🎒"],
     ["drucker(?!papier)|toner|patrone", "🖨️"], ["maus\\b|mauspad", "🖱️"], ["tastatur", "⌨️"], ["laptop|monitor|bildschirm|webcam", "💻"], ["usb|sd-karte|festplatte|rohlinge", "💾"], ["rechner", "🧮"], ["headset", "🎧"],
     ["schere|cutter|klingen|briefoffner", "✂️"], ["geodreieck|winkelmesser|zirkel", "📐"], ["lineal|schablone", "📏"],
@@ -397,6 +412,7 @@ var EMO = {
     ["pinsel", "🖌️"], ["farben|malkasten|tusch|aquarell|acryl|leinwand|staffelei|deckweiss", "🎨"], ["marker|wachsmal|kreide|buntstift|filzstift|fasermaler|brush", "🖍️"],
     ["kugelschreiber|fuller|fineliner|gelschreiber|tintenroller|tinte", "🖊️"], ["schultute|federmappe|mappchen", "🎒"], ["bastel|perlen|pompons|wackelaugen|moosgummi|pfeifenreiniger|glitzer", "🧩"]]],
   "Sonstiges": ["🛒", [
+    ["buch", "📚"], ["zigar", "🚬"], ["sudoku|comic", "📰"], ["arzt|medikament", "💊"], ["parkticket|fahrkarte|monatskarte", "🎟️"], ["werkstatt termin|tuv|reifen", "🚗"],
     ["geschenk|mitbringsel", "🎁"], ["blumen", "💐"], ["paket", "📦"], ["brief|post", "✉️"], ["zeitung|zeitschrift|ratselheft", "📰"], ["lotto|los\\b|rubbel", "🎟️"],
     ["geld|bank|bargeld|gutschein|guthaben", "💶"], ["tanken", "⛽"], ["auto", "🚗"], ["foto|passbild", "📷"], ["schlussel", "🔑"], ["zigarette|tabak|filterhulsen", "🚬"], ["feuerzeug", "🔥"],
     ["pfand|leergut|altglas|altpapier|altkleider|entsorgen", "♻️"], ["apotheke|rezept", "💊"], ["backer", "🥖"], ["fleischer", "🥩"], ["friseur", "✂️"], ["markt", "🧺"], ["bibliothek", "📚"],
@@ -947,6 +963,8 @@ document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !v
 
 function editSheet(it) {
   var note = el("input", { id: "f-note", type: "text", value: it.note, placeholder: "z. B. 2 Stück, die große Packung", maxlength: "40" });
+  var nameIn = el("input", { id: "f-name", type: "text", value: it.name, maxlength: "80", autocapitalize: "sentences", spellcheck: "false" });
+  var err = el("p", { class: "notice", role: "alert", hidden: true });
   var sel = el("select", { id: "f-cat" });
   CATS.forEach(function (c, ci) { var o = el("option", { value: String(ci), text: c }); if (ci === it.cat) o.selected = true; sel.appendChild(o); });
   var chips = el("div", { class: "qchips", role: "group", "aria-label": "Schnellauswahl Menge" });
@@ -957,8 +975,19 @@ function editSheet(it) {
     el("h3", {}, it.name, el("small", { text: CATS[it.cat] })));
   if (head.style && head.style.setProperty) head.style.setProperty("--c", CATCOL[it.cat]);
   var form = el("form", { on: { submit: function (e) {
-    e.preventDefault(); it.note = note.value.trim(); it.cat = Number(sel.value); save(); render(); closeSheet();
+    e.preventDefault();
+    var nn = nameIn.value.trim().replace(/\s+/g, " "), ci = byNorm[norm(nn)], other;
+    if (!nn) { nameIn.focus(); return; }
+    if (norm(nn) !== norm(it.name)) {
+      /* Umbenennen: Katalogschreibweise übernehmen; die Abteilung folgt dem neuen Namen, wenn sie nicht von Hand gewählt wurde */
+      nn = ci !== undefined ? names[ci] : nn.charAt(0).toUpperCase() + nn.slice(1);
+      other = findItem(nn);
+      if (other && other !== it) { err.textContent = nn + " steht schon auf der Liste."; err.hidden = false; nameIn.focus(); return; }
+      if (Number(sel.value) === it.cat) sel.value = String(catOf(nn));
+    }
+    it.name = nn; it.note = note.value.trim(); it.cat = Number(sel.value); save(); render(); closeSheet();
   } } },
+    el("label", { class: "field", for: "f-name" }, "Name", nameIn), err,
     el("label", { class: "field", for: "f-note" }, "Menge oder Notiz", note),
     chips,
     el("label", { class: "field", for: "f-cat" }, "Abteilung", sel),

@@ -12,7 +12,7 @@ Von Hand bearbeitet:
 - `app.css` – gesamtes Aussehen, heller und dunkler Modus, Einbindung der Schriften.
 - `app.js` – gesamte Logik: Abteilungen und Wortregeln (`META`), Bildzeichen-Tabelle (`EMO`), Zustand, Liste, Suche mit Mengen-Erkennung, Blätter, Menü (Teilen, Vorlagen, Reihenfolge im Laden). Der Block am Ende braucht einen echten Browser: Bildschirm anlassen, Installationshinweis, Service Worker mit Update-Hinweis.
 - `manifest.webmanifest`, `icons/` – PWA-Angaben und App-Symbole (`icons/icon.svg` ist die Vorlage der PNGs).
-- `src/gen.py` mit `src/add1.py` bis `add3.py` – Katalog-Generator: Artikellisten je Abteilung, Marken, Alltagsartikel (Rangfolge), Synonyme.
+- `src/gen.py` mit `src/add1.py` bis `add4.py` – Katalog-Generator: Artikellisten je Abteilung, Marken, Alltagsartikel (Rangfolge), Synonyme. `add4.py` ist die jüngste Ergänzung; `DROP` in `gen.py` nimmt einzelne Artikel wieder heraus.
 - `src/sw.js` – Vorlage des Service Workers.
 
 Erzeugt, nicht von Hand bearbeiten:
@@ -36,8 +36,8 @@ Werkzeuge:
 ## Stand der Funktionen
 
 - Mehrere Listen, anlegen, umbenennen, löschen.
-- Suche über 8550 Artikel in 19 Abteilungen, 246 Synonyme, Rangfolge mit rund 180 Alltagsartikeln, 339 Markennamen (nur Namen, keine Logos).
-- Dreispaltiges Kachelraster; tippen hakt ab, lange drücken öffnet Menge und Abteilung.
+- Suche über 10.988 Artikel in 19 Abteilungen, 249 Synonyme, Rangfolge mit rund 180 Alltagsartikeln, 339 Markennamen (nur Namen, keine Logos).
+- Dreispaltiges Kachelraster; tippen hakt ab, lange drücken öffnet Name, Menge und Abteilung.
 - Rückgängig für Abhaken, Löschen und Hinzufügen.
 - Eigene Artikel bekommen Abteilung und Bildzeichen über Wortregeln.
 - Heller und dunkler Modus.
@@ -76,9 +76,9 @@ Werkzeuge:
 
 1. **Live-Abgleich.** Teilen per Link gibt es; gewünscht sind darüber hinaus geteilte Listen in Echtzeit ohne Konto, per Link oder Code. Backend noch nicht entschieden (Firestore: Offline-Abgleich eingebaut; Supabase: EU-Region, Offline selbst bauen). Braucht ein Projekt beim gewählten Anbieter.
 2. **Echte Geräte.** Geprüft ist nur im Desktop-Browser und in der Handy-Emulation von Chromium (Touch, langes Drücken, Offline). Auf iPhone und Android noch ausprobieren: langes Drücken, Vibration, Installation zum Startbildschirm, Zoom-Sperre, Bildschirm-an, Teilen-Menü. Die Spracheingabe ist nur mit nachgestellter Erkennung geprüft. Auf dem iPhone öffnet ein geteilter Link Safari, nicht die installierte App; dafür gibt es „Geteilte Liste einfügen“.
-3. **Zuordnung der Bildzeichen.** Alle 8550 Artikel sind einmal vollständig durchgesehen (Liste je Abteilung und Motiv gelesen), rund 420 korrigiert. Offen bleibt, wo es kein passendes Motiv gibt: Viele Artikel teilen sich die Pflegeflasche (Drogerie), den Karton (Haushalt) oder den Werkzeugkasten (Baumarkt).
+3. **Zuordnung der Bildzeichen.** Alle 10.988 Artikel sind einmal vollständig durchgesehen (Liste je Abteilung und Motiv gelesen), rund 750 korrigiert. Offen bleibt, wo es kein passendes Motiv gibt: Viele Artikel teilen sich die Pflegeflasche (Drogerie), den Karton (Haushalt) oder den Werkzeugkasten (Baumarkt).
 4. **Eigene Zeichnungen.** Alle 17 haben Verlauf und Glanzlicht. Neue Zeichnung: Symbol in `index.html` anlegen (24er-Raster, Verlaufs-IDs eindeutig benennen) und in `EMO` als `"#name"` eintragen; der Logiktest prüft, dass das Symbol existiert.
-5. **Katalog.** Ziel waren 10.000 Artikel. Der Katalog ist von Hand zusammengestellt und nicht gegen echte Sortimente geprüft.
+5. **Katalog.** Das Ziel von 10.000 Artikeln ist erreicht; die früher dünnen Abteilungen (Baby, Tier, Sonstiges, Büro, Garten, Kleidung) sind aufgefüllt. Geprüft ist der Katalog auf Dubletten und Schreibvarianten. Gegen ein echtes Sortiment ist er weiterhin nicht geprüft: Er ist von Hand zusammengestellt, und eine Datenquelle wie Open Food Facts war aus der Arbeitsumgebung nicht erreichbar.
 
 ## Technische Hinweise
 
@@ -91,3 +91,5 @@ Werkzeuge:
 - Der Logiktest läuft ohne `window`; alles, was Browser-Schnittstellen braucht, steht deshalb im Block am Ende von `app.js` und ist nur im Browser geprüft.
 - `META` enthält je Abteilung nur noch Farbe und Muster. Die Tiefkühl-Muster nennen fast jedes Lebensmittel und zählen in `guess()` nur, wenn der Name nach Tiefkühlware klingt („TK“, „gefroren“, „Eis“).
 - Mehrere Artikel (`splitItems`): Getrennt wird an Zeilenumbruch, Semikolon und Komma, nicht an einem Komma zwischen Ziffern („3,5 %“). Gesprochenes wird von links in die längsten Katalognamen zerlegt; geht das nicht auf, bleibt der Text ganz und wird nur an „und“ getrennt.
+- Katalog pflegen: Nach Ergänzungen zeigt die erste Zeile von `gen.py` unter `dups` Artikel, die schon vorhanden waren. Zusätzlich auf Beinahe-Doppelte prüfen (Schreibweise mit und ohne Bindestrich, Einzahl und Mehrzahl) und darauf, ob ein neuer Artikel ein bestehendes Synonym verdrängt (dann fällt das Synonym still weg). Danach die neuen Artikel mit ihren Bildzeichen gegenlesen.
+

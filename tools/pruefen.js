@@ -17,7 +17,8 @@ console.log(`${T.names.length} Artikel, ${T.CATS.length} Abteilungen, ${Object.k
 const erwartet = { "Äpfel": "🍎", "Vollmilch": "🥛", "Brötchen": "#bun", "Spaghetti": "🍝", "Hammer": "🔨",
   "Thunfisch in Öl": "🐟", "Frischhaltefolie": "#roll", "Windeln": "#diaper", "Backpapier": "#roll", "Passierte Tomaten": "🥫", "Mangold": "🥬", "Tomatensaft": "🧃",
   "Schneebesen": "🥄", "Fleischklopfer": "🥄", "Pastis": "🥃", "Preiselbeeren Glas": "🫙", "Tapete": "🧰", "Möhrenkuchen": "🍰", "Ventilator": "🌬️", "Tampons normal": "🩸",
-  "Senf": "#sauce", "Rapsöl": "#oil", "Chips": "#chips", "Waschmittel": "#detergent", "Glasreiniger": "#spray", "Blumenerde": "#soil", "Gefrierbeutel 1 l": "#zipbag", "Marmelade": "#jam", "Kondome": "#condom", "Ohrenstöpsel": "#earplug", "Inhalator": "#inhaler", "Insektenspray": "🪰" };
+  "Senf": "#sauce", "Rapsöl": "#oil", "Chips": "#chips", "Waschmittel": "#detergent", "Glasreiniger": "#spray", "Blumenerde": "#soil", "Gefrierbeutel 1 l": "#zipbag", "Marmelade": "#jam", "Kondome": "#condom", "Ohrenstöpsel": "#earplug", "Inhalator": "#inhaler", "Insektenspray": "🪰",
+  "Flammkuchen Lachs": "🍕", "Lammkeule TK": "🥩", "Kalklöser Gel": "#detergent", "Zigarillos": "🚬", "Taschenbuch": "📚", "Malbuch": "🖍️", "Kinderbuch": "📚", "Aromat": "#bag", "Geschirrspültabs 30er": "#detergent" };
 let ok = true;
 for (const [n, e] of Object.entries(erwartet)) { const i = T.byNorm[T.norm(n)]; if (i === undefined || T.icons[i] !== e) { ok = false; console.log("FEHLER", n, T.icons[i]); } }
 // Zu jedem benutzten Bildzeichen muss die Grafik in emoji/ liegen.
@@ -54,6 +55,9 @@ const gl = T.readShared(link); if (!gl || gl.name !== "Test" || gl.items.length 
 T.cur().items[0].done = true; T.S.doneAt = Date.now(); if (T.checkTidy()) { ok = false; console.log("FEHLER Aufräumen zu früh"); }
 T.S.doneAt = Date.now() - 4 * 3600 * 1000; if (!T.checkTidy()) { ok = false; console.log("FEHLER Aufräumen fehlt"); }
 T.cur().items[0].done = false; T.S.doneAt = 0;
+// Der Katalog soll mindestens 10.000 Artikel haben und in jeder Abteilung über 100
+if (T.names.length < 10000) { ok = false; console.log("FEHLER Katalog zu klein", T.names.length); }
+T.CATS.forEach((c, ci) => { const n = T.cats.filter(x => x === ci).length; if (n < 100) { ok = false; console.log("FEHLER Abteilung dünn", c, n); } });
 // Reihenfolge der Abteilungen und Vorlagen gehören zum Zustand
 if (T.S.order.length !== T.CATS.length || !Array.isArray(T.S.templates)) { ok = false; console.log("FEHLER Zustand"); }
 T.add("karotten"); T.add("Erdbeerkuchen");
