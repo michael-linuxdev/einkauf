@@ -850,6 +850,11 @@ $("listbtn").addEventListener("click", listsSheet);
 
 render();
 
+/* Zoom durch Spreizen in Safari unterbinden (gesturestart gibt es nur dort) */
+["gesturestart", "gesturechange"].forEach(function (ev) {
+  document.addEventListener(ev, function (e) { e.preventDefault(); }, { passive: false });
+});
+
 /* Offline-Nutzung: Service Worker anmelden (nur über https oder lokal, nicht bei file://) */
 if (typeof navigator !== "undefined" && "serviceWorker" in navigator && /^https?:$/.test(location.protocol)) {
   window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); });

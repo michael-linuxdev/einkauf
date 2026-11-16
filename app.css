@@ -30,6 +30,9 @@
 }
 *{box-sizing:border-box}
 html,body{margin:0}
+/* Kein Zoom: weder durch Doppeltippen noch durch Spreizen. Safari beachtet die Angabe im viewport-Tag nicht
+   zuverlässig, deshalb zusätzlich hier und über gesturestart in app.js. */
+html{touch-action:pan-x pan-y}
 body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.35;-webkit-text-size-adjust:100%;-webkit-font-smoothing:antialiased}
 button,input,select{font:inherit;color:inherit}
 button{cursor:pointer;-webkit-tap-highlight-color:transparent}
