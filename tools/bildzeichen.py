@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
-"""Kopiert die in src/template.html (Tabelle EMO) benutzten Bildzeichen als SVG nach emoji/.
+"""Kopiert die in app.js (Tabelle EMO) benutzten Bildzeichen als SVG nach emoji/.
 
 Aufruf: tools/bildzeichen.py <Pfad zu noto-emoji/2D/svg>
-Quelle und Lizenz: siehe emoji/LIZENZ.md. Die Dateien werden unverändert übernommen.
+Quelle und Lizenz: siehe emoji/LIZENZ.md. Kopiert werden nur fehlende Dateien; neue danach mit
+SVGO verkleinern (npx svgo@4 --config tools/svgo.config.js -f emoji).
 Dateiname: Codepunkte in Hex, mit "_" verbunden, ohne Variantenwähler FE0F (wie glyph() in der Vorlage).
 """
 import os, re, shutil, sys
 
 root = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
-t = open(os.path.join(root, "src", "template.html"), encoding="utf-8").read()
+t = open(os.path.join(root, "app.js"), encoding="utf-8").read()
 block = t[t.index("var EMO = {"):t.index("var EMO_DEF")]
-zeichen = {s for s in re.findall(r'"([^"]+)"', block) if any(ord(c) > 0x2000 for c in s)}
+zeichen = {s for s in re.findall(r'"([^"]+)"', block) if s[0] != "#" and any(ord(c) > 0x2000 for c in s)}
 zeichen.add("🛒")
 
 def datei(z):
@@ -25,7 +26,8 @@ fehlt = []
 if len(sys.argv) > 1:
     for f, z in sorted(soll.items()):
         q = os.path.join(sys.argv[1], "emoji_u" + f)
-        if os.path.exists(q): shutil.copyfile(q, os.path.join(ziel, f))
+        if os.path.exists(os.path.join(ziel, f)): continue    # vorhandene (verkleinerte) Dateien bleiben
+        if os.path.exists(q): shutil.copyfile(q, os.path.join(ziel, f)); print("neu:", f, "- noch mit SVGO verkleinern")
         else: fehlt.append(z + " " + f)
 else:
     fehlt = [z + " " + f for f, z in sorted(soll.items()) if not os.path.exists(os.path.join(ziel, f))]

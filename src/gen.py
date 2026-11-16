@@ -288,7 +288,7 @@ for k, v in out.items(): print(f"  {len(v):4d} {k}", file=sys.stderr)
 assert not miss and not bad
 st = {key(s_) for s_ in STAPLE}
 data = [[k, "|".join(i + ("*" if key(i) in st else "") for i in v)] for k, v in out.items()]
-tpl = open(sys.argv[1], encoding="utf-8").read()
-assert "/*CATALOG*/" in tpl and "/*SYN*/" in tpl
-open(sys.argv[2], "w", encoding="utf-8").write(
-    tpl.replace("/*CATALOG*/", json.dumps(data, ensure_ascii=False)).replace("/*SYN*/", json.dumps("|".join(syn), ensure_ascii=False)))
+open(sys.argv[1], "w", encoding="utf-8").write(
+    "/* Erzeugt von src/gen.py - nicht von Hand bearbeiten. */\n"
+    "var DATA = " + json.dumps(data, ensure_ascii=False, separators=(",", ":")) + ";\n"
+    "var SYNRAW = " + json.dumps("|".join(syn), ensure_ascii=False) + ";\n")

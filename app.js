@@ -1,220 +1,5 @@
-<!DOCTYPE html>
-<html lang="de">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Einkaufszettel</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-/* Layout: eine schmale Spalte. Kopf mit Fortschritt und Eingabe, darunter weiße Karten im Dreierraster.
-   Die Farbe trägt allein das Piktogramm: jede Abteilung hat ihren Ton, alles andere bleibt ruhig. */
-:root{
-  --bg:#edf0ea; --surface:#ffffff; --ink:#14201a; --muted:#647268; --line:#d5ddd3;
-  --accent:#15663f; --accent-ink:#ffffff; --soft:#dfeae1; --danger:#b3372c;
-  --shadow:0 1px 0 rgba(20,32,26,.04),0 8px 18px -12px rgba(20,32,26,.28);
-  --tint:13%; --inkmix:0%;
-  --display:"Bricolage Grotesque","Trebuchet MS",system-ui,sans-serif;
-  --body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
-  color-scheme:light;
-}
-@media (prefers-color-scheme:dark){
-  :root:not([data-theme="light"]){
-    --bg:#0e1411; --surface:#1a221d; --ink:#e8efe9; --muted:#93a399; --line:#2b362f;
-    --accent:#62d199; --accent-ink:#0a1810; --soft:#1f2d25; --danger:#ff8a7d;
-    --shadow:0 1px 0 rgba(255,255,255,.03),0 10px 20px -14px rgba(0,0,0,.8);
-    --tint:24%; --inkmix:45%;
-    color-scheme:dark;
-  }
-}
-:root[data-theme="dark"]{
-  --bg:#0e1411; --surface:#1a221d; --ink:#e8efe9; --muted:#93a399; --line:#2b362f;
-  --accent:#62d199; --accent-ink:#0a1810; --soft:#1f2d25; --danger:#ff8a7d;
-  --shadow:0 1px 0 rgba(255,255,255,.03),0 10px 20px -14px rgba(0,0,0,.8);
-  --tint:24%; --inkmix:45%;
-  color-scheme:dark;
-}
-*{box-sizing:border-box}
-html,body{margin:0}
-body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.35;-webkit-text-size-adjust:100%;-webkit-font-smoothing:antialiased}
-button,input,select{font:inherit;color:inherit}
-button{cursor:pointer;-webkit-tap-highlight-color:transparent}
-:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
-.sprite{position:absolute;width:0;height:0;overflow:hidden}
-symbol{overflow:visible}
-.app{max-width:560px;margin:0 auto;padding:0 16px 56px}
-
-.top{padding:16px 0 2px}
-.stick{position:sticky;top:0;z-index:5;background:var(--bg);padding:8px 0 12px;display:flex;flex-direction:column;gap:12px}
-.bar{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
-.listbtn{display:flex;align-items:center;gap:8px;background:none;border:0;padding:2px 0;min-height:44px;font-family:var(--display);font-weight:800;font-size:31px;line-height:1.05;letter-spacing:-.025em;text-align:left;min-width:0}
-.listbtn span{overflow-wrap:anywhere}
-.listbtn svg{flex:none;color:var(--muted);margin-top:4px}
-.count{flex:none;padding-bottom:8px;font-size:14px;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
-.count b{font-family:var(--display);font-weight:800;font-size:20px;color:var(--ink);letter-spacing:-.02em}
-.track{height:5px;border-radius:99px;background:var(--line);overflow:hidden}
-.track i{display:block;height:100%;width:0;border-radius:99px;background:var(--accent)}
-.search{display:flex;gap:8px}
-.field-wrap{position:relative;flex:1;min-width:0}
-.field-wrap>svg{position:absolute;left:16px;top:50%;width:20px;height:20px;margin-top:-10px;color:var(--muted);pointer-events:none;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round}
-.search input{width:100%;height:54px;border:1.5px solid transparent;background:var(--surface);border-radius:18px;padding:0 46px;font-size:17px;box-shadow:var(--shadow)}
-.clear{position:absolute;right:7px;top:50%;margin-top:-20px;width:40px;height:40px;border:0;background:none;color:var(--muted);border-radius:50%;display:grid;place-items:center}
-.clear[hidden]{display:none}
-.clear svg,.xbtn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round}
-.search input::placeholder{color:var(--muted)}
-.search input:focus{outline:none;border-color:var(--accent)}
-.done-btn{flex:none;height:54px;padding:0 18px;border-radius:18px;border:0;background:var(--accent);color:var(--accent-ink);font-weight:700}
-
-.hint{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;border:1.5px dashed var(--line);border-radius:14px;padding:6px 14px;font-size:14.5px;color:var(--muted);margin-bottom:12px}
-.link{background:none;border:0;padding:8px 0;color:var(--accent);font-weight:700;text-decoration:underline;text-underline-offset:3px;min-height:36px}
-.link.danger{color:var(--danger)}
-
-h2{font-family:var(--body);font-size:12.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:26px 4px 10px;display:flex;justify-content:space-between;align-items:center;gap:12px}
-h2:first-child{margin-top:4px}
-h2 .link{text-transform:none;letter-spacing:0;font-size:14px;padding:0}
-
-.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
-.tile{--c:#6f7a72;position:relative;display:flex;min-height:114px;border-radius:20px;background:var(--surface);color:var(--ink);box-shadow:var(--shadow);-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
-.tile .main{flex:1;min-width:0;border:0;background:none;border-radius:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;padding:14px 6px 12px;text-align:center}
-.badge{position:relative;flex:none;width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:var(--soft);color:var(--c)}
-@supports (color:color-mix(in srgb,red,blue)){
-  .badge{background:color-mix(in srgb,var(--c) var(--tint),var(--surface));color:color-mix(in srgb,var(--c),#fff var(--inkmix))}
-}
-.badge.pic{background:none;width:48px;height:46px;border-radius:0}
-/* Bildzeichen sind Noto-Emoji-Grafiken aus emoji/ (Lizenz: emoji/LIZENZ.md).
-   Lässt sich eine Datei nicht laden, springt die Emoji-Schrift des Geräts ein (.emot). */
-.emo{width:40px;height:40px;display:block;pointer-events:none;-webkit-user-drag:none}
-.emot{font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji","Segoe UI Symbol",sans-serif;font-size:37px;line-height:1.15;font-weight:400}
-.ex{width:44px;height:44px}
-.tile.done .badge.pic{background:none}
-.tile.done .emo,.tile.done .emot,.tile.done .ex{filter:grayscale(1);opacity:.5}
-#sug .badge.pic{width:42px;height:40px}
-#sug .emo{width:34px;height:34px}
-#sug .emot{font-size:31px}
-#sug .ex{width:38px;height:38px}
-.sheet-head .badge.pic{width:56px;height:56px}
-.sheet-head .emo{width:48px;height:48px}
-.sheet-head .emot{font-size:44px}
-.sheet-head .ex{width:52px;height:52px}
-.ic{width:30px;height:30px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
-.chk{position:absolute;right:-4px;bottom:-3px;width:20px;height:20px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;box-shadow:0 0 0 2.500px var(--surface)}
-.chk svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:3.4;stroke-linecap:round;stroke-linejoin:round}
-.tname{max-width:100%;font-size:13.5px;font-weight:600;line-height:1.2;-webkit-hyphens:auto;hyphens:auto;overflow-wrap:anywhere}
-.tnote{max-width:100%;font-size:11.5px;font-weight:600;line-height:1.2;color:var(--muted);background:var(--bg);border-radius:99px;padding:3px 8px;overflow-wrap:anywhere}
-.tile.done{background:none;box-shadow:inset 0 0 0 1.5px var(--line);color:var(--muted)}
-.tile.done .badge{background:var(--line);color:var(--muted)}
-.tile.done .chk{box-shadow:0 0 0 2.500px var(--bg)}
-.tile.done .tname{font-weight:500;text-decoration:line-through;text-decoration-thickness:1px}
-.tile.done .tnote{background:none;padding:0}
-.tile.on{box-shadow:inset 0 0 0 2px var(--accent),var(--shadow)}
-.tile.on .tnote{background:none;padding:0;color:var(--accent)}
-.tile.new{background:none;box-shadow:inset 0 0 0 1.5px var(--accent);color:var(--accent)}
-.tile.new .badge{background:var(--accent);color:var(--accent-ink)}
-.tile.new .tnote{background:none;padding:0;color:var(--accent)}
-/* Details-Knopf: per Tastatur und Maus sichtbar; am Handy öffnet langes Drücken die Details */
-.dots{position:absolute;top:2px;right:2px;width:34px;height:32px;border:0;background:none;color:var(--muted);display:grid;place-items:center;border-radius:12px;opacity:0;pointer-events:none}
-.tile:focus-within .dots{opacity:1;pointer-events:auto}
-@media (hover:hover){.tile:hover .dots{opacity:1;pointer-events:auto}}
-#sug .tile{min-height:100px}
-#sug .tile .main{gap:5px;padding:10px 6px}
-#sug .badge{width:40px;height:40px}
-#sug .ic{width:26px;height:26px}
-.status{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--soft);border-radius:14px;padding:3px 14px;min-height:44px;font-size:14.5px;font-weight:600;margin-bottom:12px}
-.status span{overflow-wrap:anywhere}
-.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:15;width:max-content;max-width:calc(100% - 32px);display:flex;align-items:center;gap:6px;background:var(--ink);color:var(--bg);border-radius:16px;padding:6px 6px 6px 16px;font-size:15px;font-weight:600;box-shadow:0 14px 30px -12px rgba(0,0,0,.6)}
-.toast[hidden]{display:none}
-.toast span{overflow-wrap:anywhere}
-.toast button{flex:none;border:0;background:none;color:inherit;font-weight:800;text-decoration:underline;text-underline-offset:3px;padding:8px 12px;min-height:40px}
-.dots svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round}
-
-.empty{background:var(--surface);border-radius:20px;box-shadow:var(--shadow);padding:30px 20px;text-align:center;color:var(--muted)}
-.empty strong{display:block;color:var(--ink);font-family:var(--display);font-weight:800;font-size:22px;letter-spacing:-.02em;margin-bottom:4px}
-.foot{margin-top:32px;text-align:center;font-size:13px;color:var(--muted)}
-
-.veil{position:fixed;inset:0;z-index:20;background:rgba(8,14,10,.55);display:flex;align-items:flex-end;justify-content:center}
-.veil[hidden]{display:none}
-.sheet{position:relative;width:100%;max-width:560px;max-height:88%;overflow:auto;background:var(--bg);border-radius:26px 26px 0 0;padding:10px 16px 26px;display:flex;flex-direction:column;gap:16px}
-.sheet:focus{outline:none}
-.sheet::before{content:"";align-self:center;width:40px;height:4px;border-radius:99px;background:var(--line)}
-.sheet-head{display:flex;align-items:center;gap:14px}
-.sheet-head,.sheet>h3{padding-right:48px}
-.xbtn{position:absolute;top:14px;right:12px;width:40px;height:40px;border:0;border-radius:50%;background:var(--surface);color:var(--muted);display:grid;place-items:center;box-shadow:var(--shadow)}
-.qchips{display:flex;flex-wrap:wrap;gap:8px}
-.qchip{border:0;background:var(--surface);border-radius:99px;padding:8px 14px;min-height:40px;font-size:15px;font-weight:600;box-shadow:var(--shadow)}
-.inline{display:flex;gap:8px;align-items:flex-end}
-.inline .field{flex:1;min-width:0}
-.inline .btn{flex:none;min-width:0;height:50px;padding:0 16px}
-.sheet-head .badge{width:56px;height:56px}
-.sheet-head .ic{width:34px;height:34px}
-.sheet h3{font-family:var(--display);font-weight:800;font-size:24px;line-height:1.1;letter-spacing:-.02em;margin:0;overflow-wrap:anywhere;text-wrap:balance}
-.sheet-head small{display:block;font-family:var(--body);font-size:13px;font-weight:600;letter-spacing:0;color:var(--muted);margin-top:3px}
-.sheet form{display:flex;flex-direction:column;gap:14px}
-.field{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--muted)}
-.field input,.field select{height:50px;border:1.5px solid transparent;background:var(--surface);border-radius:14px;padding:0 14px;font-size:17px;font-weight:400;letter-spacing:0;color:var(--ink);width:100%;box-shadow:var(--shadow)}
-.field input:focus,.field select:focus{outline:none;border-color:var(--accent)}
-.row{display:flex;gap:8px;flex-wrap:wrap}
-.btn{flex:1;min-width:120px;height:52px;border-radius:16px;border:0;background:var(--surface);font-weight:700;box-shadow:var(--shadow)}
-.btn.primary{background:var(--accent);color:var(--accent-ink)}
-.btn.danger{color:var(--danger)}
-.lists{list-style:none;margin:0;padding:0;background:var(--surface);border-radius:18px;overflow:hidden;box-shadow:var(--shadow)}
-.lists li{display:flex;align-items:stretch;border-top:1px solid var(--line)}
-.lists li:first-child{border-top:0}
-.lists .pick{flex:1;min-width:0;display:flex;align-items:center;justify-content:space-between;gap:12px;background:none;border:0;padding:12px 8px 12px 16px;min-height:58px;text-align:left}
-.lists .name{overflow-wrap:anywhere;font-weight:600}
-.lists .cur .name{color:var(--accent)}
-.lists .n{flex:none;font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
-.lists .del{flex:none;background:none;border:0;padding:0 16px;color:var(--danger);font-size:14px;font-weight:700}
-.lists .del:disabled{color:var(--muted);opacity:.5;cursor:default}
-@media (prefers-reduced-motion:no-preference){
-  .tile .main{transition:transform .09s ease-out}
-  .tile .main:active{transform:scale(.95)}
-  .track i{transition:width .35s cubic-bezier(.2,.8,.2,1)}
-  .sheet{animation:up .22s cubic-bezier(.2,.8,.2,1)}
-  .tile.pop{animation:pop .3s cubic-bezier(.2,.9,.3,1.3)}
-  @keyframes pop{from{transform:scale(.84)}to{transform:none}}
-  @keyframes up{from{transform:translateY(28px)}to{transform:none}}
-}
-</style>
-</head>
-<body>
-<svg class="sprite" aria-hidden="true">
-<defs><mask id="embmask" maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24"><rect width="24" height="24" fill="#fff"/><circle cx="17.8" cy="17.8" r="6.800" fill="#000"/></mask></defs>
-<!--SPRITE-->
-<!--OWN-->
-</svg>
-
-<div class="app">
-  <header class="top">
-    <div class="bar">
-      <button class="listbtn" id="listbtn" type="button" aria-haspopup="dialog">
-        <span id="listname"></span>
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg>
-      </button>
-      <span class="count" id="count"></span>
-    </div>
-  </header>
-  <div class="stick">
-    <div class="track" id="track" role="progressbar" aria-label="Erledigt" aria-valuemin="0" aria-valuemax="100"><i id="trackbar"></i></div>
-    <form class="search" id="searchform" autocomplete="off">
-      <div class="field-wrap">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.500"></circle><path d="M16 16l4.500 4.500"></path></svg>
-        <input id="q" type="text" inputmode="search" enterkeyhint="done" placeholder="Artikel hinzufügen" aria-label="Artikel hinzufügen" autocapitalize="sentences" spellcheck="false">
-        <button class="clear" id="clearq" type="button" aria-label="Eingabe löschen" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
-      </div>
-      <button class="done-btn" id="closesearch" type="button" hidden>Fertig</button>
-    </form>
-  </div>
-  <main id="main"></main>
-  <section id="sug" hidden></section>
-</div>
-<div class="toast" id="toast" role="status" aria-live="polite" hidden><span id="toastmsg"></span><button type="button" id="toastundo">Rückgängig</button></div>
-<div class="veil" id="veil" hidden><div class="sheet" id="sheet" role="dialog" aria-modal="true"></div></div>
-
-<script>
 "use strict";
-var DATA = /*CATALOG*/;
-var SYNRAW = /*SYN*/;
+/* DATA (Abteilungen mit Artikeln) und SYNRAW (Synonyme) kommen aus katalog.js, das src/gen.py erzeugt. */
 var KEY = "einkaufszettel.v1";
 var CATS = DATA.map(function (d) { return d[0]; });
 var SONST = CATS.length - 1;
@@ -224,7 +9,9 @@ function norm(s) {
   return s.toLowerCase().replace(/ß/g, "ss").normalize("NFD").replace(/[̀-ͯ]/g, "");
 }
 
-/* ---------- Abteilungen: Farbe, Standard-Piktogramm, Regeln (erste passende gewinnt) ---------- */
+/* ---------- Abteilungen: Farbe und Wortregeln ----------
+   Die Regeln sortieren eigene Artikel in eine Abteilung ein (guess). Der zweite Wert je Eintrag und je Regel
+   ist der Name eines früheren Linien-Symbols und wird nicht mehr ausgewertet. */
 var META = {
   "Obst & Gemüse": ["#3d9140", "apple", [
     ["getrocknet|nuss|nusse|mandel|kerne|pistazie|marone|kastanie|cashew|studentenfutter|trail|rosine|sultanine|korinthe|apfelringe|chips|gojibeeren|datteln|kandiert", "nut"],
@@ -397,10 +184,10 @@ var META = {
     ["tasche|tute|beutel", "handbag"],
     ["tanken|auto", "car"]]]
 };
-var CATCOL = [], CATDEF = [], CATRULES = [];
+var CATCOL = [], CATRULES = [];
 CATS.forEach(function (c) {
   var m = META[c] || ["#6f7a80", "box", []];
-  CATCOL.push(m[0]); CATDEF.push(m[1]);
+  CATCOL.push(m[0]);
   CATRULES.push(m[2].map(function (p) { return [new RegExp(p[0]), p[1]]; }));
 });
 function ruleIcon(cat, n) {
@@ -414,24 +201,25 @@ function ruleIcon(cat, n) {
    (Noto Emoji; nach Änderungen an der Tabelle tools/bildzeichen.py laufen lassen). */
 var EMO = {
   "Obst & Gemüse": ["🥬", [
-    ["granny", "🍏"], ["apfelringe|getrocknet|datteln|feigen|rosine|sultanine|korinthe|kandiert", "🌰"], ["apfel|\\bobst", "🍎"], ["birne|nashi|quitte", "🍐"],
+    ["granny", "🍏"], ["pilz|champignon|pfifferling|seitling|shiitake|portobello|enoki|shimeji|morchel|truffel|rohrling", "🍄"], ["tomate", "🍅"],
+    ["petersilie|schnittlauch|basilikum|dill|koriander|minze|rosmarin|thymian|salbei|oregano|majoran|estragon|kerbel|liebstock|barlauch|melisse|krauter|bohnenkraut|kresse|suppengrun|zitronengras|blatter|lorbeer|waldmeister|lavendel|sprossen", "🌿"],
+    ["mango(?!ld)|papaya|maracuja|passionsfrucht|guave|kaki|sternfrucht|drachenfrucht|granatapfel|tamarillo", "🥭"], ["apfelringe|getrocknet|datteln|feigen|rosine|sultanine|korinthe|kandiert", "🌰"], ["apfel|\\bobst", "🍎"], ["birne|nashi|quitte", "🍐"],
     ["orange|mandarine|clementine|kumquat|grapefruit|pomelo", "🍊"], ["zitrone|limette", "🍋"], ["banane", "🍌"], ["wassermelone", "🍉"], ["melone", "🍈"],
     ["traube", "🍇"], ["erdbeer", "🍓"], ["kirsch", "🍒"], ["beere|physalis|holunder|sanddorn|hagebutte|litschi|rambutan", "🫐"],
-    ["pfirsich|nektarine|aprikose|pflaume|zwetschge|mirabelle|reneklode", "🍑"], ["mango|papaya|maracuja|passionsfrucht|guave|kaki|sternfrucht|drachenfrucht|granatapfel|tamarillo", "🥭"],
+    ["pfirsich|nektarine|aprikose|pflaume|zwetschge|mirabelle|reneklode", "🍑"],
     ["ananas", "🍍"], ["kokos", "🥥"], ["kiwi", "🥝"], ["erdnuss|erdnusse", "🥜"],
     ["nuss|nusse|mandel|pistazie|cashew|marone|kastanie|kerne|studentenfutter|trail", "🌰"],
-    ["susskartoffel", "🍠"], ["kartoffel|drillinge|hornchen|la ratte", "🥔"], ["tomate", "🍅"], ["olive", "🫒"], ["avocado", "🥑"], ["aubergine", "🍆"],
+    ["susskartoffel", "🍠"], ["kartoffel|drillinge|hornchen|la ratte", "🥔"], ["olive", "🫒"], ["avocado", "🥑"], ["aubergine", "🍆"],
     ["mohre|karotte|pastinake|wurzel|rube|rubchen|rettich|radieschen|bete", "🥕"], ["mais", "🌽"], ["chili|peperoni|jalapeno|habanero", "🌶️"], ["paprika", "🫑"],
-    ["gurke|zucchini", "🥒"], ["brokkoli|blumenkohl|romanesco|rosenkohl|sprouts", "🥦"], ["knoblauch", "🧄"], ["zwiebel|schalotte|lauch", "🧅"],
-    ["pilz|champignon|pfifferling|seitling|shiitake|portobello|enoki|shimeji|morchel|truffel|rohrling", "🍄"], ["bohne|erbse|schote|edamame", "🫘"], ["kurbis|hokkaido|butternut|patisson", "🎃"],
-    ["petersilie|schnittlauch|basilikum|dill|koriander|minze|rosmarin|thymian|salbei|oregano|majoran|estragon|kerbel|liebstock|barlauch|melisse|krauter|kresse|suppengrun|zitronengras|blatter|lorbeer|waldmeister|lavendel|sprossen", "🌿"],
+    ["gurke|zucchini", "🥒"], ["brokkoli|blumenkohl|romanesco|rosenkohl|sprouts", "🥦"], ["knoblauch", "🧄"], ["zwiebel|schalotte|(^|[\\s-])lauch|porree", "🧅"],
+    ["bohne|erbse|schote|edamame", "🫘"], ["kurbis|hokkaido|butternut|patisson", "🎃"],
     ["salat|coleslaw", "🥗"]]],
   "Brot & Backwaren": ["🍞", [
-    ["croissant|hornchen|franzbrotchen", "🥐"], ["brezel|laugen", "🥨"], ["bagel", "🥯"], ["donut|berliner|krapfen|quarkballchen|mutzen|schmalzkuchen", "🍩"],
+    ["croissant|hornchen|franzbrotchen", "🥐"], ["brezel|laugen", "🥨"], ["bagel", "🥯"], ["donut|berliner(?! landbrot)|krapfen|quarkballchen|mutzen|schmalzkuchen", "🍩"],
     ["brotchen|semmel|schrippe|wecken|seelen|schusterjungen|knuppel|buns|toasties|brioche", "#bun"],
     ["baguette|ciabatta|grissini|brotsticks|stange|panini", "🥖"], ["fladenbrot|pita|naan|wrap|tortilla|lavash|yufka|durum|pide|simit|matzen", "🫓"],
     ["pfannkuchen|crepe", "🥞"], ["waffel", "🧇"], ["torte", "🎂"], ["muffin|cupcake|cake pops", "🧁"], ["quiche|zwiebelkuchen|borek", "🥧"],
-    ["cookie|macarons|florentiner|knacke|zwieback|reiswaffel|maiswaffel|dinkelwaffel|ecken|ohren|amerikaner", "🍪"],
+    ["schnecke", "🍰"], ["cookie|macarons|florentiner|knacke|zwieback|reiswaffel|maiswaffel|dinkelwaffel|ecken|ohren|amerikaner", "🍪"],
     ["kuchen|stollen|strudel|schnecke|tasche|streusel|brownie|biskuit|schecke|donauwelle|bienenstich|eclair|windbeutel|plunder|boden|zopf|kranz|baklava|cannoli|churros|pastel|kalter hund|petit|keulchen|puddingbrezel|osterbrot|weckmann", "🍰"]]],
   "Milch, Käse & Eier": ["🥛", [
     ["kase|gouda|edamer|emmentaler|tilsiter|maasdamer|appenzeller|gruyere|cheddar|parmesan|grana|pecorino|manchego|mozzarella|burrata|feta|halloumi|camembert|brie\\b|gorgonzola|roquefort|limburger|romadur|obazda|provolone|scamorza|taleggio|fontina|havarti|esrom|jarlsberg|paneer|ricotta|mascarpone|babybel|leerdammer|geramont|philadelphia|exquisa|bresso|almette|kiri|raclette|fondue|comte|reblochon|munster|chaumes|cambozola|bavaria blu|stilton|danablu|morbier|vacherin|old amsterdam|mimolette|quargel|weisslacker|tete de moine", "🧀"],
@@ -439,41 +227,43 @@ var EMO = {
     ["tofu|tempeh|seitan|vegan|vegetarisch|falafel|bratling|soja-|jackfruit|erbsenprotein|gemuse", "🌱"],
     ["pudding|panna|brulee|mousse|tiramisu|gotterspeise|wackelpudding|grutze|dessert", "🍮"],
     ["joghurt|quark|skyr|creme|schmand|saure sahne|sour cream|milchreis|activia|fruchtzwerge|monte|almighurt|dany|leckermaulchen|tzatziki|aioli|dip|hummus|frischkase|taramas|guacamole", "#cup"],
-    ["nudeln|tortellini|ravioli|gnocchi|spatzle|pasta|pesto", "🍝"], ["maultaschen|knodel|klosse|schupfnudeln|germknodel|dampfnudeln", "🥟"], ["suppe", "🍲"], ["salat", "🥗"],
+    ["maultaschen|knodel|klosse|schupfnudeln|germknodel|dampfnudeln", "🥟"], ["nudeln|tortellini|ravioli|gnocchi|spatzle|pasta|pesto", "🍝"], ["suppe", "🍲"], ["salat", "🥗"],
     ["sushi", "🍣"], ["sandwich|wrap", "🥪"], ["oliven|antipasti", "🫒"], ["pizzateig|flammkuchenteig|teig|hefe", "#bag"], ["kaiserschmarrn|reibekuchen", "🥞"]]],
   "Fleisch, Wurst & Fisch": ["🥩", [
     ["sushi|sashimi", "🍣"], ["garnele|krabbe|scampi|gambas|shrimp", "🦐"], ["krebs|hummer|langustinen|kaisergranat", "🦞"], ["muschel|auster", "🦪"], ["tintenfisch|calamari|oktopus|pulpo|sepia", "🦑"],
-    ["schinken|prosciutto|coppa|lardo|guanciale|pastrami|haxe|eisbein|keule|schaufele", "🍖"], ["speck|bacon|pancetta", "🥓"], ["burger|patties", "🍔"],
+    ["schinken|prosciutto|coppa|lardo|guanciale|pastrami|haxe|eisbein|keule|schaufele", "🍖"], ["speck|bacon|pancetta", "🥓"], ["(^|[\\s-])burger|lachsburger|patties", "🍔"],
     ["fisch|lachs|forelle|saibling|zander|karpfen|kabeljau|rotbarsch|scholle|seezunge|butt\\b|dorade|barsch|pangasius|tilapia|matjes|hering|rollmops|buckling|makrele|sprotte|aal\\b|schillerlocke|surimi|kaviar|rogen|wels|hecht|schleie|marane|felchen|stor\\b|seeteufel|seehecht|leng|rotzunge|flunder|steinbeisser|knurrhahn|rotbarbe|sardine|sardelle|anchovis|kipper|gabelbissen|algen|wakame", "🐟"],
     ["wurst|salami|wiener|knacker|krakauer|cabanossi|debreziner|landjager|beisser|mettenden|chorizo|fuet|griller|bifi|lyoner|mortadella|salsiccia|merguez|sucuk|regensburger|braunschweiger|gottinger|pinkel|stracke|feldkieker|rauchenden|aufschnitt|leberkase|fleischkase|sulze|presskopf|saumagen", "#sausage"],
-    ["hahnchen|huhn|huhner|pute|ente|gans|ganse|geflugel|wachtel|chicken|kuken|fasan", "🍗"], ["spiess|schaschlik|souvlaki|gyros|doner|kebab", "🍢"]]],
+    ["hahnchen|huhn|huhner|pute|ente|gans|ganse|geflugel|wachtel|chicken|kuken|fasan", "🍗"], ["spiess(?!braten)|schaschlik|souvlaki|gyros|doner|kebab", "🍢"]]],
   "Tiefkühl": ["❄️", [
     ["eiswurfel|crushed", "🧊"], ["pizza|flammkuchen|piccolinis|ristorante|ofenfrische|pinsa|calzone", "🍕"],
     ["eisbecher|eisbombe|eistorte|sorbet|frozen", "🍨"], ["\\beis|wassereis|stieleis|kindereis|proteineis|fruchteis|milcheis|sahneeis|nuss-eis|magnum|cornetto|langnese|movenpick|haagen|ben & jerry|nogger", "🍦"],
-    ["burger", "🍔"], ["pommes|krokett|rosti|kartoffel|wedges|fries|hash browns|potatoes", "🍟"], ["garnele|meeresfruchte|calamari|tintenfisch", "🦐"],
+    ["gyoza|dim sum|wan tan|pierogi|pelmeni|wareniki|manti|maultaschen|tortell|ravioli|knodel|klosse|bao|buchteln|dampfnudeln", "🥟"], ["burger", "🍔"], ["pommes|krokett|rosti|kartoffel|wedges|fries|hash browns|potatoes", "🍟"], ["garnele|meeresfruchte|calamari|tintenfisch", "🦐"],
     ["fisch|lachs|filet|muschel|pangasius|zander|rotbarsch|scholle|surimi|kibbelinge", "🐟"], ["chicken|hahnchen|ente\\b|enten|gans\\b|ganse|pute", "🍗"],
+    ["pancake|pfannkuchen|crepes", "🥞"], ["kuchen|torte|(^|[^e])strudel|windbeutel|kaiserschmarrn|muffin|brownie|cheesecake|\\bcake|tiramisu|profiteroles", "🍰"],
     ["erdbeer", "🍓"], ["beer|kirsch|mango|ananas|pflaume|smoothie|rhabarber|aprikose|pfirsich|banane|obst|granatapfel", "🫐"],
-    ["croissant", "🥐"], ["brezel|brezen|laugen", "🥨"], ["donut|berliner|quarkballchen|churros", "🍩"], ["waffel", "🧇"], ["pancake|pfannkuchen|crepes", "🥞"],
-    ["gyoza|dim sum|wan tan|pierogi|pelmeni|wareniki|manti|maultaschen|tortell|ravioli|knodel|bao|buchteln|dampfnudeln", "🥟"], ["burrito|quesadilla|fruhlingsrolle|sommerrolle|empanada", "🌯"],
-    ["lasagne|nudel|cannelloni|spatzle|bolognese|penne|spaghetti|tagliatelle", "🍝"], ["reis|paella|goreng|curry|sushi", "🍛"], ["suppe|eintopf|gulasch|frikassee|chili con|rouladen|klopse", "🍲"],
-    ["brotchen", "#bun"], ["baguette|brot|ciabatta|naan", "🥖"], ["kuchen|torte|strudel|windbeutel|kaiserschmarrn|muffin|brownie|cheesecake|cake|tiramisu|profiteroles", "🍰"],
+    ["croissant", "🥐"], ["brezel|brezen|laugen", "🥨"], ["donut|berliner|quarkballchen|churros", "🍩"], ["waffel", "🧇"],
+    ["burrito|quesadilla|fruhlingsrolle|sommerrolle|empanada", "🌯"],
+    ["lasagne|nudel|cannelloni|spatzle|bolognese|penne|spaghetti|tagliatelle", "🍝"], ["reis|paella|goreng|curry|sushi", "🍛"], ["suppe(?!ngrun|ngemuse)|eintopf|gulasch|frikassee|chili con|rouladen|klopse", "🍲"],
+    ["brotchen", "#bun"], ["baguette|brot|ciabatta|naan", "🥖"],
     ["tk-|gemuse|spinat|vegan|veggie|falafel", "🥦"], ["frikadellen|kottbullar|hackballchen|cevapcici|bifteki|schnitzel|cordon|hack|pulled|wild|kaninchen|rehkeule|hirsch", "🥩"]]],
   "Nudeln, Reis & Konserven": ["🥫", [
+    ["thunfisch|sardine|sardelle|makrele|hering|lachs|dorsch|sprotten|saupiquet|hawesta|appel|muscheln\\b|krabben(?!chips)", "🐟"], ["kapern|rotkohl|meerrettich|weinblatter", "🫙"],
+    ["passiert|passata|polpa|pelati|geschalt|gehackte tomaten|stuckige tomaten|tomatenstucke|tomaten dose|dosentomaten|san-marzano", "🥫"], ["ketchup", "🍅"], ["senf", "🍶"],
     ["olivenol", "🫒"], ["sojasosse|ketjap|tamari|ponzu|fischsosse|teriyaki|mirin|reiswein|essig|balsamico|ol\\b|verjus|condimento", "🍶"], ["honig", "🍯"],
-    ["thunfisch|sardine|sardelle|makrele|hering|lachs|dorsch|sprotten|saupiquet|hawesta|appel|muscheln|krabben", "🐟"],
     ["ramen|instantnudel|mie-|udon|soba|pho|glasnudel|reisnudel|wok-nudeln|chow|somen|pad-thai|yum yum|asia-snack", "🍜"],
     ["nudel|spaghetti|linguine|tagliatelle|fettuccine|pappardelle|penne|rigatoni|fusilli|spirelli|farfalle|makkaroni|tortiglioni|conchiglie|orecchiette|cannelloni|lasagne|spatzle|knopfle|tortell|ravioli|gnocchi|barilla|buitoni|miracoli|pasta|orzo|risoni|bucatini|capellini|vermicelli|paccheri|trofie|gemelli|kritharaki|maccheroni|girandole|casarecce|strozzapreti|radiatori|rotelle|ditalini|anelli|stelline|mafaldine|tagliolini", "🍝"],
     ["curry|dal\\b|masala|korma|vindaloo|tandoori|butter-chicken|palak", "🍛"], ["sushi|nori", "🍣"], ["taco", "🌮"], ["tortillas|papadam|naan|yufka", "🫓"],
     ["reis|risotto", "🍚"], ["couscous|bulgur|quinoa|hirse|polenta|griess|buchweizen|amaranth|grunkern|graupen|dinkel|weizen|gerste|roggen|emmer|einkorn|kamut|freekeh|teff|hafergrutze|tapioka|sago", "🌾"],
     ["suppe|eintopf|bruhe|bouillon|fond|topf|terrine|gulasch|soljanka|borschtsch|minestrone|labskaus|bigos|zurek|jus\\b|suppeneinlage|backerbsen", "🍲"],
     ["tomate|ketchup|passata|sugo|polpa|pelati|datterini|salca", "🍅"], ["senf|mayo|remoulade|sosse|sauce|dressing|sriracha|sambal|wurze|sirup|kwas", "🍶"],
-    ["oliven|tapenade", "🫒"], ["mais", "🌽"], ["bohne|linse|kichererbse|erbse|refried|baked beans", "🫘"], ["pilz|champignon|pfifferling|truffel", "🍄"], ["kokos", "🥥"],
-    ["kartoffel|rosti|knodel|klosse", "🥔"], ["ananas", "🍍"], ["pfirsich|aprikose|pflaume", "🍑"], ["kirsch|schattenmorelle", "🍒"], ["mandarine", "🍊"], ["apfel", "🍎"], ["birne", "🍐"],
+    ["oliven|tapenade", "🫒"], ["mais", "🌽"], ["bohne|linse|kichererbse|erbse|refried|baked beans", "🫘"], ["pilz|champignon|pfifferling|truffel|shiitake|morchel", "🍄"], ["kokos", "🥥"],
     ["chili|peperoni|jalapeno|harissa|pul biber|chipotle|gochu|adschika", "🌶️"], ["paprika|ajvar|letscho", "🫑"], ["knoblauch", "🧄"], ["zwiebel", "🧅"], ["gurke|cornichon|pickle", "🥒"],
+    ["kartoffel|\\brosti", "🥔"], ["knodel|klosse", "🥟"], ["ananas", "🍍"], ["pfirsich|aprikose|pflaume", "🍑"], ["kirsch|schattenmorelle", "🍒"], ["mandarine", "🍊"], ["apfel", "🍎"], ["birne", "🍐"],
     ["glas|eingelegt|pesto|aufstrich|chutney|kimchi|paste|mus\\b|mark\\b|kompott|meerrettich|sauerkraut|kraut|dip|tahini|creme|antipasti|kapern|ghee|smetana|tworog|salat", "🫙"],
     ["fix\\b|binder|pulver|wurfel|panko|mehl|chips|rostzwiebeln|kit\\b|blatter|papier|glucks|kerne|wurzmischung|tute|mix\\b|flocken|zucker|hefe|fett", "#bag"]]],
   "Backen & Gewürze": ["#bag", [
-    ["kerzen", "🕯️"], ["lebensmittelfarbe|dekostifte", "🎨"], ["honig|sirup|dicksaft|goldsaft", "🍯"],
+    ["kerzen", "🕯️"], ["gotterspeise|tortenguss|gelatine", "🍮"], ["puderzucker|zitronensaure", "#bag"], ["lebensmittelfarbe|dekostifte", "🎨"], ["honig|sirup|dicksaft|goldsaft", "🍯"],
     ["kuverture|schoko|kakao|nougat|glasur|callets|cake melts", "🍫"], ["kokos", "🥥"], ["erdnuss|erdnusse", "🥜"],
     ["mandel|haselnuss|walnuss|pistazie|pekan|cashew|nuss|krokant|marzipan", "🌰"], ["zitron|orange", "🍋"], ["kirsch", "🍒"],
     ["chili|cayenne|chipotle|piment|paprika|harissa", "🌶️"], ["knoblauch", "🧄"], ["zwiebel", "🧅"],
@@ -483,19 +273,20 @@ var EMO = {
     ["tortenguss|gelatine|pudding|gotterspeise|gelier|creme|mousse|kaltschale", "🍮"], ["konfiture|fullung|mark\\b|paste|aprikotur|gelee|aroma|extrakt|rosenwasser", "🫙"]]],
   "Frühstück, Kaffee & Tee": ["🫙", [
     ["kaffee|espresso|crema|cappuccino|latte|nescafe|jacobs|dallmayr|lavazza|senseo|nespresso|tassimo|mokka|ristretto|cold brew(?!-tee)", "☕"],
+    ["riegel|flapjack|fruchtschnitte", "🍫"], ["erdnussbutter|erdnussmus", "🥜"],
+    ["flocken|musli|porridge|granola|cornflakes|cerealien|pops|kissen|ringe|flakes|kleie|frosties|smacks|krispies|oats|crunch|haferbrei|puffreis|gepufft|biscuits|weizenkeime|hafermark|\\bchia", "🥣"],
     ["kakao|trinkschokolade|nesquik|kaba|ovomaltine", "🍫"], ["teekanne", "🫖"], ["tee\\b|teemischung|teekapseln|earl grey|darjeeling|sencha|matcha|chai|heisse zitrone|kandis|golden-milk", "🍵"],
-    ["honig", "🍯"], ["erdnuss", "🥜"], ["riegel|flapjack|fruchtschnitte", "🍫"],
-    ["flocken|musli|porridge|granola|cornflakes|cerealien|pops|kissen|ringe|flakes|kleie|frosties|smacks|krispies|oats|crunch|haferbrei|puffreis|gepufft|biscuits|weizenkeime|hafermark|chia", "🥣"],
+    ["honig", "🍯"], ["erdnuss", "🥜"],
     ["nutella|nudossi|nusspli|schoko|nougat", "🍫"]]],
   "Süßes & Snacks": ["🍬", [
     ["popcorn", "🍿"], ["lutscher|zuckerstange|schleckmuschel", "🍭"], ["salzstangen|brezel|laugen", "🥨"],
     ["keks|cookie|waffel|biskuit|spekulatius|lebkuchen|pfeffernusse|pfefferkuchen|zimtsterne|kipferl|printen|baumkuchen|amarettini|cantuccini|shortbread|soft cake|kuchen|russisch brot|geback|milchschnitte|prinzenrolle|oreo|pick up|makronen|filinchen|knacke|hanuta|knoppers|platzchen|heidesand|hippen|engelsaugen|husarenkrapfen|spitzbuben|barentatzen|magenbrot|fruchtebrot|stollen", "🍪"],
     ["erdnuss|erdnusse", "🥜"], ["cashew|pistazie|mandeln|macadamia|nussmix|nuss-frucht|studentenfutter|pekannusse|walnusse|kerne|wasabi-nusse", "🌰"],
-    ["cracker|reisgeback|reis-chips", "🍘"], ["chips|flips|nachos|sticks|stangen|ringe|ballchen|knabber|party-mix|snack|pringles|erdnusslocken|nicnac|grissini|kichererbsen|edamame|mais geroste", "#bag"],
+    ["cracker|reisgeback|reis-chips", "🍘"], ["saure |fruchtgummi|weingummi|lakritz|gummibar", "🍬"], ["wasabi-erbsen|chips|flips|nachos|sticks|stangen|ringe|ballchen|knabber|party-mix|snack|pringles|erdnusslocken|nicnac|grissini|kichererbsen|edamame|mais geroste", "#bag"],
     ["jerky|biltong|trockenfleisch|salami", "🥩"],
     ["schoko|praline|marzipan|nougat|riegel|mozartkugel|domino|advent|milka|ritter sport|kinder |duplo|toffifee|merci|ferrero|raffaello|mon cheri|lindt|after eight|snickers|\\bmars\\b|twix|bounty|milky way|kitkat|\\blion\\b|m&m|smarties|halloren|knusperflocken|bambina|minztafelchen|uberraschungsei|weinbrandbohnen|rumkugeln|krokant|ostereier|-eier", "🍫"]]],
   "Getränke": ["🥤", [
-    ["mate", "🧉"], ["wasser|gerolsteiner|volvic|vittel|evian|apollinaris|\\bvio\\b|lichtenauer|margon|brambacher|oppacher", "💧"],
+    ["(^|[\\s-])mate", "🧉"], ["wasser|gerolsteiner|volvic|vittel|evian|apollinaris|\\bvio\\b|lichtenauer|margon|brambacher|oppacher", "💧"],
     ["saft|nektar|smoothie|trinkpackchen|shot\\b|hohes c|granini|punica|valensina|rotbackchen|capri|sirup", "🧃"],
     ["kaffee|cappuccino|latte|espresso-drink", "☕"], ["milch|kakao-drink|protein-drink|trinkmahlzeit", "🥛"],
     ["bier|\\b(pils|helles|export|lager|ipa|radler|marzen|gose|kolsch|cider|stout|porter|tripel|kriek|russ)\\b|\\bale\\b|weizen(?!korn)|bock\\b|berliner weisse|malztrunk|partyfass|radeberger|wernesgruner|kostritzer|krostitzer|sternburg|freiberger|feldschlosschen|beck's|krombacher|bitburger|warsteiner|veltins|erdinger|paulaner|franziskaner|augustiner|jever|flensburger|hasseroder", "🍺"],
@@ -505,10 +296,10 @@ var EMO = {
     ["wein|riesling|thurgau|silvaner|burgunder|chardonnay|sauvignon|pinot|traminer|dornfelder|merlot|shiraz|tempranillo|rioja|chianti|primitivo|montepulciano|bordeaux|lambrusco|sherry|wermut|federweisser|veltliner|zweigelt|blaufrankisch|lemberger|trollinger|portugieser|regent|malbec|syrah|zinfandel|sangiovese|barolo|barbera|valpolicella|amarone|avola|rhone|beaujolais|chablis|sancerre|elbling|kerner|bacchus|scheurebe|gutedel|rivaner|muskateller|verdejo|albarino|vinho|soave|lugana|vermentino|rose\\b|weissherbst|rotling|blanc de|spatlese|auslese|kabinett|madeira|marsala|retsina|jagertee|met\\b|sake", "🍷"]]],
   "Drogerie & Gesundheit": ["🧴", [
     ["zahn|aufsteckburste|interdental|mundspulung|mundwasser|munddusche|zungenreiniger|colgate|odol|elmex|aronal|blend-a-med|sensodyne|oral-b|listerine", "🪥"],
-    ["rasier|bart|epilier|scherkopf|haarschneider|gillette|wilkinson", "🪒"], ["nagellack|nagel|manikure|unterlack|uberlack", "💅"],
+    ["rasier|bart|epilier|scherkopf|haarschneider|gillette|wilkinson", "🪒"], ["nagellack|nagel|feile|manikure|unterlack|uberlack", "💅"],
     ["lippenstift|lipgloss|lipliner|mascara|eyeliner|kajal|lidschatten|make-up|foundation|concealer|rouge|\\bpuder\\b|kompaktpuder|loser puder|bronzer|highlighter|primer|wimpern|augenbrauen|kosmetik|schmink|bb-cream|cc-cream", "💄"],
     ["spiegel", "🪞"], ["lesebrille|brille|kontaktlinse", "👓"], ["schwamm|luffa", "🧽"], ["seife", "🧼"], ["badeol|badeperlen|badebombe|badetee|badesalz|schaumbad|badezusatz|fussbad|erkaltungsbad|badekugeln", "🛁"],
-    ["pflaster|verband|binde\\b|mullbinde|kompresse|tape|hansaplast|wundauflage|dreiecktuch|erste-hilfe", "🩹"], ["thermometer", "🌡️"], ["blutdruck|pulsoximeter", "🩺"], ["\\btest|schnelltest|teststreifen|ovulationstest|schwangerschaftstest", "🧪"],
+    ["pflaster|verband|binde\\b|mullbinde|kompresse|tape|hansaplast|wundauflage|dreiecktuch|erste-hilfe|rettungsdecke", "🩹"], ["thermometer", "🌡️"], ["blutdruck|pulsoximeter", "🩺"], ["\\btest|schnelltest|teststreifen|ovulationstest|schwangerschaftstest", "🧪"],
     ["tablette|vitamin|magnesium|calcium|\\bzink|eisen|kapseln|baldrian|hustensaft|tropfen|elektrolyt|bonbons|pastillen|ibuprofen|paracetamol|zapfchen|mittel\\b|probiotika|biotin|selen|jod|kalium|kieselerde|kollagen|coenzym|omega|lebertran|algenol|spirulina|chlorella|maca|ashwagandha|ginseng|melatonin|mariendistel|folsaure|heilerde|traubenzucker", "💊"],
     ["taschentucher|tucher|watte|pads\\b|tempo", "🧻"], ["whey|casein|kreatin|bcaa|protein|shake|iso-pulver|energy-gel|sportriegel", "🥤"],
     ["warmflasche|warmekissen|heizkissen|kirschkernkissen|warme", "🔥"], ["kuhl|kalte|eisspray", "🧊"], ["mucke|insekt|zecke|lause", "🦟"], ["sonnen|after sun|after-sun", "☀️"],
@@ -530,12 +321,12 @@ var EMO = {
     ["schussel|schale|sieb|salatschleuder|messbecher", "🥣"], ["eiswurfel|kuhltasche|kuhlakku|eiskugel", "🧊"], ["salz- und pfeffer|muhle|morser|gewurzregal", "🧂"],
     ["kuchenform|springform|kastenform|gugelhupf|muffinform|tarteform|backblech|ausstech|tortenring|spritzbeutel|tortenplatte|tortenhaube|backmatte", "🧁"],
     ["wecker|wanduhr|eieruhr|timer", "⏰"], ["bilderrahmen|fotoalbum", "🖼️"], ["vase", "🏺"], ["thermometer|hygrometer", "🌡️"], ["waage", "⚖️"], ["mausefalle", "🪤"],
-    ["dusch|badvorleger", "🚿"], ["wc-|klo|toiletten|pumpel", "🚽"], ["schuh", "👞"], ["kleiderbugel|hosenbugel|kleidersack|bugel|wasche|textil", "👕"], ["schere", "✂️"],
-    ["insekt|fliegen|ameisen|motten|wespen|mucken|silberfisch|schaben", "🪰"], ["alufolie|frischhaltefolie|backpapier|butterbrotpapier|gefrierbeutel|beutel|bratschlauch", "🛍️"],
+    ["dusch|badvorleger", "🚿"], ["wc-|klo|toiletten|pumpel", "🚽"], ["handschuh|topflappen", "🧤"], ["schuh", "👞"], ["kleiderbugel|hosenbugel|kleidersack|bugel|wasche|textil", "👕"], ["schere", "✂️"],
+    ["insekt|fliegen|ameisen|motten|wespen|mucken|silberfisch|schaben", "🪰"], ["folie|backpapier|butterbrotpapier|bratschlauch", "#roll"], ["beutel", "#bag"], ["tuch\\b|tucher|lappen", "🧽"],
     ["seife", "🧼"], ["mittel|spuler|reiniger|entferner|spray|politur|pflege|entkalker|scheuer|soda|starke|bleich|erfrischer|fleck|schimmel|persil|ariel|spee|weisser riese|lenor|perwoll|pril|fairy|frosch|ajax|meister proper|domestos|bref|cillit|viss|sagrotan|vanish|febreze|tabs|duft|pods|klarspuler", "🧴"],
     ["maschine|mixer|ruhrgerat|kocher|maker|waffeleisen|fritteuse|mikrowelle|backofen|kochplatte|automat|toaster|sauger|saugroboter|dampfreiniger", "🔌"]]],
   "Baby & Kind": ["🍼", [
-    ["windel|pants|wickel|pampers", "🧷"], ["glaschen|quetschie|alete|bebivita", "🫙"], ["brei|flocken|musli", "🥣"], ["keks|stangen|kringel|waffel|riegel", "🍪"],
+    ["windel|pants|wickel|pampers", "👶"], ["glaschen|quetschie|alete|bebivita", "🫙"], ["brei|flocken|musli", "🥣"], ["keks|stangen|kringel|waffel|riegel", "🍪"],
     ["malbuch|kreide|farben|knete", "🖍️"], ["puzzle", "🧩"], ["sticker|sammelkarten|zeitschrift", "📰"], ["seifenblasen", "🫧"], ["sandspielzeug|spielzeug|beissring", "🧸"],
     ["creme|lotion|shampoo|babyol|babybad|waschgel|puder|bubchen|penaten|sonnencreme", "🧴"], ["feuchttucher|tucher|mullwindeln", "🧻"], ["besteck", "🍴"], ["brotdose", "🍱"], ["trinkflasche|trinklern", "🥤"],
     ["saft", "🧃"], ["tee", "🍵"], ["latzchen", "👶"]]],
@@ -544,28 +335,29 @@ var EMO = {
     ["wellensittich|kanarien|papagei|vogel|meise|kolbenhirse|streufutter|fettfutter", "🐦"], ["fisch|teich|aquarium|filterwatte", "🐟"], ["kaninchen", "🐰"],
     ["hamster|nager|meerschwein|kleintier|heu|stroh|einstreu|salzleckstein", "🐹"], ["huhner|legemehl", "🐔"], ["pferd", "🐴"], ["igel", "🦔"], ["schildkrote", "🐢"], ["zecke|floh", "🦟"]]],
   "Kleidung & Textilien": ["👕", [
+    ["handtuch|handtucher|duschtuch|badetuch|saunatuch|strandtuch|waschlappen|waschhandschuh|badematte|vorleger|duschmatte", "🛁"], ["strickjacke", "🧥"],
     ["socken|strumpf|strumpfe|fusslinge", "🧦"], ["handschuh|faustlinge", "🧤"], ["schal\\b|halstuch|tuch\\b", "🧣"], ["sonnenhut|strohhut|fischerhut", "👒"], ["mutze|cap\\b|stirnband|ohrenschutzer", "🧢"],
     ["gummistiefel|stiefel|wanderschuhe", "🥾"], ["sandalen|flip-flops|badeschuhe", "🩴"], ["pantoffel|clogs|hausschuhe", "🥿"], ["schuh|sneaker|sohlen|schnursenkel|fersenkissen", "👟"],
-    ["rucksack|ranzen|turnbeutel", "🎒"], ["koffer|reisetasche", "🧳"], ["geldborse", "👛"], ["tasche", "👜"], ["sonnenbrille", "🕶️"], ["schirm", "☂️"],
+    ["rucksack|ranzen|turnbeutel", "🎒"], ["koffer|reisetasche", "🧳"], ["geldborse", "👛"], ["tasche\\b", "👜"], ["sonnenbrille", "🕶️"], ["schirm", "☂️"],
     ["bikini", "👙"], ["badeanzug", "🩱"], ["badehose|shorts|kurze hose|radlerhose|boxershorts", "🩳"], ["slips|panty|hipster|unterhose|string|bh\\b|bustier", "🩲"],
     ["bett|kissen|decke|laken|matratze|molton|steppbett|nasseschutz", "🛏️"], ["vorhang|gardine", "🪟"],
     ["garn|naht|nah|faden|fingerhut|einfadler|schneider|stopf|stick", "🧵"], ["wolle|strick|hakel|nadelspiel", "🧶"], ["nadel", "🪡"], ["knopf|knopfe|sicherheits|reissverschluss|klett|haken und", "🧷"],
     ["kleid|rock\\b|nachthemd", "👗"], ["hose|jeans|leggings|chino", "👖"], ["hemd|bluse|krawatte|fliege|einstecktuch", "👔"], ["jacke|mantel|weste|anzug|poncho|kittel|overall", "🧥"],
-    ["handtuch|handtucher|duschtuch|badetuch|saunatuch|strandtuch|waschlappen|waschhandschuh|badematte|vorleger|duschmatte", "🛁"], ["tischdecke|laufer|servietten|wachstuch|tischset", "🍽️"]]],
+    ["tischdecke|laufer|servietten|wachstuch|tischset", "🍽️"]]],
   "Baumarkt & Werkzeug": ["🧰", [
     ["fahrrad|sattel|pedale|lenker|gepacktrager|reflektor|rucklicht|bremszug|schaltzug", "🚲"], ["reifen", "🛞"], ["motorol|getriebeol|benzin|adblue", "⛽"],
     ["auto|motor|scheibenwisch|scheibenenteiser|scheibenfrost|scheibenreiniger|kuhl|felgen|wischer|eiskratzer|duftbaum|enteiser|wagenheber|radkreuz|starthilfe|abschlepp|warndreieck|zundkerzen|h7|h4|sitzbezuge|kofferraum|schneeketten|bremsen|cockpit|lackstift|kratzer", "🚗"],
     ["schlusselkasten|schlusseltresor|schlusselanhanger", "🔑"], ["schloss|riegel|zylinder|turkette|turspion|tresor", "🔒"], ["leuchte|strahler|lampe|led-panel|fassung", "💡"], ["batterie", "🔋"],
     ["schraubendreher|torx|inbus|\\bbits?\\b|bit-|bithalter|akkuschrauber", "🪛"], ["schlussel|zange|ratsche|schraubstock|zwinge|rohr|siphon|fitting|ventil", "🔧"],
-    ["sage", "🪚"], ["hammer|faustel|meissel|stechbeitel|brecheisen|nageleisen", "🔨"], ["leiter|tritt|arbeitsbock", "🪜"],
+    ["sage", "🪚"], ["hammer|faustel|meissel|stechbeitel|brecheisen|nageleisen", "🔨"], ["(^|[^g])leiter|tritt(?!schall)|arbeitsbock", "🪜"],
     ["steckdose|schalter|kabel|stecker|kupplung|dimmer|klemmen|sicherung|dose\\b|melder|trafo|aderend|schrumpf|litze", "🔌"], ["magnet", "🧲"],
     ["wc-|spulkasten", "🚽"], ["badewanne", "🛁"], ["hahn|armatur|dusch|brause|perlator|strahlregler|thermostat|boiler|erhitzer|waschbecken|schlauch", "🚿"],
     ["massband|bandmass|zollstock|wasserwaage|messschieber|entfernungsmesser", "📏"], ["winkel\\b|anschlagwinkel", "📐"],
-    ["walze|roller|farbrolle|pinsel|quast", "🖌️"], ["farbeimer|baueimer|mortelkubel", "🪣"], ["farbe|lack|lasur|grundierung|beize|abtonpaste|spruh", "🎨"],
+    ["walze|nahtroller|farbroller|lackierroller|malerroller|farbrolle|pinsel|quast", "🖌️"], ["farbeimer|baueimer|mortelkubel", "🪣"], ["farbe|lack|lasur|grundierung|beize|abtonpaste|spruh", "🎨"],
     ["ziegel|stein|beton|zement|mortel|putz|gips|fliesen|kies|splitt|sand|kalk|estrich", "🧱"], ["holz|latten|leisten|platte|brett|diele|laminat|parkett|sperrholz|hobelware|pfosten|paneele|stab\\b", "🪵"],
-    ["fenster|rollo|plissee|jalousie|gardinen|fliegengitter", "🪟"], ["tur", "🚪"], ["ketten|stahlseil|seil|gurt|karabiner|schakel", "⛓️"], ["haken", "🪝"],
+    ["fenster|rollo|plissee|jalousie|gardinen|fliegengitter", "🪟"], ["\\btur|haustur|zimmertur", "🚪"], ["ketten|stahlseil|seil|gurt|karabiner|schakel", "⛓️"], ["haken", "🪝"],
     ["schraube|dubel|nagel|nieten|mutter|scheiben\\b|splinte|krampen|stifte|anker|ose|schelle|verbinder|scharnier|winkel|federringe|gewindestangen", "🔩"],
-    ["heiz|heissluft|lot", "🔥"], ["ventilator|klima", "🌬️"], ["helm", "⛑️"], ["handschuhe", "🧤"], ["schutzbrille", "🥽"], ["stiefel|schuhe", "🥾"],
+    ["heiz|heissluft|\\blot", "🔥"], ["ventilator|klima", "🌬️"], ["helm", "⛑️"], ["handschuhe", "🧤"], ["schutzbrille", "🥽"], ["stiefel|sicherheitsschuhe|arbeitsschuhe", "🥾"],
     ["spiegel", "🪞"], ["regal|mobel|stuhl", "🪑"], ["klingel", "🔔"], ["briefkasten", "📫"], ["karre|roller", "🛒"],
     ["kleber|leim|silikon|acryl|kleister|dicht|schaum|harz|ol\\b|wachs|verdunnung|spiritus|aceton|reiniger|spray|fett|paste|pflege|politur", "🧴"], ["band\\b|tape|krepp", "🩹"]]],
   "Garten & Pflanzen": ["🪴", [
@@ -577,11 +369,11 @@ var EMO = {
     ["kaktus|sukkulent", "🌵"], ["palme", "🌴"], ["baum|strauch|hecke|bambus|ficus|buchs|efeu|mistel", "🌳"],
     ["tomate", "🍅"], ["mohre", "🥕"], ["gurke|zucchini", "🥒"], ["kurbis", "🎃"], ["paprika", "🫑"], ["chili", "🌶️"], ["erdbeer", "🍓"], ["salat|kohlrabi", "🥬"], ["bohne|erbse", "🫘"],
     ["samen|saat|nachsaat|rasen|bienenweide|grundungung|anzucht|quelltabletten", "🌱"], ["krauter|basilikum|petersilie|schnittlauch|kresse", "🌿"], ["laub", "🍂"],
-    ["schneck", "🐌"], ["ameise", "🐜"], ["insektenhotel|biene", "🐝"], ["vogel|nist|futtersaule", "🐦"], ["igel", "🦔"], ["katze", "🐱"],
+    ["schneck", "🐌"], ["ameise", "🐜"], ["insektenhotel|biene", "🐝"], ["vogel|\\bnist|futtersaule", "🐦"], ["igel", "🦔"], ["katze", "🐱"],
     ["schnee|streu|winterschutz", "❄️"], ["handschuhe", "🧤"], ["schere", "✂️"], ["solar|leuchten|lichterkette", "💡"],
 ]],
   "Büro & Schule": ["✏️", [
-    ["drucker|toner|patrone", "🖨️"], ["maus\\b|mauspad", "🖱️"], ["tastatur", "⌨️"], ["laptop|monitor|bildschirm|webcam", "💻"], ["usb|sd-karte|festplatte|rohlinge", "💾"], ["rechner", "🧮"], ["headset", "🎧"],
+    ["drucker(?!papier)|toner|patrone", "🖨️"], ["maus\\b|mauspad", "🖱️"], ["tastatur", "⌨️"], ["laptop|monitor|bildschirm|webcam", "💻"], ["usb|sd-karte|festplatte|rohlinge", "💾"], ["rechner", "🧮"], ["headset", "🎧"],
     ["schere|cutter|klingen|briefoffner", "✂️"], ["geodreieck|winkelmesser|zirkel", "📐"], ["lineal|schablone", "📏"],
     ["ordner|hefter|mappe|hulle|register|ablage|sammler|trenn|aktendeckel", "📁"], ["kalender|planer", "📅"], ["heft|block|buch", "📒"], ["papier|karton|pappe", "📄"],
     ["brief|umschlag|karte\\b|karten\\b|post", "✉️"], ["paket|versand|luftpolster", "📦"], ["etiketten|anhanger", "🏷️"], ["geschenk|schleifen", "🎁"],
@@ -715,19 +507,10 @@ function el(tag, attrs) {
   return e;
 }
 function svgUse(id, cls) {
-  var s = document.createElementNS(SVGNS, "svg"), u = document.createElementNS(SVGNS, "use"), p = id.split("+");
+  var s = document.createElementNS(SVGNS, "svg"), u = document.createElementNS(SVGNS, "use");
   if (cls) s.setAttribute("class", cls);
   s.setAttribute("viewBox", "0 0 24 24"); s.setAttribute("aria-hidden", "true");
-  u.setAttribute("href", "#i-" + p[0]);
-  if (!p[1]) { s.appendChild(u); return s; }
-  /* Grundform verkleinert nach oben links, unten rechts ausgespart; Strichstärke bleibt gleich */
-  var g = document.createElementNS(SVGNS, "g"), e = document.createElementNS(SVGNS, "use");
-  g.setAttribute("mask", "url(#embmask)");
-  u.setAttribute("transform", "translate(.28 .28) scale(.86)"); u.setAttribute("stroke-width", "1.98");
-  g.appendChild(u); s.appendChild(g);
-  e.setAttribute("href", "#e-" + p[1]); e.setAttribute("x", "12.3"); e.setAttribute("y", "12.3");
-  e.setAttribute("width", "11"); e.setAttribute("height", "11"); e.setAttribute("stroke-width", "1.55");
-  s.appendChild(e);
+  u.setAttribute("href", "#i-" + id); s.appendChild(u);
   return s;
 }
 /* Dateiname zu einem Emoji-Zeichen: Codepunkte in Hex, mit "_" verbunden, ohne Variantenwähler FE0F */
@@ -786,21 +569,29 @@ function notify(text, undo) {
 }
 function buzz() { try { if (typeof navigator !== "undefined" && navigator.vibrate) navigator.vibrate(8); } catch (e) {} }
 
+/* Ab 14 Buchstaben am Stück oder 24 Zeichen insgesamt wird der Name kleiner gesetzt */
+function longName(n) {
+  if (n.length > 24) return true;
+  var w = n.split(/[\s-]+/);
+  for (var i = 0; i < w.length; i++) if (w[i].length > 13) return true;
+  return false;
+}
 /* Kachel: tippen = Aktion, lange drücken oder Rechtsklick = Details */
 function tile(o) {
-  var held = false, timer = null;
+  var held = false, timer = null, x0 = 0, y0 = 0;
   var b = el("button", { class: "main", type: "button", "aria-label": o.label || null },
     badge(o.icon, o.checked),
-    el("span", { class: "tname", text: o.name }),
+    el("span", { class: "tname" + (longName(o.name) ? " long" : ""), text: o.name }),
     o.note ? el("span", { class: "tnote", text: o.note }) : null);
   function clear() { if (timer) { clearTimeout(timer); timer = null; } }
   if (o.onHold) {
-    b.addEventListener("pointerdown", function () {
-      held = false; clear();
+    b.addEventListener("pointerdown", function (e) {
+      held = false; clear(); x0 = e.clientX; y0 = e.clientY;
       timer = setTimeout(function () { held = true; timer = null; o.onHold(); }, 550);
     });
     ["pointerup", "pointerleave", "pointercancel"].forEach(function (ev) { b.addEventListener(ev, clear); });
-    b.addEventListener("pointermove", function (e) { if (Math.abs(e.movementX) + Math.abs(e.movementY) > 6) clear(); });
+    /* Abstand zum Startpunkt statt movementX/Y: die liefert Safari bei Berührung nicht zuverlässig */
+    b.addEventListener("pointermove", function (e) { if (Math.abs(e.clientX - x0) + Math.abs(e.clientY - y0) > 10) clear(); });
     b.addEventListener("contextmenu", function (e) { e.preventDefault(); clear(); held = true; o.onHold(); });
   }
   b.addEventListener("click", function () { if (held) { held = false; return; } o.onTap(); });
@@ -899,11 +690,21 @@ function catTile(i, via) {
     onTap: function () { if (on) q.focus(); else pick(n); }
   });
 }
+/* Güte eines Treffers: 0 gleich, 1 Namensanfang, 2 Wortanfang, 3 Wortende (Grundwort wie „milch“ in „Vollmilch“),
+   4 irgendwo mitten im Wort. Stufe 4 steht immer hinter allen anderen, egal wie gängig der Artikel ist. */
 function matchScore(text, nq) {
-  var at = text.indexOf(nq);
+  var best = -1, at = text.indexOf(nq), sc, end;
   if (at < 0) return -1;
   if (text === nq) return 0;
-  return at === 0 ? 1 : (/[\s-]/.test(text.charAt(at - 1)) ? 2 : 3);
+  for (; at >= 0; at = text.indexOf(nq, at + 1)) {
+    end = at + nq.length;
+    if (at === 0) sc = 1;
+    else if (/[\s-]/.test(text.charAt(at - 1))) sc = 2;
+    else if (nq.length >= 3 && (end === text.length || /[\s-]/.test(text.charAt(end)))) sc = 3;
+    else sc = 4;
+    if (best < 0 || sc < best) best = sc;
+  }
+  return best;
 }
 function renderSug() {
   sug.textContent = "";
@@ -931,7 +732,7 @@ function renderSug() {
   }
   var hits = Object.keys(best).map(function (k) {
     k = Number(k);
-    var s = best[k] - (staple[k] ? 2.1 : 0) - Math.min(S.freq[names[k]] || 0, 5) * 0.6 - (best[k] === 0 ? 5 : 0);
+    var s = best[k] - (staple[k] ? 2.1 : 0) - Math.min(S.freq[names[k]] || 0, 5) * 0.6 - (best[k] === 0 ? 5 : 0) + (best[k] === 4 ? 100 : 0);
     return [s, names[k].length, k];
   });
   hits.sort(function (a, b) { return a[0] - b[0] || a[1] - b[1] || a[2] - b[2]; });
@@ -977,7 +778,11 @@ function closeSheet() {
   try { if (opener && opener.isConnected && opener.focus) opener.focus(); } catch (e) {}
   opener = null;
 }
-veil.addEventListener("click", function (e) { if (e.target === veil) closeSheet(); });
+/* Schließen nur, wenn die Berührung auch auf dem Schleier begonnen hat. Sonst schließt das Loslassen nach
+   langem Drücken das eben geöffnete Blatt sofort wieder, weil der Finger dann über dem Schleier liegt. */
+var veilDown = false;
+veil.addEventListener("pointerdown", function (e) { veilDown = e.target === veil; });
+veil.addEventListener("click", function (e) { if (e.target === veil && veilDown) closeSheet(); veilDown = false; });
 document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !veil.hidden) closeSheet(); });
 
 function editSheet(it) {
@@ -1044,6 +849,8 @@ function listsSheet() {
 $("listbtn").addEventListener("click", listsSheet);
 
 render();
-</script>
-</body>
-</html>
+
+/* Offline-Nutzung: Service Worker anmelden (nur über https oder lokal, nicht bei file://) */
+if (typeof navigator !== "undefined" && "serviceWorker" in navigator && /^https?:$/.test(location.protocol)) {
+  window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); });
+}
