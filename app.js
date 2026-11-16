@@ -2,7 +2,7 @@
 /* DATA (Abteilungen mit Artikeln) und SYNRAW (Synonyme) kommen aus katalog.js, das src/gen.py erzeugt. */
 var KEY = "einkaufszettel.v1";
 var CATS = DATA.map(function (d) { return d[0]; });
-var SONST = CATS.length - 1;
+var SONST = CATS.length - 1, TK = CATS.indexOf("Tiefkühl");
 var STARTERS = ["Vollmilch","Butter","Eier 10er","Brötchen","Bananen","Äpfel","Tomaten","Gurke","Kartoffeln","Zwiebeln","Toastbrot","Spaghetti","Kaffee gemahlen","Naturjoghurt 3,5 %","Mineralwasser medium","Toilettenpapier","Käse","Möhren"];
 
 function norm(s) {
@@ -10,190 +10,190 @@ function norm(s) {
 }
 
 /* ---------- Abteilungen: Farbe und Wortregeln ----------
-   Die Regeln sortieren eigene Artikel in eine Abteilung ein (guess). Der zweite Wert je Eintrag und je Regel
-   ist der Name eines früheren Linien-Symbols und wird nicht mehr ausgewertet. */
+   Je Abteilung: Farbe und Muster. Trifft ein Muster den vereinfachten Namen, gehört ein eigener Artikel
+   in diese Abteilung (guess); geprüft wird in der Reihenfolge von GUESS_ORDER. */
 var META = {
-  "Obst & Gemüse": ["#3d9140", "apple", [
-    ["getrocknet|nuss|nusse|mandel|kerne|pistazie|marone|kastanie|cashew|studentenfutter|trail|rosine|sultanine|korinthe|apfelringe|chips|gojibeeren|datteln|kandiert", "nut"],
-    ["mohre|karotte|pastinake|wurzel|rettich|radieschen|rube|rubchen|bete|topinambur|ingwer|kurkuma|galgant|maniok|taro", "carrot"],
-    ["kartoffel|drillinge|hornchen|la ratte", "potato"],
-    ["zwiebel|schalotte|knoblauch", "bulb"],
-    ["pilz|champignon|pfifferling|seitling|shiitake|portobello|enoki|shimeji|morchel|truffel|rohrling", "mushroom"],
-    ["chili|peperoni|jalapeno|habanero", "chili"],
-    ["tomate|paprika|kurbis|granatapfel|kaki|patisson", "tomato"],
-    ["banane", "banana"],
-    ["zitrone|limette|orange|mandarine|clementine|grapefruit|pomelo|kumquat", "citrus"],
-    ["traube", "grapes"],
-    ["erdbeer", "strawberry"],
-    ["kirsch|beere|physalis|litschi|pflaume|zwetschge|mirabelle|reneklode|sanddorn|hagebutte", "cherry"],
-    ["birne|quitte|avocado|guave", "pear"],
-    ["mais", "corn"],
-    ["salat|rucola|spinat|mangold|kohl|kresse|lollo|endivie|chicoree|radicchio|batavia|frisee|pak choi|wirsing|brokkoli|romanesco|sprossen|lauch|sellerie|fenchel|spargel|bohnen|schoten|erbsen|artischock|okra|zucchini|gurke|aubergine|kraut|gemuse|coleslaw|petersilie|basilikum|dill|koriander|minze|rosmarin|thymian|salbei|oregano|majoran|estragon|kerbel|liebstock|barlauch|melisse|zitronengras|suppengrun|rhabarber|blatter|romana|portulak|postelein|lowenzahn|sauerampfer|mizuna|edamame|shiso|lorbeer|borretsch|pimpinelle|waldmeister|lavendel|stielmus|sprouts", "leaf"]]],
-  "Brot & Backwaren": ["#b5732a", "bread", [
-    ["croissant|hornchen|franzbrotchen", "croissant"],
-    ["donut|berliner|krapfen|bagel|simit|mutzen|quarkballchen|schmalzkuchen", "donut"],
-    ["brotchen|semmel|schrippe|toastie|brioche|laugen|brezel|wecken|seelen|schusterjungen|knuppel|panini|vinschgauer|buns", "bun"],
-    ["kuchen|torte|stollen|schnecke|tasche|strudel|eclair|windbeutel|plunder|ecken|amerikaner|brownie|cookie|waffel|biskuit|schecke|donauwelle|bienenstich|muffin|quiche|geback|crepe|boden|ohren|stangen|keulchen|puddingbrezel|streusel|zopf|kranz|macarons|florentiner|petit|cupcake|cake|baklava|cannoli|churros|pastel|kalter hund|bananenbrot|osterbrot|weckmann", "cake"]]],
-  "Milch, Käse & Eier": ["#2f7dbf", "milk", [
-    ["kase|gouda|edamer|emmentaler|tilsiter|maasdamer|appenzeller|gruyere|cheddar|parmesan|grana|pecorino|manchego|mozzarella|burrata|feta|halloumi|camembert|brie\\b|gorgonzola|roquefort|limburger|romadur|obazda|provolone|scamorza|taleggio|fontina|havarti|esrom|jarlsberg|paneer|ricotta|mascarpone|babybel|leerdammer|geramont|philadelphia|exquisa|bresso|almette|kiri|raclette|fondue|comte|reblochon|munster|chaumes|cambozola|bavaria blu|stilton|danablu|morbier|vacherin|old amsterdam|mimolette|quargel|weisslacker|tete de moine", "cheese"],
-    ["\\beier|eiweiss|wachtelei|vollei|eigelb", "egg"],
-    ["tofu|tempeh|seitan|vegan|vegetarisch|falafel|hummus|gemuse|antipasti|oliven|guacamole|bratling|soja-|jackfruit|erbsenprotein|kichererbsen|baba|muhammara", "leaf"],
-    ["butter(?!milch)|margarine|schmalz|streichfett|\\brama\\b|latta|kerrygold", "butter"],
-    ["joghurt|quark|skyr|pudding|dessert|grutze|mousse|tiramisu|panna|creme|schmand|saure sahne|sour cream|milchreis|gotterspeise|activia|actimel|fruchtzwerge|monte|almighurt|dany|leckermaulchen|tzatziki|aioli|dip|taramas|tirokafteri", "cup"],
-    ["nudeln|tortellini|ravioli|gnocchi|spatzle|maultaschen|knodel|klosse|suppe|salat|kaiserschmarrn|pasta|pesto|sushi", "bowl"],
-    ["teig|hefe|reibekuchen|pulver", "bag"]]],
-  "Fleisch, Wurst & Fisch": ["#bf463f", "steak", [
-    ["schinken|prosciutto|speck|bacon|pancetta|coppa|lardo|guanciale|pastrami", "steak"],
-    ["burger|patties", "burger"],
-    ["fisch|lachs|forelle|saibling|zander|karpfen|kabeljau|rotbarsch|scholle|seezunge|butt\\b|dorade|barsch|pangasius|tilapia|matjes|hering|rollmops|buckling|makrele|sprotte|aal\\b|schillerlocke|garnele|krabbe|krebs|surimi|muschel|oktopus|pulpo|hummer|kaviar|rogen|sushi|sashimi|wels|hecht|schleie|marane|felchen|stor\\b|seeteufel|seehecht|leng|rotzunge|flunder|steinbeisser|knurrhahn|rotbarbe|sardine|sardelle|anchovis|kipper|gabelbissen|gambas|langustinen|kaisergranat|calamari|sepia|austern|algen|wakame", "fish"],
-    ["wurst|salami|wiener|knacker|krakauer|cabanossi|debreziner|landjager|beisser|mettenden|chorizo|fuet|griller|bifi|lyoner|mortadella|salsiccia|merguez|sucuk|regensburger|braunschweiger|gottinger|pinkel|stracke|feldkieker|rauchenden", "sausage"],
-    ["hahnchen|huhn|huhner|pute|ente|gans|ganse|geflugel|wachtel|chicken|kuken|fasan", "drumstick"]]],
-  "Tiefkühl": ["#2a9db3", "snow", [
-    ["eiswurfel|crushed", "snow"],
-    ["pizza|flammkuchen|piccolinis|ristorante|ofenfrische|pinsa|calzone", "pizza"],
-    ["\\beis|wassereis|stieleis|kindereis|proteineis|fruchteis|milcheis|sahneeis|nuss-eis|sorbet|frozen|magnum|cornetto|langnese|movenpick|haagen|ben & jerry|nogger", "ice"],
-    ["burger", "burger"],
-    ["pommes|krokett|rosti|kartoffel|wedges|fries|hash browns|potatoes", "fries"],
-    ["fisch|lachs|filet|garnele|meeres|muschel|pangasius|zander|rotbarsch|scholle|calamari|surimi|kibbelinge", "fish"],
-    ["chicken|hahnchen|ente\\b|enten|gans\\b|ganse|pute", "drumstick"],
-    ["beer|kirsch|mango|ananas|pflaume|smoothie|rhabarber|aprikose|pfirsich|banane|obst|granatapfel", "cherry"],
-    ["croissant", "croissant"],
-    ["donut|berliner|quarkballchen|churros", "donut"],
-    ["lasagne|nudel|tortell|ravioli|maultaschen|goreng|paella|pfanne|gyoza|dim sum|wan tan|frikassee|gulasch|cannelloni|pierogi|pelmeni|wareniki|manti|spatzle|knodel|curry|bolognese|penne|spaghetti|tagliatelle|reis|sushi|suppe|eintopf|chili con|moussaka|auflauf|gratin|bao|sommerrollen", "bowl"],
-    ["brotchen|brezel|brezen|baguette|brot|ciabatta|naan", "bun"],
-    ["kuchen|torte|strudel|windbeutel|waffel|germknodel|kaiserschmarrn|muffin|brownie|cheesecake|cake|crepes|pancakes|tiramisu|profiteroles|buchteln|dampfnudeln", "cake"],
-    ["tk-|gemuse|spinat|vegan|veggie", "leaf"]]],
-  "Nudeln, Reis & Konserven": ["#c2622b", "can", [
-    ["ol\\b|essig|balsamico|zitronensaft|limettensaft|ketchup|mayo|remoulade|senf|sosse|sauce|dressing|sriracha|sambal|wurze|mirin|sirup|ponzu|tamari|ketjap|verjus|condimento|reiswein|jus\\b|kwas", "oil"],
-    ["thunfisch|sardine|sardelle|makrele|hering|lachs|dorsch|muschel|krabben dose|sprotten|saupiquet|hawesta|appel", "fish"],
-    ["glas|gurke|cornichon|pickle|oliven|kapern|eingelegt|pesto|ajvar|aufstrich|chutney|kimchi|paste|mus\\b|mark\\b|kompott|meerrettich|schattenmorellen|sauerkraut|dip|fond|tahini|harissa|letscho|silberzwiebeln|hengstenberg|sugo|salsa|creme|tapenade|antipasti|gochujang|doenjang|adschika|salca|ghee|smetana|tworog", "jar"],
-    ["nudel|spaghetti|linguine|tagliatelle|fettuccine|pappardelle|penne|rigatoni|fusilli|spirelli|farfalle|makkaroni|tortiglioni|conchiglie|orecchiette|cannelloni|lasagne|spatzle|knopfle|tortell|ravioli|gnocchi|reis|couscous|bulgur|quinoa|hirse|polenta|griess|buchweizen|amaranth|grunkern|graupen|dinkel|weizen|suppe|eintopf|topf|terrine|risotto|gericht|curry|dal\\b|masala|barilla|buitoni|miracoli|labskaus|soljanka|borschtsch|minestrone|oryza|gulasch|bigos|zurek|becher|pasta|orzo|risoni|bucatini|capellini|vermicelli|paccheri|trofie|gemelli|somen|kritharaki|paneer", "bowl"],
-    ["bruhe|bouillon|fix\\b|binder|pulver|wurfel|panko|mehl|chips|rostzwiebeln|taco|kit\\b|blatter|papier|papadam|glucks|salatkerne|wurzmischung|tute|mix\\b|flocken|tortillas|zucker|kombu|wakame|furikake|hefe", "bag"]]],
-  "Backen & Gewürze": ["#a37f22", "bag", [
-    ["kerzen", "candle"],
-    ["sirup|dicksaft|aroma|extrakt|flussig|rosenwasser|goldsaft", "oil"],
-    ["kuverture|schoko|kakao|nougat|marzipan|glasur|callets|cake melts", "choc"],
-    ["konfiture|fullung|mark\\b|paste|aprikotur|gelee", "jar"],
-    ["salz|pfeffer|paprika|chili|curry|kurkuma|kummel|koriander|kardamom|zimt|nelken|muskat|piment|anis|fenchel|senfkorner|wacholder|lorbeer|ingwer|knoblauch|zwiebel|safran|getrocknet|krauter|gewurz|masala|hanout|zatar|sumach|bockshorn|wurzmischung|vanille gemahlen|\\brub\\b|beeren|bluten|baharat|berbere|dukkah|chermoula|pumpkin|macis|tonka|galgant|amchur|asafoetida|ajowan|namak|beifuss", "shaker"]]],
-  "Frühstück, Kaffee & Tee": ["#8a5a3c", "jar", [
-    ["kaffee|espresso|crema|cappuccino|latte|kakao|trinkschokolade|nescafe|jacobs|dallmayr|lavazza|senseo|nespresso|tassimo|nesquik|kaba|ovomaltine|mokka|ristretto|cold brew(?!-tee)|golden-milk", "coffee"],
-    ["tee\\b|teemischung|teekapseln|earl grey|darjeeling|sencha|matcha|chai|teekanne|heisse zitrone|kandis", "tea"],
-    ["riegel|flapjack|fruchtschnitte", "choc"],
-    ["flocken|musli|porridge|granola|cornflakes|cerealien|pops|kissen|ringe|flakes|kleie|frosties|smacks|krispies|oats|crunch|haferbrei|puffreis|gepufft|biscuits|weizenkeime|hafermark|chia", "bowl"]]],
-  "Süßes & Snacks": ["#c2477d", "candy", [
-    ["popcorn", "popcorn"],
-    ["lutscher|zuckerstange|schleckmuschel", "lollipop"],
-    ["keks|cookie|waffel|biskuit|spekulatius|lebkuchen|pfeffernusse|pfefferkuchen|zimtsterne|kipferl|printen|baumkuchen|amarettini|cantuccini|shortbread|soft cake|kuchen|russisch brot|geback|milchschnitte|prinzenrolle|oreo|pick up|makronen|filinchen|knacke|hanuta|knoppers|platzchen|heidesand|hippen|engelsaugen|husarenkrapfen|spitzbuben|barentatzen|magenbrot|fruchtebrot|stollen", "cookie"],
-    ["chips|flips|salz|brezel|cracker|erdnuss|erdnusse|cashew|pistazie|mandeln|macadamia|nuss-frucht|nussmix|nachos|laugen|kichererbsen|wasabi|snack|jerky|biltong|trockenfleisch|pringles|erdnusslocken|nicnac|knabber|sticks|stangen|ringe|ballchen|studentenfutter|pekannusse|walnusse|kerne|edamame|mais geroste|party-mix|grissini|reisgeback", "bag"],
-    ["schoko|praline|marzipan|nougat|riegel|mozartkugel|domino|advent|milka|ritter sport|kinder |duplo|toffifee|merci|ferrero|raffaello|mon cheri|lindt|after eight|snickers|\\bmars\\b|twix|bounty|milky way|kitkat|\\blion\\b|m&m|smarties|halloren|knusperflocken|bambina|minztafelchen|uberraschungsei|weinbrandbohnen|rumkugeln|krokant|ostereier|-eier", "choc"]]],
-  "Getränke": ["#5a6cd4", "bottle", [
-    ["ginger ale|ginger beer|spicy ginger|tonic|bitter lemon|soda|wasser|cola(?!bier)|sirup|wild berry", "bottle"],
-    ["saft|nektar|schorle|smoothie|shot\\b|trinkpackchen|eistee|limo|brause|hohes c|granini|punica|valensina|rotbackchen|capri|drink|trinkmahlzeit", "glass"],
-    ["bier|\\b(pils|helles|export|lager|ipa|radler|marzen|gose|kolsch|cider|stout|porter|tripel|kriek|russ)\\b|\\bale\\b|weizen(?!korn)|bock\\b|berliner weisse|malztrunk|partyfass|radeberger|wernesgruner|kostritzer|krostitzer|sternburg|freiberger|feldschlosschen|beck's|krombacher|bitburger|warsteiner|veltins|erdinger|paulaner|franziskaner|augustiner|jever|flensburger|hasseroder", "beer"],
-    ["cocktail|mojito|caipirinha|colada|\\bgin\\b|wodka|\\brum\\b|whisk|tequila|mezcal|pisco|likor|schnaps|korn\\b|\\bbrand\\b|brand\\b|geist\\b|obstler|grappa|ouzo|raki|aquavit|amaretto|sambuca|absinth|cachaca|curacao|triple sec|maraschino|barenfang|bitter|fernet|amaro|pastis|genever|cognac|armagnac|calvados|brandy|bourbon|scotch|limoncello|jagermeister|baileys|ramazzotti|berentzen|angostura|spirituose|saurer apfel|rumtopf|kirschwasser|zwetschgenwasser|williamsbirne|doppelkorn", "cocktail"],
-    ["wein|sekt|secco|prosecco|champagner|\\bcava\\b|cremant|piccolo|\\bhugo\\b|riesling|thurgau|silvaner|burgunder|chardonnay|sauvignon|pinot|traminer|dornfelder|merlot|shiraz|tempranillo|rioja|chianti|primitivo|montepulciano|bordeaux|lambrusco|sherry|wermut|aperitif|aperol|federweisser|veltliner|zweigelt|blaufrankisch|lemberger|trollinger|portugieser|regent|malbec|syrah|zinfandel|sangiovese|barolo|barbera|valpolicella|amarone|avola|rhone|beaujolais|chablis|sancerre|elbling|kerner|bacchus|scheurebe|gutedel|rivaner|muskateller|verdejo|albarino|vinho|soave|lugana|vermentino|rose\\b|weissherbst|rotling|blanc de|spatlese|auslese|kabinett|madeira|marsala|retsina|sangria|bowle|punsch|jagertee|met\\b|sake|frizzante|spumante|asti|spritz", "wine"]]],
-  "Drogerie & Gesundheit": ["#8a55c7", "pump", [
-    ["zahnburste|aufsteckburste|interdental|zahnseide|zungenreiniger|zahnholzer|munddusche", "brush"],
-    ["rasier|bart|epilier|scherkopf|haarschneider", "razor"],
-    ["lippenstift|lipgloss|lipliner|mascara|eyeliner|kajal|lidschatten|make-up|foundation|concealer|rouge|\\bpuder\\b|kompaktpuder|loser puder|bronzer|highlighter|primer|wimpern|augenbrauen|nagellack|kosmetik|schmink|kunstnagel|unterlack|uberlack|bb-cream|cc-cream", "lipstick"],
-    ["kamm|burste|haarband|haarreif|haarspange|haarnadel|haargummi|haarklammer|scrunchie|lockenwickler|haarnetz|duttkissen|haarschere", "comb"],
-    ["parfum|eau de|bodyspray|duftset|aftershave|korperspray", "perfume"],
-    ["sonnen|after sun|after-sun|selbstbrauner", "sun"],
-    ["thermometer|blutdruck|pulsoximeter|waage|teststreifen|schnelltest", "thermometer"],
-    ["pflaster|verband|binde\\b|mullbinde|kompresse|tape|hansaplast|wundauflage|dreiecktuch|erste-hilfe", "plaster"],
-    ["tablette|vitamin|magnesium|calcium|\\bzink|eisen|kapseln|baldrian|protein|hustensaft|tropfen|elektrolyt|bonbons|pastillen|ibuprofen|paracetamol|zapfchen|mittel\\b|probiotika|biotin|selen|jod|kalium|kieselerde|kollagen|coenzym|omega|lebertran|algenol|spirulina|chlorella|maca|ashwagandha|ginseng|melatonin|mariendistel|whey|casein|kreatin|bcaa|folsaure|heilerde|traubenzucker", "pill"],
-    ["tucher|watte|binden|slipeinlagen|tampons|einlagen|always|pads\\b", "roll"],
-    ["dusch|shampoo|seife|\\bdeo|spulung|haar|bad\\b|bade|schaumbad|waschlotion|waschgel|lotion|spray|serum|ol\\b|wasser|tonic|reinigung|desinfektion", "pump"],
-    ["zahnpasta|zahncreme|zahngel|creme|cream|salbe|gel\\b|balsam|korperbutter|colgate|odol|elmex|aronal|blend-a-med|sensodyne|labello|bepanthen|lippen|vaseline|melkfett|sheabutter|hirschtalg|maske|peeling", "tube"]]],
-  "Haushalt & Putzen": ["#1f9783", "box", [
-    ["toilettenpapier|kuchenrolle|servietten|papierhandtucher|folie|backpapier|butterbrotpapier", "roll"],
-    ["waschmittel|weichspuler|spulmittel|klarspuler|hygienespuler|persil|ariel|\\bspee\\b|weisser riese|lenor|perwoll|pril|fairy", "jug"],
-    ["kleiderbugel|hosenbugel|kleidersack", "hanger"],
-    ["bugel|dampfglatter", "iron"],
-    ["mull|gelbe sacke|sacke|treteimer|kosmetikeimer", "bin"],
-    ["eimer", "bucket"],
-    ["beutel", "bag"],
-    ["batterie|knopfzelle|akku(?!sauger)", "battery"],
-    ["gluhbirne|lampe|leuchtstoff|leuchtmittel|led-|lichterkette|nachtlicht|laterne|windlicht", "lamp"],
-    ["kerze|teelicht|grablicht", "candle"],
-    ["pfanne|wok\\b", "pan"],
-    ["kochtopf|topfset|schnellkochtopf|milchtopf|kasserolle|brater|auflaufform|dampfgar|slow cooker|fondue", "cookpot"],
-    ["grill|anzund|kohle|brikett|brenn|kamin|feuer|streichholz|zundholz|gas|fackel|lampenol|raucher", "flame"],
-    ["geschenkpapier|geschenkband|geschenktute|party|girlande|konfetti|luftschlangen|luftballon|troten|knallbonbon|papierhute|tischfeuerwerk|tortenfontane", "gift"],
-    ["kabel|stecker|steckdose|netzteil|powerbank|usb|hdmi|ladegerat|kopfhorer|handy|display", "plug"],
-    ["wasserkocher|wasserkessel|kanne|french press|espressokocher|karaffe|krug", "kettle"],
-    ["toaster|maschine|mixer|ruhrgerat|kocher|maker|waffeleisen|fritteuse|mikrowelle|backofen|kochplatte|automat|bereiter|sprudler|vakuumierer|allesschneider|zerkleinerer|entsafter|sauger|saugroboter|dampfreiniger|kaffeemuhle|luftbefeuchter|luftentfeuchter", "toaster"],
-    ["einmach|schraubglaser|vorratsglaser|gewurzglaser", "jar"],
-    ["teller|besteck|gabel|loffel|messer(?!becher)|schale|schussel|tasse|becher|glaser|geschirr|tablett|platte\\b|essstabchen|schneidebrett|kochloffel|pfannenwender|schneebesen|kelle|schaber|zange|reibe|hobel|schaler|offner|korkenzieher|presse|stampfer|sieb|nudelholz|morser|muhle", "cutlery"],
-    ["wasche|korb", "basket"],
-    ["besen|handfeger|wischmopp|wischer|staubwedel|burste|kehrschaufel|schrubber|abzieher", "broom"],
-    ["reiniger|entferner|spray|politur|pflege|entkalker|scheuer|wc-|\\bsoda\\b|seife|starke|bugelwasser|bleich|erfrischer|fleckensalz|schimmel|frosch|ajax|meister proper|domestos|\\bbref\\b|cillit|\\bviss\\b|sagrotan|vanish|febreze|silberputz|duft|schuhcreme|fleck", "spray"]]],
-  "Baby & Kind": ["#d7647f", "babybottle", [
-    ["windel|pants|wickel|pampers", "diaper"],
-    ["glaschen|brei|quetschie|babynahrung|alete|bebivita", "jar"],
-    ["keks|stangen|kringel|waffel|riegel|musli", "cookie"],
-    ["malbuch|knete|kreide|farben|sticker|puzzle|zeitschrift|sammelkarten", "pencil"],
-    ["creme|lotion|shampoo|\\bol\\b|babyol|babybad|waschgel|puder|bubchen", "pump"]]],
-  "Tierbedarf": ["#7a8a2c", "paw", [
-    ["fisch|teich|aquarium", "fish"]]],
-  "Kleidung & Textilien": ["#56799a", "shirt", [
-    ["socken|strumpf|strumpfe|fusslinge", "sock"],
-    ["handschuh|faustlinge|mutze|hut\\b|cap\\b|stirnband|ohrenschutzer|schal\\b|halstuch", "beanie"],
-    ["schuh|stiefel|sandalen|flip-flops|sneaker|pantoffeln|clogs|sohlen|schnursenkel|fersenkissen", "shoe"],
-    ["tasche|rucksack|koffer|ranzen|beutel|geldborse", "handbag"],
-    ["handtuch|handtucher|duschtuch|badetuch|saunatuch|strandtuch|waschlappen|waschhandschuh|badematte|vorleger|duschmatte|tischdecke|laufer|servietten|wachstuch|teppich|vorhang|gardine|plaid|uberwurf", "towel"],
-    ["bett|kissen|decke|laken|matratze|molton|steppbett|nasseschutz", "bed"],
-    ["garn|nadel|naht|nah|knopf|knopfe|reissverschluss|wolle|strick|hakel|stick|stopf|fingerhut|gummi|kordel|band\\b|flicken|aufnaher|stoff|filz|vlies|watte|klett|schneider|einfadler|bugelbilder|etiketten", "thread"],
-    ["hose|jeans|leggings|shorts|chino|rock\\b|slips|panty|hipster|unterhose", "pants"],
-    ["jacke|mantel|weste|anzug|poncho|kittel|pullover|sweatshirt|overall", "jacket"]]],
-  "Baumarkt & Werkzeug": ["#cf861b", "hammer", [
-    ["fahrrad|sattel|pedale|lenker|gepacktrager|reflektor|rucklicht|bremszug|schaltzug", "bike"],
-    ["auto|motor|scheibenwisch|scheibenenteiser|scheibenfrost|scheibenreiniger|kuhl|adblue|felgen|wischer|eiskratzer|duftbaum|enteiser|reifen|wagenheber|radkreuz|starthilfe|abschlepp|warndreieck|zundkerzen|h7|h4|sitzbezuge|kofferraum|schneeketten|bremsen|bremsflussig|getriebe|cockpit|lackstift|kratzer", "car"],
-    ["schloss|riegel|zylinder|turkette|turspion|tresor", "lock"],
-    ["leuchte|strahler|lampe|led-panel", "lamp"],
-    ["schraubendreher|torx|inbus|\\bbits?\\b|bit-|bithalter", "screwdriver"],
-    ["schlussel(?!kasten)|zange|ratsche|schraubstock|zwinge", "wrench"],
-    ["bohr|akkuschrauber|frase|schleif|sage|multitool|elektrohobel|kompressor|heissluft|trennscheiben|schruppscheiben|facherscheiben|sauger|werkzeug-", "drill"],
-    ["steckdose|schalter|kabel|stecker|kupplung|fassung|dimmer|klemmen|sicherung|dose\\b|melder|trafo|baldachin|aderend|schrumpf|litze", "plug"],
-    ["hahn|armatur|dusch|brause|siphon|spulkasten|wc-|waschbecken|ventil|rohr|schlauch|stopsel|perlator|strahlregler|thermostat|boiler|erhitzer|fitting|heizkorper|haarsieb|heberglocke|druckminderer", "faucet"],
-    ["massband|bandmass|zollstock|wasserwaage|messschieber|entfernungsmesser|winkel\\b|anschlagwinkel", "tape"],
-    ["leiter|tritt|arbeitsbock", "ladder"],
-    ["walze|roller|farbrolle|pinsel|quast", "roller"],
-    ["farbe|lack|lasur|grund|beize|ol\\b|wachs|firnis|verdunnung|spiritus|aceton|benzin|abbeizer|kleister|putz|spachtel|zement|mortel|beton|gips|kitt|fugen|silikon|acryl|kleber|leim|harz|dicht|bitumen|schaum|abtonpaste|terpentin", "paintcan"],
-    ["holz|latten|leisten|platte|brett|diele|laminat|parkett|vinyl|boden|fliesen|paneele|stab\\b|pfosten|sperrholz|hobelware|fensterbank|profil|regal|tapete|raufaser", "plank"],
-    ["schraube|dubel|nagel|nieten|mutter|scheiben\\b|splinte|krampen|stifte|anker|haken|ose|schelle|verbinder|scharnier|winkel|federringe|gewindestangen", "screw"],
-    ["band\\b|tape|krepp", "roll"],
-    ["handschuhe|helm|schutz|maske|overall|stiefel", "shirt"]]],
-  "Garten & Pflanzen": ["#5b9a2d", "pot", [
-    ["grill|feuer|fackel|gasflasche", "flame"],
-    ["giess|schlauch|brause|sprenger|bewasser|regentonne|hahnanschluss", "wateringcan"],
-    ["spaten|schaufel|gabel|harke|rechen|hacke|stecher|kelle|kralle|schere|schneeschieber|maher|trimmer|vertikutierer|laubblaser", "shovel"],
-    ["erde\\b|dunger|kalk|sand|mulch|kompost(?!er)|samen|saat|blaukorn|mehl|spane|granulat|blahton|perlite|streu|splitt|sack|nachsaat|rasen\\b|bienenweide|grundungung", "bag"],
-    ["blume|rose|tulpe|orchidee|strauss|stern|kranz|gesteck|geranie|petunie|stiefmutterchen|primel|veilchen|begonie|fuchsie|lavendel|chrysantheme|heide|hortensie|amaryllis|narzisse|krokus|hyazinthe|dahlie|gladiole|stauden|zwiebeln|christrose", "flower"],
-    ["baum|strauch|strauch|hecke|bambus|palme|ficus|monstera|buchs|efeu|tanne|mistel", "tree"]]],
-  "Büro & Schule": ["#486ba3", "pencil", [
-    ["drucker|toner|patrone|laminier|aktenvernichter|maus|tastatur|webcam|headset|festplatte|usb|sd-karte|rohlinge|laptop|monitor|rechner|bildschirm", "printer"],
-    ["schere|cutter|klingen|briefoffner", "scissors"],
-    ["ordner|hefter|mappe|hulle|register|ablage|sammler|trenn|aktendeckel", "folder"],
-    ["heft|block|buch|kalender|planer|papier|karton|pappe", "notebook"],
-    ["brief|umschlag|versand|karte\\b|karten\\b|paket|post", "envelope"],
-    ["klammer|locher|heftgerat|tacker|reisszweck|pinn|gummi|magnete|klebe|kleber|tesa|uhu|pritt|band\\b|klebefilm", "paperclip"]]],
-  "Sonstiges": ["#6f7a80", "box", [
-    ["geschenk|mitbringsel|blumen", "gift"],
-    ["paket|brief|post", "envelope"],
-    ["tasche|tute|beutel", "handbag"],
-    ["tanken|auto", "car"]]]
+  "Obst & Gemüse": ["#3d9140", [
+    "getrocknet|nuss|nusse|mandel|kerne|pistazie|marone|kastanie|cashew|studentenfutter|trail|rosine|sultanine|korinthe|apfelringe|chips|gojibeeren|datteln|kandiert",
+    "mohre|karotte|pastinake|wurzel|rettich|radieschen|rube|rubchen|bete|topinambur|ingwer|kurkuma|galgant|maniok|taro",
+    "kartoffel|drillinge|hornchen|la ratte",
+    "zwiebel|schalotte|knoblauch",
+    "pilz|champignon|pfifferling|seitling|shiitake|portobello|enoki|shimeji|morchel|truffel|rohrling",
+    "chili|peperoni|jalapeno|habanero",
+    "tomate|paprika|kurbis|granatapfel|kaki|patisson",
+    "banane",
+    "zitrone|limette|orange|mandarine|clementine|grapefruit|pomelo|kumquat",
+    "traube",
+    "erdbeer",
+    "kirsch|beere|physalis|litschi|pflaume|zwetschge|mirabelle|reneklode|sanddorn|hagebutte",
+    "birne|quitte|avocado|guave",
+    "mais",
+    "salat|rucola|spinat|mangold|kohl|kresse|lollo|endivie|chicoree|radicchio|batavia|frisee|pak choi|wirsing|brokkoli|romanesco|sprossen|lauch|sellerie|fenchel|spargel|bohnen|schoten|erbsen|artischock|okra|zucchini|gurke|aubergine|kraut|gemuse|coleslaw|petersilie|basilikum|dill|koriander|minze|rosmarin|thymian|salbei|oregano|majoran|estragon|kerbel|liebstock|barlauch|melisse|zitronengras|suppengrun|rhabarber|blatter|romana|portulak|postelein|lowenzahn|sauerampfer|mizuna|edamame|shiso|lorbeer|borretsch|pimpinelle|waldmeister|lavendel|stielmus|sprouts"]],
+  "Brot & Backwaren": ["#b5732a", [
+    "croissant|hornchen|franzbrotchen",
+    "donut|berliner|krapfen|bagel|simit|mutzen|quarkballchen|schmalzkuchen",
+    "brotchen|semmel|schrippe|toastie|brioche|laugen|brezel|wecken|seelen|schusterjungen|knuppel|panini|vinschgauer|buns",
+    "kuchen|torte|stollen|schnecke|tasche|strudel|eclair|windbeutel|plunder|ecken|amerikaner|brownie|cookie|waffel|biskuit|schecke|donauwelle|bienenstich|muffin|quiche|geback|crepe|boden|ohren|stangen|keulchen|puddingbrezel|streusel|zopf|kranz|macarons|florentiner|petit|cupcake|cake|baklava|cannoli|churros|pastel|kalter hund|bananenbrot|osterbrot|weckmann"]],
+  "Milch, Käse & Eier": ["#2f7dbf", [
+    "kase|gouda|edamer|emmentaler|tilsiter|maasdamer|appenzeller|gruyere|cheddar|parmesan|grana|pecorino|manchego|mozzarella|burrata|feta|halloumi|camembert|brie\\b|gorgonzola|roquefort|limburger|romadur|obazda|provolone|scamorza|taleggio|fontina|havarti|esrom|jarlsberg|paneer|ricotta|mascarpone|babybel|leerdammer|geramont|philadelphia|exquisa|bresso|almette|kiri|raclette|fondue|comte|reblochon|munster|chaumes|cambozola|bavaria blu|stilton|danablu|morbier|vacherin|old amsterdam|mimolette|quargel|weisslacker|tete de moine",
+    "\\beier|eiweiss|wachtelei|vollei|eigelb",
+    "tofu|tempeh|seitan|vegan|vegetarisch|falafel|hummus|gemuse|antipasti|oliven|guacamole|bratling|soja-|jackfruit|erbsenprotein|kichererbsen|baba|muhammara",
+    "butter(?!milch)|margarine|schmalz|streichfett|\\brama\\b|latta|kerrygold",
+    "joghurt|quark|skyr|pudding|dessert|grutze|mousse|tiramisu|panna|creme|schmand|saure sahne|sour cream|milchreis|gotterspeise|activia|actimel|fruchtzwerge|monte|almighurt|dany|leckermaulchen|tzatziki|aioli|dip|taramas|tirokafteri",
+    "nudeln|tortellini|ravioli|gnocchi|spatzle|maultaschen|knodel|klosse|suppe|salat|kaiserschmarrn|(^|[^n])pasta|pesto|sushi",
+    "teig|hefe|reibekuchen|pulver"]],
+  "Fleisch, Wurst & Fisch": ["#bf463f", [
+    "schinken|prosciutto|speck|bacon|pancetta|coppa|lardo|guanciale|pastrami",
+    "burger|patties",
+    "fisch|lachs|forelle|saibling|zander|karpfen|kabeljau|rotbarsch|scholle|seezunge|butt\\b|dorade|barsch|pangasius|tilapia|matjes|hering|rollmops|buckling|makrele|sprotte|aal\\b|schillerlocke|garnele|krabbe|krebs|surimi|muschel|oktopus|pulpo|hummer|kaviar|rogen|sushi|sashimi|wels|hecht|schleie|marane|felchen|stor\\b|seeteufel|seehecht|leng|rotzunge|flunder|steinbeisser|knurrhahn|rotbarbe|sardine|sardelle|anchovis|kipper|gabelbissen|gambas|langustinen|kaisergranat|calamari|sepia|austern|algen|wakame",
+    "wurst|salami|wiener|knacker|krakauer|cabanossi|debreziner|landjager|beisser|mettenden|chorizo|fuet|griller|bifi|lyoner|mortadella|salsiccia|merguez|sucuk|regensburger|braunschweiger|gottinger|pinkel|stracke|feldkieker|rauchenden",
+    "hahnchen|huhn|huhner|pute|ente|gans|ganse|geflugel|wachtel|chicken|kuken|fasan"]],
+  "Tiefkühl": ["#2a9db3", [
+    "eiswurfel|crushed",
+    "pizza|flammkuchen|piccolinis|ristorante|ofenfrische|pinsa|calzone",
+    "\\beis|wassereis|stieleis|kindereis|proteineis|fruchteis|milcheis|sahneeis|nuss-eis|sorbet|frozen|magnum|cornetto|langnese|movenpick|haagen|ben & jerry|nogger",
+    "burger",
+    "pommes|krokett|rosti|kartoffel|wedges|fries|hash browns|potatoes",
+    "fisch|lachs|filet|garnele|meeres|muschel|pangasius|zander|rotbarsch|scholle|calamari|surimi|kibbelinge",
+    "chicken|hahnchen|ente\\b|enten|gans\\b|ganse|pute",
+    "beer|kirsch|mango|ananas|pflaume|smoothie|rhabarber|aprikose|pfirsich|banane|obst|granatapfel",
+    "croissant",
+    "donut|berliner|quarkballchen|churros",
+    "lasagne|nudel|tortell|ravioli|maultaschen|goreng|paella|pfanne|gyoza|dim sum|wan tan|frikassee|gulasch|cannelloni|pierogi|pelmeni|wareniki|manti|spatzle|knodel|curry|bolognese|penne|spaghetti|tagliatelle|reis|sushi|suppe|eintopf|chili con|moussaka|auflauf|gratin|bao|sommerrollen",
+    "brotchen|brezel|brezen|baguette|brot|ciabatta|naan",
+    "kuchen|torte|strudel|windbeutel|waffel|germknodel|kaiserschmarrn|muffin|brownie|cheesecake|cake|crepes|pancakes|tiramisu|profiteroles|buchteln|dampfnudeln",
+    "tk-|gemuse|spinat|vegan|veggie"]],
+  "Nudeln, Reis & Konserven": ["#c2622b", [
+    "ol\\b|essig|balsamico|zitronensaft|limettensaft|ketchup|mayo|remoulade|senf|sosse|sauce|dressing|sriracha|sambal|wurze|mirin|sirup|ponzu|tamari|ketjap|verjus|condimento|reiswein|jus\\b|kwas",
+    "thunfisch|sardine|sardelle|makrele|hering|lachs|dorsch|muschel|krabben dose|sprotten|saupiquet|hawesta|appel",
+    "glas|gurke|cornichon|pickle|oliven|kapern|eingelegt|pesto|ajvar|aufstrich|chutney|kimchi|paste|mus\\b|mark\\b|kompott|meerrettich|schattenmorellen|sauerkraut|dip|fond|tahini|harissa|letscho|silberzwiebeln|hengstenberg|sugo|salsa|creme|tapenade|antipasti|gochujang|doenjang|adschika|salca|ghee|smetana|tworog",
+    "nudel|spaghetti|linguine|tagliatelle|fettuccine|pappardelle|penne|rigatoni|fusilli|spirelli|farfalle|makkaroni|tortiglioni|conchiglie|orecchiette|cannelloni|lasagne|spatzle|knopfle|tortell|ravioli|gnocchi|reis|couscous|bulgur|quinoa|hirse|polenta|griess|buchweizen|amaranth|grunkern|graupen|dinkel|weizen|suppe|eintopf|topf|terrine|risotto|gericht|curry|dal\\b|masala|barilla|buitoni|miracoli|labskaus|soljanka|borschtsch|minestrone|oryza|gulasch|bigos|zurek|becher|(^|[^n])pasta|orzo|risoni|bucatini|capellini|vermicelli|paccheri|trofie|gemelli|somen|kritharaki|paneer",
+    "bruhe|bouillon|fix\\b|binder|pulver|wurfel|panko|mehl|chips|rostzwiebeln|taco|kit\\b|blatter|papier|papadam|glucks|salatkerne|wurzmischung|tute|mix\\b|flocken|tortillas|zucker|kombu|wakame|furikake|hefe"]],
+  "Backen & Gewürze": ["#a37f22", [
+    "kerzen",
+    "sirup|dicksaft|aroma|extrakt|flussig|rosenwasser|goldsaft",
+    "kuverture|schoko|kakao|nougat|marzipan|glasur|callets|cake melts",
+    "konfiture|fullung|mark\\b|paste|aprikotur|gelee",
+    "salz|pfeffer|paprika|chili|curry|kurkuma|kummel|koriander|kardamom|zimt|nelken|muskat|piment|anis|fenchel|senfkorner|wacholder|lorbeer|ingwer|knoblauch|zwiebel|safran|getrocknet|krauter|gewurz|masala|hanout|zatar|sumach|bockshorn|wurzmischung|vanille gemahlen|\\brub\\b|beeren|bluten|baharat|berbere|dukkah|chermoula|pumpkin|macis|tonka|galgant|amchur|asafoetida|ajowan|namak|beifuss"]],
+  "Frühstück, Kaffee & Tee": ["#8a5a3c", [
+    "kaffee|espresso|crema|cappuccino|latte|kakao|trinkschokolade|nescafe|jacobs|dallmayr|lavazza|senseo|nespresso|tassimo|nesquik|kaba|ovomaltine|mokka|ristretto|cold brew(?!-tee)|golden-milk",
+    "tee\\b|teemischung|teekapseln|earl grey|darjeeling|sencha|matcha|chai|teekanne|heisse zitrone|kandis",
+    "riegel|flapjack|fruchtschnitte",
+    "flocken|musli|porridge|granola|cornflakes|cerealien|pops|kissen|ringe|flakes|kleie|frosties|smacks|krispies|oats|crunch|haferbrei|puffreis|gepufft|biscuits|weizenkeime|hafermark|chia"]],
+  "Süßes & Snacks": ["#c2477d", [
+    "popcorn",
+    "lutscher|zuckerstange|schleckmuschel",
+    "keks|cookie|waffel|biskuit|spekulatius|lebkuchen|pfeffernusse|pfefferkuchen|zimtsterne|kipferl|printen|baumkuchen|amarettini|cantuccini|shortbread|soft cake|kuchen|russisch brot|geback|milchschnitte|prinzenrolle|oreo|pick up|makronen|filinchen|knacke|hanuta|knoppers|platzchen|heidesand|hippen|engelsaugen|husarenkrapfen|spitzbuben|barentatzen|magenbrot|fruchtebrot|stollen",
+    "chips|flips|salz|brezel|cracker|erdnuss|erdnusse|cashew|pistazie|mandeln|macadamia|nuss-frucht|nussmix|nachos|laugen|kichererbsen|wasabi|snack|jerky|biltong|trockenfleisch|pringles|erdnusslocken|nicnac|knabber|sticks|stangen|ringe|ballchen|studentenfutter|pekannusse|walnusse|kerne|edamame|mais geroste|party-mix|grissini|reisgeback",
+    "schoko|praline|marzipan|nougat|riegel|mozartkugel|domino|advent|milka|ritter sport|kinder |duplo|toffifee|merci|ferrero|raffaello|mon cheri|lindt|after eight|snickers|\\bmars\\b|twix|bounty|milky way|kitkat|\\blion\\b|m&m|smarties|halloren|knusperflocken|bambina|minztafelchen|uberraschungsei|weinbrandbohnen|rumkugeln|krokant|ostereier|-eier"]],
+  "Getränke": ["#5a6cd4", [
+    "ginger ale|ginger beer|spicy ginger|tonic|bitter lemon|soda|wasser|cola(?!bier)|sirup|wild berry",
+    "saft|nektar|schorle|smoothie|shot\\b|trinkpackchen|eistee|limo|brause|hohes c|granini|punica|valensina|rotbackchen|capri|drink|trinkmahlzeit",
+    "bier|\\b(pils|helles|export|lager|ipa|radler|marzen|gose|kolsch|cider|stout|porter|tripel|kriek|russ)\\b|\\bale\\b|weizen(?!korn)|bock\\b|berliner weisse|malztrunk|partyfass|radeberger|wernesgruner|kostritzer|krostitzer|sternburg|freiberger|feldschlosschen|beck's|krombacher|bitburger|warsteiner|veltins|erdinger|paulaner|franziskaner|augustiner|jever|flensburger|hasseroder",
+    "cocktail|mojito|caipirinha|colada|\\bgin\\b|wodka|\\brum\\b|whisk|tequila|mezcal|pisco|likor|schnaps|korn\\b|\\bbrand\\b|brand\\b|geist\\b|obstler|grappa|ouzo|raki|aquavit|amaretto|sambuca|absinth|cachaca|curacao|triple sec|maraschino|barenfang|bitter|fernet|amaro|pastis|genever|cognac|armagnac|calvados|brandy|bourbon|scotch|limoncello|jagermeister|baileys|ramazzotti|berentzen|angostura|spirituose|saurer apfel|rumtopf|kirschwasser|zwetschgenwasser|williamsbirne|doppelkorn",
+    "wein|sekt|secco|prosecco|champagner|\\bcava\\b|cremant|piccolo|\\bhugo\\b|riesling|thurgau|silvaner|burgunder|chardonnay|sauvignon|pinot|traminer|dornfelder|merlot|shiraz|tempranillo|rioja|chianti|primitivo|montepulciano|bordeaux|lambrusco|sherry|wermut|aperitif|aperol|federweisser|veltliner|zweigelt|blaufrankisch|lemberger|trollinger|portugieser|regent|malbec|syrah|zinfandel|sangiovese|barolo|barbera|valpolicella|amarone|avola|rhone|beaujolais|chablis|sancerre|elbling|kerner|bacchus|scheurebe|gutedel|rivaner|muskateller|verdejo|albarino|vinho|soave|lugana|vermentino|rose\\b|weissherbst|rotling|blanc de|spatlese|auslese|kabinett|madeira|marsala|retsina|sangria|bowle|punsch|jagertee|met\\b|sake|frizzante|spumante|asti|spritz"]],
+  "Drogerie & Gesundheit": ["#8a55c7", [
+    "zahnburste|aufsteckburste|interdental|zahnseide|zungenreiniger|zahnholzer|munddusche",
+    "rasier|bart|epilier|scherkopf|haarschneider",
+    "lippenstift|lipgloss|lipliner|mascara|eyeliner|kajal|lidschatten|make-up|foundation|concealer|rouge|\\bpuder\\b|kompaktpuder|loser puder|bronzer|highlighter|primer|wimpern|augenbrauen|nagellack|kosmetik|schmink|kunstnagel|unterlack|uberlack|bb-cream|cc-cream",
+    "kamm|burste|haarband|haarreif|haarspange|haarnadel|haargummi|haarklammer|scrunchie|lockenwickler|haarnetz|duttkissen|haarschere",
+    "parfum|eau de|bodyspray|duftset|aftershave|korperspray",
+    "sonnen|after sun|after-sun|selbstbrauner",
+    "thermometer|blutdruck|pulsoximeter|waage|teststreifen|schnelltest",
+    "pflaster|verband|binde\\b|mullbinde|kompresse|tape|hansaplast|wundauflage|dreiecktuch|erste-hilfe",
+    "tablette|vitamin|magnesium|calcium|\\bzink|eisen|kapseln|baldrian|protein|hustensaft|tropfen|elektrolyt|bonbons|pastillen|ibuprofen|paracetamol|zapfchen|mittel\\b|probiotika|biotin|selen|jod|kalium|kieselerde|kollagen|coenzym|omega|lebertran|algenol|spirulina|chlorella|maca|ashwagandha|ginseng|melatonin|mariendistel|whey|casein|kreatin|bcaa|folsaure|heilerde|traubenzucker",
+    "tucher|watte|binden|slipeinlagen|tampons|einlagen|always|pads\\b",
+    "dusch|shampoo|seife|\\bdeo|spulung|haar|bad\\b|bade|schaumbad|waschlotion|waschgel|lotion|spray|serum|ol\\b|wasser|tonic|reinigung|desinfektion",
+    "zahnpasta|zahncreme|zahngel|creme|cream|salbe|gel\\b|balsam|korperbutter|colgate|odol|elmex|aronal|blend-a-med|sensodyne|labello|bepanthen|lippen|vaseline|melkfett|sheabutter|hirschtalg|maske|peeling"]],
+  "Haushalt & Putzen": ["#1f9783", [
+    "toilettenpapier|kuchenrolle|servietten|papierhandtucher|folie|backpapier|butterbrotpapier",
+    "waschmittel|weichspuler|spulmittel|klarspuler|hygienespuler|persil|ariel|\\bspee\\b|weisser riese|lenor|perwoll|pril|fairy",
+    "kleiderbugel|hosenbugel|kleidersack",
+    "bugel|dampfglatter",
+    "mull|gelbe sacke|sacke|treteimer|kosmetikeimer",
+    "eimer",
+    "beutel",
+    "batterie|knopfzelle|akku(?!sauger)",
+    "gluhbirne|lampe|leuchtstoff|leuchtmittel|led-|lichterkette|nachtlicht|laterne|windlicht",
+    "kerze|teelicht|grablicht",
+    "pfanne|wok\\b",
+    "kochtopf|topfset|schnellkochtopf|milchtopf|kasserolle|brater|auflaufform|dampfgar|slow cooker|fondue",
+    "grill|anzund|kohle|brikett|brenn|kamin|feuer|streichholz|zundholz|gas|fackel|lampenol|raucher",
+    "geschenkpapier|geschenkband|geschenktute|party|girlande|konfetti|luftschlangen|luftballon|troten|knallbonbon|papierhute|tischfeuerwerk|tortenfontane",
+    "kabel|stecker|steckdose|netzteil|powerbank|usb|hdmi|ladegerat|kopfhorer|handy|display",
+    "wasserkocher|wasserkessel|kanne|french press|espressokocher|karaffe|krug",
+    "toaster|maschine|mixer|ruhrgerat|kocher|maker|waffeleisen|fritteuse|mikrowelle|backofen|kochplatte|automat|bereiter|sprudler|vakuumierer|allesschneider|zerkleinerer|entsafter|sauger|saugroboter|dampfreiniger|kaffeemuhle|luftbefeuchter|luftentfeuchter",
+    "einmach|schraubglaser|vorratsglaser|gewurzglaser",
+    "teller|besteck|gabel|loffel|messer(?!becher)|schale|schussel|tasse|becher|glaser|geschirr|tablett|platte\\b|essstabchen|schneidebrett|kochloffel|pfannenwender|schneebesen|kelle|schaber|zange|reibe|hobel|schaler|offner|korkenzieher|presse|stampfer|sieb|nudelholz|morser|muhle",
+    "wasche|korb",
+    "besen|handfeger|wischmopp|wischer|staubwedel|burste|kehrschaufel|schrubber|abzieher",
+    "reiniger|entferner|spray|politur|pflege|entkalker|scheuer|wc-|\\bsoda\\b|seife|starke|bugelwasser|bleich|erfrischer|fleckensalz|schimmel|frosch|ajax|meister proper|domestos|\\bbref\\b|cillit|\\bviss\\b|sagrotan|vanish|febreze|silberputz|duft|schuhcreme|fleck"]],
+  "Baby & Kind": ["#d7647f", [
+    "windel|pants|wickel|pampers",
+    "glaschen|brei|quetschie|babynahrung|alete|bebivita",
+    "keks|stangen|kringel|waffel|riegel|musli",
+    "malbuch|knete|kreide|farben|sticker|puzzle|zeitschrift|sammelkarten",
+    "creme|lotion|shampoo|\\bol\\b|babyol|babybad|waschgel|puder|bubchen"]],
+  "Tierbedarf": ["#7a8a2c", [
+    "fisch|teich|aquarium"]],
+  "Kleidung & Textilien": ["#56799a", [
+    "socken|strumpf|strumpfe|fusslinge",
+    "handschuh|faustlinge|mutze|hut\\b|cap\\b|stirnband|ohrenschutzer|schal\\b|halstuch",
+    "schuh|stiefel|sandalen|flip-flops|sneaker|pantoffeln|clogs|sohlen|schnursenkel|fersenkissen",
+    "tasche|rucksack|koffer|ranzen|beutel|geldborse",
+    "handtuch|handtucher|duschtuch|badetuch|saunatuch|strandtuch|waschlappen|waschhandschuh|badematte|vorleger|duschmatte|tischdecke|laufer|servietten|wachstuch|teppich|vorhang|gardine|plaid|uberwurf",
+    "bett|kissen|decke|laken|matratze|molton|steppbett|nasseschutz",
+    "garn|nadel|naht|nah|knopf|knopfe|reissverschluss|wolle|strick|hakel|stick|stopf|fingerhut|gummi|kordel|band\\b|flicken|aufnaher|stoff|filz|vlies|watte|klett|schneider|einfadler|bugelbilder|etiketten",
+    "hose|jeans|leggings|shorts|chino|rock\\b|slips|panty|hipster|unterhose",
+    "jacke|mantel|weste|anzug|poncho|kittel|pullover|sweatshirt|overall"]],
+  "Baumarkt & Werkzeug": ["#cf861b", [
+    "fahrrad|sattel|pedale|lenker|gepacktrager|reflektor|rucklicht|bremszug|schaltzug",
+    "auto|motor|scheibenwisch|scheibenenteiser|scheibenfrost|scheibenreiniger|kuhl|adblue|felgen|wischer|eiskratzer|duftbaum|enteiser|reifen|wagenheber|radkreuz|starthilfe|abschlepp|warndreieck|zundkerzen|h7|h4|sitzbezuge|kofferraum|schneeketten|bremsen|bremsflussig|getriebe|cockpit|lackstift|kratzer",
+    "schloss|riegel|zylinder|turkette|turspion|tresor",
+    "leuchte|strahler|lampe|led-panel",
+    "schraubendreher|torx|inbus|\\bbits?\\b|bit-|bithalter",
+    "schlussel(?!kasten)|zange|ratsche|schraubstock|zwinge",
+    "bohr|akkuschrauber|frase|schleif|sage|multitool|elektrohobel|kompressor|heissluft|trennscheiben|schruppscheiben|facherscheiben|sauger|werkzeug-",
+    "steckdose|schalter|kabel|stecker|kupplung|fassung|dimmer|klemmen|sicherung|dose\\b|melder|trafo|baldachin|aderend|schrumpf|litze",
+    "hahn|armatur|dusch|brause|siphon|spulkasten|wc-|waschbecken|ventil|rohr|schlauch|stopsel|perlator|strahlregler|thermostat|boiler|erhitzer|fitting|heizkorper|haarsieb|heberglocke|druckminderer",
+    "massband|bandmass|zollstock|wasserwaage|messschieber|entfernungsmesser|winkel\\b|anschlagwinkel",
+    "leiter|tritt|arbeitsbock",
+    "walze|roller|farbrolle|pinsel|quast",
+    "farbe|lack|lasur|grund|beize|ol\\b|wachs|firnis|verdunnung|spiritus|aceton|benzin|abbeizer|kleister|putz|spachtel|zement|mortel|beton|gips|kitt|fugen|silikon|acryl|kleber|leim|harz|dicht|bitumen|schaum|abtonpaste|terpentin",
+    "holz|latten|leisten|platte|brett|diele|laminat|parkett|vinyl|boden|fliesen|paneele|stab\\b|pfosten|sperrholz|hobelware|fensterbank|profil|regal|tapete|raufaser",
+    "schraube|dubel|nagel|nieten|mutter|scheiben\\b|splinte|krampen|stifte|anker|haken|ose|schelle|verbinder|scharnier|winkel|federringe|gewindestangen",
+    "band\\b|tape|krepp",
+    "handschuhe|helm|schutz|maske|overall|stiefel"]],
+  "Garten & Pflanzen": ["#5b9a2d", [
+    "grill|feuer|fackel|gasflasche",
+    "giess|schlauch|brause|sprenger|bewasser|regentonne|hahnanschluss",
+    "spaten|schaufel|gabel|harke|rechen|hacke|stecher|kelle|kralle|schere|schneeschieber|maher|trimmer|vertikutierer|laubblaser",
+    "erde\\b|dunger|kalk|sand|mulch|kompost(?!er)|samen|saat|blaukorn|mehl|spane|granulat|blahton|perlite|streu|splitt|sack|nachsaat|rasen\\b|bienenweide|grundungung",
+    "blume|rose|tulpe|orchidee|strauss|stern|kranz|gesteck|geranie|petunie|stiefmutterchen|primel|veilchen|begonie|fuchsie|lavendel|chrysantheme|heide|hortensie|amaryllis|narzisse|krokus|hyazinthe|dahlie|gladiole|stauden|zwiebeln|christrose",
+    "baum|strauch|strauch|hecke|bambus|palme|ficus|monstera|buchs|efeu|tanne|mistel"]],
+  "Büro & Schule": ["#486ba3", [
+    "drucker|toner|patrone|laminier|aktenvernichter|maus|tastatur|webcam|headset|festplatte|usb|sd-karte|rohlinge|laptop|monitor|rechner|bildschirm",
+    "schere|cutter|klingen|briefoffner",
+    "ordner|hefter|mappe|hulle|register|ablage|sammler|trenn|aktendeckel",
+    "heft|block|buch|kalender|planer|papier|karton|pappe",
+    "brief|umschlag|versand|karte\\b|karten\\b|paket|post",
+    "klammer|locher|heftgerat|tacker|reisszweck|pinn|gummi|magnete|klebe|kleber|tesa|uhu|pritt|band\\b|klebefilm"]],
+  "Sonstiges": ["#6f7a80", [
+    "geschenk|mitbringsel|blumen",
+    "paket|brief|post",
+    "tasche|tute|beutel",
+    "tanken|auto"]]
 };
 var CATCOL = [], CATRULES = [];
 CATS.forEach(function (c) {
-  var m = META[c] || ["#6f7a80", "box", []];
+  var m = META[c] || ["#6f7a80", []];
   CATCOL.push(m[0]);
-  CATRULES.push(m[2].map(function (p) { return [new RegExp(p[0]), p[1]]; }));
+  CATRULES.push(m[1].map(function (p) { return new RegExp(p); }));
 });
-function ruleIcon(cat, n) {
+function ruleHit(cat, n) {
   var r = CATRULES[cat];
-  for (var i = 0; i < r.length; i++) if (r[i][0].test(n)) return r[i][1];
-  return null;
+  for (var i = 0; i < r.length; i++) if (r[i].test(n)) return true;
+  return false;
 }
 /* ---------- Farbige Bildzeichen (Stil E) ----------
    Je Abteilung: Regeln (erste passende gewinnt), danach das Standardzeichen.
@@ -415,10 +415,30 @@ function pictogram(cat, n) {
 }
 var GUESS_ORDER = ["Getränke","Brot & Backwaren","Tiefkühl","Süßes & Snacks","Frühstück, Kaffee & Tee","Nudeln, Reis & Konserven","Backen & Gewürze","Milch, Käse & Eier","Fleisch, Wurst & Fisch","Obst & Gemüse","Drogerie & Gesundheit","Haushalt & Putzen","Baby & Kind","Tierbedarf","Kleidung & Textilien","Baumarkt & Werkzeug","Garten & Pflanzen","Büro & Schule","Sonstiges"]
   .map(function (n) { return CATS.indexOf(n); }).filter(function (i) { return i >= 0; });
+/* Abteilung für einen eigenen Artikel. Zuerst der Katalog:
+   1. Steckt ein Katalogname als Wort oder Wortfolge im Namen („Omas Nudeln“, „Zahnpasta Kids“), gilt dessen Abteilung.
+      Die längste Folge gewinnt, bei gleicher Länge die vordere („Chips Paprika“ sind Chips).
+   2. Endet ein Wort auf einen Katalognamen („Kindershampoo“), gilt dessen Abteilung – das Grundwort steht im Deutschen hinten.
+   Erst danach die Wortregeln; sie sind grob und treffen oft die falsche Abteilung. */
 function guess(n) {
+  var w = n.split(/[\s-]+/), k, s, j, key, hit, best;
+  for (k = Math.min(4, w.length); k > 0; k--) for (s = 0; s + k <= w.length; s++) {
+    key = w.slice(s, s + k).join(" ");
+    hit = byNorm[key]; if (hit === undefined) hit = synBy[key];
+    if (hit !== undefined) return { cat: cats[hit], icon: icons[hit] };
+  }
+  for (s = 0; s < w.length; s++) {
+    for (j = 0, best = -1; j < norms.length; j++) {
+      key = norms[j];
+      if (key.length >= 4 && key.length < w[s].length && key.indexOf(" ") < 0 && w[s].slice(-key.length) === key && (best < 0 || key.length > norms[best].length)) best = j;
+    }
+    if (best >= 0) return { cat: cats[best], icon: icons[best] };
+  }
+  var frozen = /(^|[\s-])tk([\s-]|$)|tiefkuhl|gefroren|frost|(^|[\s-])eis/.test(n);
   for (var i = 0; i < GUESS_ORDER.length; i++) {
-    var ic = ruleIcon(GUESS_ORDER[i], n);
-    if (ic) return { cat: GUESS_ORDER[i], icon: pictogram(GUESS_ORDER[i], n) };
+    /* die Tiefkühl-Regeln nennen fast jedes Lebensmittel; sie zählen nur, wenn der Name nach Tiefkühlware klingt */
+    if (GUESS_ORDER[i] === TK && !frozen) continue;
+    if (ruleHit(GUESS_ORDER[i], n)) return { cat: GUESS_ORDER[i], icon: pictogram(GUESS_ORDER[i], n) };
   }
   return null;
 }
@@ -478,14 +498,18 @@ function seed() {
     ]
   };
 }
+function validOrder(o) {
+  return Array.isArray(o) && o.length === CATS.length && CATS.every(function (c, i) { return o.indexOf(i) >= 0; });
+}
 function load() {
   try {
     var s = JSON.parse(localStorage.getItem(KEY));
     if (s && Array.isArray(s.lists) && s.lists.length) {
       s.freq = s.freq || {};
       /* Reihenfolge der Abteilungen: muss jede Abteilung genau einmal enthalten, sonst gilt die Standardfolge */
-      var ok = Array.isArray(s.order) && s.order.length === CATS.length && CATS.every(function (c, i) { return s.order.indexOf(i) >= 0; });
-      if (!ok) s.order = CATS.map(function (c, i) { return i; });
+      if (!validOrder(s.order)) s.order = CATS.map(function (c, i) { return i; });
+      /* eine Liste kann ihre eigene Reihenfolge haben (anderer Laden) */
+      s.lists.forEach(function (l) { if (l.order && !validOrder(l.order)) delete l.order; });
       s.templates = Array.isArray(s.templates) ? s.templates.filter(function (x) { return x && typeof x.name === "string" && Array.isArray(x.items); }) : [];
       if ((s.v || 1) < 3) {
         /* Abteilungen wurden neu geschnitten: gespeicherte Artikel neu einsortieren */
@@ -624,7 +648,7 @@ function itemTile(it) {
     cls: it.done ? "done" : "", icon: iconOf(it), cat: it.cat, name: it.name, note: it.note, checked: it.done, pop: it.id === lastId,
     label: it.name + (it.note ? ", " + it.note : "") + (it.done ? ", erledigt. Zurück auf die Liste" : ". Abhaken"),
     onTap: function () {
-      var u = snap(); it.done = !it.done; lastId = it.id; buzz(); save(); render(); lastId = null;
+      var u = snap(); it.done = !it.done; lastId = it.id; if (it.done) S.doneAt = Date.now(); tidy = false; buzz(); save(); render(); lastId = null;
       notify(it.name + (it.done ? " erledigt" : " wieder offen"), u);
     },
     onHold: function () { editSheet(it); }
@@ -635,10 +659,16 @@ function itemTile(it) {
 }
 
 /* ---------- Liste ---------- */
+/* Liegt das letzte Abhaken länger zurück, ist der Einkauf vorbei: dann bietet die Liste an, Erledigtes zu entfernen */
+var tidy = false, TIDY_AFTER = 3 * 60 * 60 * 1000;
+function checkTidy() {
+  tidy = !!S.doneAt && Date.now() - S.doneAt > TIDY_AFTER && cur().items.some(function (i) { return i.done; });
+  return tidy;
+}
 function render() {
   var L = cur(), open = [], done = [];
   L.items.forEach(function (i) { (i.done ? done : open).push(i); });
-  var rank = []; S.order.forEach(function (ci, pos) { rank[ci] = pos; });
+  var rank = []; (L.order || S.order).forEach(function (ci, pos) { rank[ci] = pos; });
   open.sort(function (a, b) { return rank[a.cat] - rank[b.cat]; });
   var total = open.length + done.length, pct = total ? Math.round(done.length / total * 100) : 0;
   $("listname").textContent = L.name;
@@ -653,6 +683,18 @@ function render() {
       el("button", { class: "link", type: "button", text: "Listen leeren", on: { click: function () {
         S.lists.forEach(function (l) { l.items = []; }); S.example = false; save(); render();
       } } })));
+  }
+  if (tidy && done.length) {
+    /* Erledigtes vom letzten Einkauf: beim nächsten Öffnen einmal fragen, nichts von selbst löschen */
+    main.appendChild(el("div", { class: "hint" },
+      el("span", { text: done.length + (done.length === 1 ? " erledigter Artikel" : " erledigte Artikel") + " vom letzten Einkauf" }),
+      el("span", { class: "acts" },
+        el("button", { class: "link", type: "button", text: "Behalten", on: { click: function () { tidy = false; S.doneAt = 0; save(); render(); } } }),
+        el("button", { class: "link danger", type: "button", text: "Entfernen", on: { click: function () {
+          var u = snap(), n = done.length; tidy = false; S.doneAt = 0;
+          L.items = L.items.filter(function (i) { return !i.done; }); save(); render();
+          notify(n + (n === 1 ? " erledigter Artikel entfernt" : " erledigte Artikel entfernt"), u);
+        } } }))));
   }
   if (!open.length) {
     main.appendChild(el("div", { class: "empty" },
@@ -713,6 +755,66 @@ function add(name, note) {
   S.freq[name] = (S.freq[name] || 0) + 1;
   save(); render();
   return { text: msg, changed: true };
+}
+
+/* ---------- Mehrere Artikel auf einmal: eingefügte Liste, Kommas, Spracheingabe ----------
+   Getrennt wird an Zeilenumbruch, Semikolon und Komma (nicht zwischen Ziffern: „3,5 %“). Aufzählungszeichen fallen weg. */
+var NUMW = { ein: 1, eine: 1, einen: 1, einem: 1, zwei: 2, drei: 3, vier: 4, "fünf": 5, sechs: 6, sieben: 7, acht: 8, neun: 9, zehn: 10, elf: 11, "zwölf": 12 };
+function splitItems(text, spoken) {
+  var out = [];
+  text.split(/\s*(?:[;\n\r]+|,(?!\d))\s*/).forEach(function (p) {
+    p = p.replace(/^\s*(?:[-–—•*·]+|\[[ xX]?\])\s*/, "").replace(/\s+/g, " ").trim();
+    if (!p) return;
+    if (spoken) spokenItems(p).forEach(function (x) { out.push(x); }); else out.push(p);
+  });
+  return out.slice(0, 200);
+}
+/* Gesprochenes hat keine Kommas: „Milch Butter drei Äpfel“. Von links wird jeweils der längste Katalogname genommen,
+   davor eine Menge. Geht das nicht auf, bleibt der Text ganz und wird nur an „und“ getrennt. */
+function spokenItems(p) {
+  var tok = p.replace(/[.!?]+$/, "").split(" ").map(function (w) { var n = NUMW[w.toLowerCase()]; return n ? String(n) : w; });
+  var out = [], i = 0, k, qty, name, unitRe = new RegExp("^(?:" + UNIT + ")$", "i");
+  while (i < tok.length) {
+    if (/^und$/i.test(tok[i])) { i++; continue; }
+    qty = "";
+    if (/^\d+(?:[.,]\d+)?$/.test(tok[i]) && i + 1 < tok.length) {
+      qty = tok[i++];
+      if (unitRe.test(tok[i]) && i + 1 < tok.length) qty += " " + tok[i++];
+    }
+    for (k = Math.min(5, tok.length - i), name = ""; k > 0; k--) {
+      name = tok.slice(i, i + k).join(" ");
+      if (lookup(name) !== undefined) break;
+      name = "";
+    }
+    if (!name) return tok.join(" ").split(/\s+und\s+/i);
+    out.push((qty ? qty + " " : "") + name); i += k;
+  }
+  return out;
+}
+function addMany(texts) {
+  var u = snap(), L = cur(), n = 0;
+  texts.forEach(function (t) {
+    var pq = parseQty(t), name = pq.name, i = byNorm[norm(name)];
+    if (!name) return;
+    name = i !== undefined ? names[i] : name.charAt(0).toUpperCase() + name.slice(1);
+    var ex = findItem(name);
+    if (ex && !ex.done) { if (pq.note && ex.note !== pq.note) { ex.note = pq.note; n++; } return; }
+    if (ex) { ex.done = false; if (pq.note) ex.note = pq.note; } else L.items.push(mk(name, pq.note));
+    S.freq[name] = (S.freq[name] || 0) + 1; n++;
+  });
+  save(); render();
+  return { n: n, undo: n ? u : null };
+}
+/* in der Suche: alle auf die Liste, Meldung mit Rückgängig */
+function pickMany(texts) {
+  var r = addMany(texts);
+  buzz(); sugMsg = { text: r.n ? r.n + " Artikel hinzugefügt" : "Alles steht schon auf der Liste", undo: r.undo };
+  q.value = ""; $("clearq").hidden = true; openSearch(); renderSug();
+}
+function several(text) {
+  if (lookup(text.trim()) !== undefined) return null;
+  var p = splitItems(text);
+  return p.length > 1 ? p : null;
 }
 
 /* ---------- Suche ---------- */
@@ -806,9 +908,16 @@ $("toastundo").addEventListener("click", function () { var u = toastUndo; hideTo
 q.addEventListener("keydown", function (e) { if (e.key === "Escape") closeSearch(); });
 $("searchform").addEventListener("submit", function (e) {
   e.preventDefault();
-  if (q.value.trim()) pick(q.value); else closeSearch();
+  var many = several(q.value);
+  if (many) pickMany(many); else if (q.value.trim()) pick(q.value); else closeSearch();
 });
 $("closesearch").addEventListener("click", closeSearch);
+/* Eingefügter Text mit mehreren Zeilen oder Kommas: gleich alles hinzufügen (das Feld selbst würde Zeilenumbrüche schlucken) */
+q.addEventListener("paste", function (e) {
+  var t = e.clipboardData && e.clipboardData.getData ? e.clipboardData.getData("text") : "";
+  var many = t && !q.value.trim() ? several(t) : null;
+  if (many) { e.preventDefault(); pickMany(many); q.focus(); }
+});
 
 /* ---------- Sheets ---------- */
 var opener = null;
@@ -903,6 +1012,7 @@ function listsSheet() {
       el("button", { class: "btn", type: "submit", text: "Ändern" })));
   var menu = el("ul", { class: "lists menu" },
     menuRow("Liste teilen", "", function () { closeSheet(); shareList(); }),
+    menuRow("Geteilte Liste einfügen", "", pasteSheet),
     menuRow("Vorlagen", S.templates.length ? String(S.templates.length) : "", templatesSheet),
     menuRow("Reihenfolge im Laden", "", orderSheet),
     INSTALL && !INSTALL.platform().standalone ? menuRow("Als App installieren", "", INSTALL.sheet) : null);
@@ -959,18 +1069,24 @@ function templatesSheet() {
 
 /* ---------- Reihenfolge der Abteilungen wie im eigenen Laden ---------- */
 function orderSheet() {
-  var ul = el("ul", { class: "lists order" });
+  var L = cur(), ul = el("ul", { class: "lists order" });
+  function arr() { return L.order || S.order; }
+  /* gilt die Reihenfolge für alle Listen oder nur für diese (anderer Laden)? */
+  var bAll = el("button", { type: "button", text: "Alle Listen", on: { click: function () { delete L.order; save(); render(); fill(); } } });
+  var bOwn = el("button", { type: "button", text: "Nur „" + L.name + "“", on: { click: function () { if (!L.order) L.order = S.order.slice(); save(); render(); fill(); } } });
+  var seg = el("div", { class: "seg", role: "group", "aria-label": "Gilt für" }, bAll, bOwn);
   function fill(focus) {
     ul.textContent = "";
-    S.order.forEach(function (ci, pos) {
+    bAll.setAttribute("aria-pressed", L.order ? "false" : "true"); bOwn.setAttribute("aria-pressed", L.order ? "true" : "false");
+    arr().forEach(function (ci, pos) {
       function move(d) {
         return function () {
-          var j = pos + d; if (j < 0 || j >= S.order.length) return;
-          S.order.splice(j, 0, S.order.splice(pos, 1)[0]); save(); render(); fill([j, d]);
+          var o = arr(), j = pos + d; if (j < 0 || j >= o.length) return;
+          o.splice(j, 0, o.splice(pos, 1)[0]); save(); render(); fill([j, d]);
         };
       }
       var up = el("button", { class: "mv", type: "button", "aria-label": CATS[ci] + " nach oben", disabled: pos === 0, text: "↑", on: { click: move(-1) } });
-      var down = el("button", { class: "mv", type: "button", "aria-label": CATS[ci] + " nach unten", disabled: pos === S.order.length - 1, text: "↓", on: { click: move(1) } });
+      var down = el("button", { class: "mv", type: "button", "aria-label": CATS[ci] + " nach unten", disabled: pos === arr().length - 1, text: "↓", on: { click: move(1) } });
       ul.appendChild(el("li", {}, el("span", { class: "oico" }, glyph(EMO_DEF[ci])), el("span", { class: "name", text: CATS[ci] }), up, down));
       if (focus && focus[0] === pos) { var b = focus[1] < 0 ? up : down; if (b.disabled) b = focus[1] < 0 ? down : up; setTimeout(function () { if (b.focus) b.focus(); }, 0); }
     });
@@ -978,9 +1094,11 @@ function orderSheet() {
   fill();
   openSheet("Reihenfolge im Laden", el("h3", { text: "Reihenfolge im Laden" }),
     el("p", { class: "lead", text: "Bring die Abteilungen in die Reihenfolge, in der du durch deinen Laden gehst. Die Liste sortiert sich danach." }),
-    ul,
+    seg, ul,
     el("div", { class: "row" },
-      el("button", { class: "btn", type: "button", text: "Zurücksetzen", on: { click: function () { S.order = CATS.map(function (c, i) { return i; }); save(); render(); fill(); } } }),
+      el("button", { class: "btn", type: "button", text: "Zurücksetzen", on: { click: function () {
+        var o = arr(); o.length = 0; CATS.forEach(function (c, i) { o.push(i); }); save(); render(); fill();
+      } } }),
       el("button", { class: "btn primary", type: "button", text: "Fertig", on: { click: closeSheet } })));
 }
 
@@ -1011,8 +1129,8 @@ function shareList() {
   else copy();
 }
 /* Geteilte Liste aus dem Link lesen. Übernommen wird nur Text in begrenzter Länge. */
-function readShared() {
-  var m = /^#l=([A-Za-z0-9_-]+)$/.exec(location.hash || "");
+function readShared(text) {
+  var m = /#l=([A-Za-z0-9_-]+)/.exec(text || "");
   if (!m) return null;
   try {
     var d = JSON.parse(b64d(m[1]));
@@ -1022,8 +1140,9 @@ function readShared() {
     return items.length ? { name: d.n.trim().slice(0, 40) || "Geteilte Liste", items: items } : null;
   } catch (e) { return null; }
 }
-function importSheet() {
-  var d = readShared();
+/* Ohne Angabe wird der Link in der Adresszeile gelesen (Aufruf beim Start und bei hashchange) */
+function importSheet(d) {
+  if (!d || !d.items) d = readShared(location.hash);
   if (!d) return false;
   function done() { try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {} }
   var prev = d.items.slice(0, 8).map(function (x) { return x.name; }).join(", ") + (d.items.length > 8 ? " …" : "");
@@ -1040,6 +1159,25 @@ function importSheet() {
   return true;
 }
 
+/* In der installierten App kommt ein geteilter Link nicht von selbst an (auf dem iPhone öffnet er Safari).
+   Hier lässt er sich aus der Nachricht einfügen. */
+function pasteSheet() {
+  var inp = el("input", { id: "f-link", type: "text", placeholder: "Link oder ganze Nachricht einfügen", autocomplete: "off", autocapitalize: "off", spellcheck: "false" });
+  var err = el("p", { class: "notice", role: "alert", hidden: true, text: "Darin steckt keine geteilte Liste. Kopiere die ganze Nachricht mit dem Link." });
+  function take(v) { var d = readShared(v); if (d) importSheet(d); else { err.hidden = false; inp.focus(); } }
+  var form = el("form", { on: { submit: function (e) { e.preventDefault(); take(inp.value); } } },
+    el("div", { class: "inline" },
+      el("label", { class: "field", for: "f-link" }, "Geteilter Link", inp),
+      el("button", { class: "btn primary", type: "submit", text: "Übernehmen" })));
+  var clip = typeof navigator !== "undefined" && navigator.clipboard && navigator.clipboard.readText
+    ? el("button", { class: "btn block", type: "button", text: "Aus der Zwischenablage einfügen", on: { click: function () {
+        navigator.clipboard.readText().then(function (t) { inp.value = t; take(t); }, function () { inp.focus(); });
+      } } }) : null;
+  openSheet("Geteilte Liste einfügen", el("h3", { text: "Geteilte Liste einfügen" }),
+    el("p", { class: "lead", text: "Kopiere die Nachricht mit dem Link und füge sie hier ein." }), clip, form, err);
+}
+
+checkTidy();
 render();
 
 /* ---------- Alles ab hier braucht einen echten Browser ---------- */
@@ -1059,6 +1197,34 @@ if (typeof window !== "undefined" && window.matchMedia) (function () {
   }
   document.addEventListener("visibilitychange", wake);
   wake();
+  /* beim Zurückkehren prüfen, ob Erledigtes vom letzten Einkauf herumliegt */
+  document.addEventListener("visibilitychange", function () {
+    if (document.visibilityState === "visible" && !tidy && checkTidy() && !searchOpen) render();
+  });
+
+  /* ---- Spracheingabe: Knopf im Suchfeld, nur wo der Browser sie kann. Die Erkennung macht der Browser,
+     bei Chrome und Safari auf den Servern des Herstellers; die App selbst schickt nichts weg. ---- */
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition, mic = $("mic");
+  if (SR && mic) {
+    var rec = null;
+    mic.hidden = false;
+    mic.addEventListener("click", function () {
+      if (rec) { rec.stop(); return; }
+      var r = new SR(), heard = "";
+      r.lang = "de-DE"; r.interimResults = false; r.maxAlternatives = 1;
+      r.onresult = function (e) { for (var i = e.resultIndex; i < e.results.length; i++) if (e.results[i].isFinal) heard += " " + e.results[i][0].transcript; };
+      r.onerror = function (e) {
+        notify(e.error === "not-allowed" || e.error === "service-not-allowed" ? "Mikrofon ist nicht erlaubt" : e.error === "network" ? "Spracheingabe braucht Internet" : e.error === "no-speech" ? "Nichts gehört" : "Spracheingabe nicht möglich");
+      };
+      r.onend = function () {
+        rec = null; mic.classList.remove("on"); mic.setAttribute("aria-pressed", "false"); q.placeholder = "Artikel hinzufügen";
+        var items = splitItems(heard.trim(), true);
+        if (items.length) pickMany(items);
+      };
+      try { r.start(); rec = r; mic.classList.add("on"); mic.setAttribute("aria-pressed", "true"); q.placeholder = "Ich höre zu …"; }
+      catch (e) { notify("Spracheingabe nicht möglich"); }
+    });
+  }
 
   /* ---- Als App installieren: Hinweise je Gerät, einmaliger Vollbild-Hinweis, danach ein Balken oben ---- */
   var deferredPrompt = null, appInstalled = false;

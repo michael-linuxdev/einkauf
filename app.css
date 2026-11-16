@@ -57,6 +57,16 @@ symbol{overflow:visible}
 .search input{width:100%;height:54px;border:1.5px solid transparent;background:var(--surface);border-radius:18px;padding:0 46px;font-size:17px;box-shadow:var(--shadow)}
 .clear{position:absolute;right:7px;top:50%;margin-top:-20px;width:40px;height:40px;border:0;background:none;color:var(--muted);border-radius:50%;display:grid;place-items:center}
 .clear[hidden]{display:none}
+/* Mikrofon steht an der Stelle des Löschen-Knopfs, solange das Feld leer ist */
+.clear:not([hidden])~.mic{display:none}
+.mic svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+.mic.on{background:var(--accent);color:var(--accent-ink)}
+@media (prefers-reduced-motion:no-preference){.mic.on{animation:hear 1.1s ease-in-out infinite}@keyframes hear{50%{box-shadow:0 0 0 7px color-mix(in srgb,var(--accent) 22%,transparent)}}}
+.hint .acts{display:flex;gap:16px}
+.seg{display:flex;gap:4px;background:var(--surface);border-radius:14px;padding:4px;box-shadow:var(--shadow)}
+.seg button{flex:1;min-width:0;min-height:42px;border:0;border-radius:11px;background:none;font-weight:600;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 10px}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.notice[hidden]{display:none}
 .clear svg,.xbtn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round}
 .search input::placeholder{color:var(--muted)}
 .search input:focus{outline:none;border-color:var(--accent)}
