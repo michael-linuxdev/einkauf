@@ -258,8 +258,8 @@ C["Baumarkt & Werkzeug"] = _cut("Schrauben", "Blumenerde")
 C["Garten & Pflanzen"] = _cut("Blumenerde", "Socken")
 C["Büro & Schule"] = _cut("Kugelschreiber", "Schrauben")
 C["Sonstiges"] = _cut("Einkaufstasche")
-import add1, add2, add3
-for _m in (add1, add2, add3):
+import add1, add2, add3, add4
+for _m in (add1, add2, add3, add4):
     for cat, txt in _m.A.items():
         C[cat] += L(txt)
 BR["Büro & Schule"] = BR.pop("Sonstiges")
@@ -267,6 +267,11 @@ SYN += L("Kohlrübe=Steckrübe;Glühbirnen=Glühbirne E27;Nähzeug=Nähset;Zolls
 for cat, it in EXTRA: C[cat].append(it)
 for cat, s_ in BR.items(): C[cat] += L(s_)
 
+# Bereinigung nach der Durchsicht: doppelt geführte oder falsch einsortierte Artikel fallen weg
+# (Milchschnitte steht im Kühlregal, Medjool-Datteln beim Obst als „Datteln Medjool“, Helva heißt hier Halva).
+DROP = {"Milchschnitten", "Medjool-Datteln", "Helva"}
+SYN += L("Helva=Halva;Medjool-Datteln=Datteln Medjool;Milchschnitten=Milchschnitte")
+for _c in C: C[_c] = [x for x in C[_c] if x not in DROP]
 seen, out, dups = {}, {k: [] for k in C}, []
 for cat, items in C.items():
     for it in items:

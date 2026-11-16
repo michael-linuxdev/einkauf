@@ -8,11 +8,11 @@ Statische Seite ohne Backend, als PWA installierbar und ohne Netz nutzbar. Daten
 
 Von Hand bearbeitet:
 
-- `index.html` – Gerüst der Seite, Plus- und Haken-Symbol, 17 eigene farbige Zeichnungen als Symbole `x-<name>` (Brötchen, Becher, Wurst, Tüte, Folienrolle, Windel, Chipstüte, Soßenflasche, Ölflasche, Waschmittel, Sprühflasche, Erdsack, Gefrierbeutel, Marmeladenglas, Kondom, Ohrenstöpsel, Inhalator).
+- `index.html` – Gerüst der Seite, Plus- und Haken-Symbol, 63 eigene farbige Zeichnungen als Symbole `x-<name>` (Obst, Gemüse und Nüsse ohne passendes Emoji wie Himbeere, Pflaume, Blumenkohl, Lauch, Walnuss; dazu Haushalt und Baumarkt wie Zahnpasta, Taschentücher, Farbeimer, Klebeband, Gießkanne).
 - `app.css` – gesamtes Aussehen, heller und dunkler Modus, Einbindung der Schriften.
 - `app.js` – gesamte Logik: Abteilungen und Wortregeln (`META`), Bildzeichen-Tabelle (`EMO`), Zustand, Liste, Suche mit Mengen-Erkennung, Blätter, Menü (Teilen, Vorlagen, Reihenfolge im Laden). Der Block am Ende braucht einen echten Browser: Bildschirm anlassen, Installationshinweis, Service Worker mit Update-Hinweis.
 - `manifest.webmanifest`, `icons/` – PWA-Angaben und App-Symbole (`icons/icon.svg` ist die Vorlage der PNGs).
-- `src/gen.py` mit `src/add1.py` bis `add3.py` – Katalog-Generator: Artikellisten je Abteilung, Marken, Alltagsartikel (Rangfolge), Synonyme.
+- `src/gen.py` mit `src/add1.py` bis `add4.py` – Katalog-Generator: Artikellisten je Abteilung, Marken, Alltagsartikel (Rangfolge), Synonyme. `add4.py` ist die jüngste Ergänzung; `DROP` in `gen.py` nimmt einzelne Artikel wieder heraus.
 - `src/sw.js` – Vorlage des Service Workers.
 
 Erzeugt, nicht von Hand bearbeiten:
@@ -22,7 +22,7 @@ Erzeugt, nicht von Hand bearbeiten:
 
 Fremdes Material:
 
-- `emoji/` – 285 Noto-Emoji-Grafiken als SVG, mit SVGO verkleinert (Apache-Lizenz 2.0; Herkunft, Änderungen und Lizenz in `emoji/LIZENZ.md`). Dateiname = Codepunkte in Hex ohne FE0F, z. B. `1f34e.svg`.
+- `emoji/` – 315 Noto-Emoji-Grafiken als SVG, mit SVGO verkleinert (Apache-Lizenz 2.0; Herkunft, Änderungen und Lizenz in `emoji/LIZENZ.md`). Dateiname = Codepunkte in Hex ohne FE0F, z. B. `1f34e.svg`.
 - `fonts/` – Figtree und Bricolage Grotesque als variable WOFF2-Dateien (SIL Open Font License, siehe `fonts/LIZENZ.md`).
 
 Werkzeuge:
@@ -36,8 +36,8 @@ Werkzeuge:
 ## Stand der Funktionen
 
 - Mehrere Listen, anlegen, umbenennen, löschen.
-- Suche über 8550 Artikel in 19 Abteilungen, 246 Synonyme, Rangfolge mit rund 180 Alltagsartikeln, 339 Markennamen (nur Namen, keine Logos).
-- Dreispaltiges Kachelraster; tippen hakt ab, lange drücken öffnet Menge und Abteilung.
+- Suche über 10.988 Artikel in 19 Abteilungen, 249 Synonyme, Rangfolge mit rund 180 Alltagsartikeln, 339 Markennamen (nur Namen, keine Logos).
+- Dreispaltiges Kachelraster; tippen hakt ab, lange drücken öffnet Name, Menge und Abteilung.
 - Rückgängig für Abhaken, Löschen und Hinzufügen.
 - Eigene Artikel bekommen Abteilung und Bildzeichen über Wortregeln.
 - Heller und dunkler Modus.
@@ -61,7 +61,7 @@ Werkzeuge:
 - Raster durchgehend 3 Spalten, nach Abteilung sortiert, ohne Zwischenüberschriften.
 - Kein Hinweistext am Seitenende.
 - Bildzeichen: Noto-Emoji-Grafiken als SVG-Dateien aus `emoji/`, nicht aus einer Schrift; nur wenn eine Datei nicht lädt, springt die Emoji-Schrift des Geräts ein. Keine Kombinationen aus Grundform und Zusatzzeichen.
-- Lücken im Set werden durch eigene Zeichnungen im gleichen Look gefüllt.
+- Lücken im Set werden durch eigene Zeichnungen im gleichen Look gefüllt. Ein Bildzeichen soll den Artikel zeigen, nicht einen ähnlichen: Himbeeren zeigen keine Blaubeere, Pflaumen keinen Pfirsich. Gibt es kein passendes Noto-Emoji, wird gezeichnet.
 - Nichts wird von fremden Servern geladen (keine Google-Schriften, kein CDN).
 - Suche: Treffer am Namens- oder Wortanfang und am Wortende („milch“ in „Vollmilch“) stehen vor Treffern mitten im Wort („ap“ in „Rapsöl“); Alltagsartikel und oft Gekauftes rücken nur innerhalb dieser Gruppen nach vorn.
 - Offline: erst der Cache, dann das Netz. Eine neue Version wird im Hintergrund geladen und wartet, bis man „Jetzt laden“ tippt; von selbst lädt die App nie neu.
@@ -76,9 +76,9 @@ Werkzeuge:
 
 1. **Live-Abgleich.** Teilen per Link gibt es; gewünscht sind darüber hinaus geteilte Listen in Echtzeit ohne Konto, per Link oder Code. Backend noch nicht entschieden (Firestore: Offline-Abgleich eingebaut; Supabase: EU-Region, Offline selbst bauen). Braucht ein Projekt beim gewählten Anbieter.
 2. **Echte Geräte.** Geprüft ist nur im Desktop-Browser und in der Handy-Emulation von Chromium (Touch, langes Drücken, Offline). Auf iPhone und Android noch ausprobieren: langes Drücken, Vibration, Installation zum Startbildschirm, Zoom-Sperre, Bildschirm-an, Teilen-Menü. Die Spracheingabe ist nur mit nachgestellter Erkennung geprüft. Auf dem iPhone öffnet ein geteilter Link Safari, nicht die installierte App; dafür gibt es „Geteilte Liste einfügen“.
-3. **Zuordnung der Bildzeichen.** Alle 8550 Artikel sind einmal vollständig durchgesehen (Liste je Abteilung und Motiv gelesen), rund 420 korrigiert. Offen bleibt, wo es kein passendes Motiv gibt: Viele Artikel teilen sich die Pflegeflasche (Drogerie), den Karton (Haushalt) oder den Werkzeugkasten (Baumarkt).
+3. **Zuordnung der Bildzeichen.** Alle 10.988 Artikel sind durchgesehen, zuletzt mit der Frage, ob das Bild den Artikel selbst zeigt. Dabei sind 46 Motive neu gezeichnet und 30 passendere Noto-Grafiken ergänzt worden. Bewusst beim nächsten Verwandten geblieben sind seltene Exoten (Kaki, Sternfrucht, Drachenfrucht, Guave, Physalis, Litschi zeigen Mango bzw. Blaubeere), Grapefruit und Pomelo (Orange), Zucchini (Gurke), Haselnüsse und Nussmischungen (Kastanie) sowie Sammelmotive wie Pflegeflasche, Karton und Werkzeugkasten.
 4. **Eigene Zeichnungen.** Alle 17 haben Verlauf und Glanzlicht. Neue Zeichnung: Symbol in `index.html` anlegen (24er-Raster, Verlaufs-IDs eindeutig benennen) und in `EMO` als `"#name"` eintragen; der Logiktest prüft, dass das Symbol existiert.
-5. **Katalog.** Ziel waren 10.000 Artikel. Der Katalog ist von Hand zusammengestellt und nicht gegen echte Sortimente geprüft.
+5. **Katalog.** Das Ziel von 10.000 Artikeln ist erreicht; die früher dünnen Abteilungen (Baby, Tier, Sonstiges, Büro, Garten, Kleidung) sind aufgefüllt. Geprüft ist der Katalog auf Dubletten und Schreibvarianten. Gegen ein echtes Sortiment ist er weiterhin nicht geprüft: Er ist von Hand zusammengestellt, und eine Datenquelle wie Open Food Facts war aus der Arbeitsumgebung nicht erreichbar.
 
 ## Technische Hinweise
 
@@ -91,3 +91,5 @@ Werkzeuge:
 - Der Logiktest läuft ohne `window`; alles, was Browser-Schnittstellen braucht, steht deshalb im Block am Ende von `app.js` und ist nur im Browser geprüft.
 - `META` enthält je Abteilung nur noch Farbe und Muster. Die Tiefkühl-Muster nennen fast jedes Lebensmittel und zählen in `guess()` nur, wenn der Name nach Tiefkühlware klingt („TK“, „gefroren“, „Eis“).
 - Mehrere Artikel (`splitItems`): Getrennt wird an Zeilenumbruch, Semikolon und Komma, nicht an einem Komma zwischen Ziffern („3,5 %“). Gesprochenes wird von links in die längsten Katalognamen zerlegt; geht das nicht auf, bleibt der Text ganz und wird nur an „und“ getrennt.
+- Katalog pflegen: Nach Ergänzungen zeigt die erste Zeile von `gen.py` unter `dups` Artikel, die schon vorhanden waren. Zusätzlich auf Beinahe-Doppelte prüfen (Schreibweise mit und ohne Bindestrich, Einzahl und Mehrzahl) und darauf, ob ein neuer Artikel ein bestehendes Synonym verdrängt (dann fällt das Synonym still weg). Danach die neuen Artikel mit ihren Bildzeichen gegenlesen.
+
