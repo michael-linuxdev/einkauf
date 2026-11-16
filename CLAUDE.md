@@ -8,7 +8,7 @@ Statische Seite ohne Backend, als PWA installierbar und ohne Netz nutzbar. Daten
 
 Von Hand bearbeitet:
 
-- `index.html` – Gerüst der Seite, Plus- und Haken-Symbol, 17 eigene farbige Zeichnungen als Symbole `x-<name>` (Brötchen, Becher, Wurst, Tüte, Folienrolle, Windel, Chipstüte, Soßenflasche, Ölflasche, Waschmittel, Sprühflasche, Erdsack, Gefrierbeutel, Marmeladenglas, Kondom, Ohrenstöpsel, Inhalator).
+- `index.html` – Gerüst der Seite, Plus- und Haken-Symbol, 63 eigene farbige Zeichnungen als Symbole `x-<name>` (Obst, Gemüse und Nüsse ohne passendes Emoji wie Himbeere, Pflaume, Blumenkohl, Lauch, Walnuss; dazu Haushalt und Baumarkt wie Zahnpasta, Taschentücher, Farbeimer, Klebeband, Gießkanne).
 - `app.css` – gesamtes Aussehen, heller und dunkler Modus, Einbindung der Schriften.
 - `app.js` – gesamte Logik: Abteilungen und Wortregeln (`META`), Bildzeichen-Tabelle (`EMO`), Zustand, Liste, Suche mit Mengen-Erkennung, Blätter, Menü (Teilen, Vorlagen, Reihenfolge im Laden). Der Block am Ende braucht einen echten Browser: Bildschirm anlassen, Installationshinweis, Service Worker mit Update-Hinweis.
 - `manifest.webmanifest`, `icons/` – PWA-Angaben und App-Symbole (`icons/icon.svg` ist die Vorlage der PNGs).
@@ -22,7 +22,7 @@ Erzeugt, nicht von Hand bearbeiten:
 
 Fremdes Material:
 
-- `emoji/` – 285 Noto-Emoji-Grafiken als SVG, mit SVGO verkleinert (Apache-Lizenz 2.0; Herkunft, Änderungen und Lizenz in `emoji/LIZENZ.md`). Dateiname = Codepunkte in Hex ohne FE0F, z. B. `1f34e.svg`.
+- `emoji/` – 315 Noto-Emoji-Grafiken als SVG, mit SVGO verkleinert (Apache-Lizenz 2.0; Herkunft, Änderungen und Lizenz in `emoji/LIZENZ.md`). Dateiname = Codepunkte in Hex ohne FE0F, z. B. `1f34e.svg`.
 - `fonts/` – Figtree und Bricolage Grotesque als variable WOFF2-Dateien (SIL Open Font License, siehe `fonts/LIZENZ.md`).
 
 Werkzeuge:
@@ -61,7 +61,7 @@ Werkzeuge:
 - Raster durchgehend 3 Spalten, nach Abteilung sortiert, ohne Zwischenüberschriften.
 - Kein Hinweistext am Seitenende.
 - Bildzeichen: Noto-Emoji-Grafiken als SVG-Dateien aus `emoji/`, nicht aus einer Schrift; nur wenn eine Datei nicht lädt, springt die Emoji-Schrift des Geräts ein. Keine Kombinationen aus Grundform und Zusatzzeichen.
-- Lücken im Set werden durch eigene Zeichnungen im gleichen Look gefüllt.
+- Lücken im Set werden durch eigene Zeichnungen im gleichen Look gefüllt. Ein Bildzeichen soll den Artikel zeigen, nicht einen ähnlichen: Himbeeren zeigen keine Blaubeere, Pflaumen keinen Pfirsich. Gibt es kein passendes Noto-Emoji, wird gezeichnet.
 - Nichts wird von fremden Servern geladen (keine Google-Schriften, kein CDN).
 - Suche: Treffer am Namens- oder Wortanfang und am Wortende („milch“ in „Vollmilch“) stehen vor Treffern mitten im Wort („ap“ in „Rapsöl“); Alltagsartikel und oft Gekauftes rücken nur innerhalb dieser Gruppen nach vorn.
 - Offline: erst der Cache, dann das Netz. Eine neue Version wird im Hintergrund geladen und wartet, bis man „Jetzt laden“ tippt; von selbst lädt die App nie neu.
@@ -76,7 +76,7 @@ Werkzeuge:
 
 1. **Live-Abgleich.** Teilen per Link gibt es; gewünscht sind darüber hinaus geteilte Listen in Echtzeit ohne Konto, per Link oder Code. Backend noch nicht entschieden (Firestore: Offline-Abgleich eingebaut; Supabase: EU-Region, Offline selbst bauen). Braucht ein Projekt beim gewählten Anbieter.
 2. **Echte Geräte.** Geprüft ist nur im Desktop-Browser und in der Handy-Emulation von Chromium (Touch, langes Drücken, Offline). Auf iPhone und Android noch ausprobieren: langes Drücken, Vibration, Installation zum Startbildschirm, Zoom-Sperre, Bildschirm-an, Teilen-Menü. Die Spracheingabe ist nur mit nachgestellter Erkennung geprüft. Auf dem iPhone öffnet ein geteilter Link Safari, nicht die installierte App; dafür gibt es „Geteilte Liste einfügen“.
-3. **Zuordnung der Bildzeichen.** Alle 10.988 Artikel sind einmal vollständig durchgesehen (Liste je Abteilung und Motiv gelesen), rund 750 korrigiert. Offen bleibt, wo es kein passendes Motiv gibt: Viele Artikel teilen sich die Pflegeflasche (Drogerie), den Karton (Haushalt) oder den Werkzeugkasten (Baumarkt).
+3. **Zuordnung der Bildzeichen.** Alle 10.988 Artikel sind durchgesehen, zuletzt mit der Frage, ob das Bild den Artikel selbst zeigt. Dabei sind 46 Motive neu gezeichnet und 30 passendere Noto-Grafiken ergänzt worden. Bewusst beim nächsten Verwandten geblieben sind seltene Exoten (Kaki, Sternfrucht, Drachenfrucht, Guave, Physalis, Litschi zeigen Mango bzw. Blaubeere), Grapefruit und Pomelo (Orange), Zucchini (Gurke), Haselnüsse und Nussmischungen (Kastanie) sowie Sammelmotive wie Pflegeflasche, Karton und Werkzeugkasten.
 4. **Eigene Zeichnungen.** Alle 17 haben Verlauf und Glanzlicht. Neue Zeichnung: Symbol in `index.html` anlegen (24er-Raster, Verlaufs-IDs eindeutig benennen) und in `EMO` als `"#name"` eintragen; der Logiktest prüft, dass das Symbol existiert.
 5. **Katalog.** Das Ziel von 10.000 Artikeln ist erreicht; die früher dünnen Abteilungen (Baby, Tier, Sonstiges, Büro, Garten, Kleidung) sind aufgefüllt. Geprüft ist der Katalog auf Dubletten und Schreibvarianten. Gegen ein echtes Sortiment ist er weiterhin nicht geprüft: Er ist von Hand zusammengestellt, und eine Datenquelle wie Open Food Facts war aus der Arbeitsumgebung nicht erreichbar.
 

@@ -16,7 +16,7 @@ Die Apache-Lizenz 2.0 erlaubt Nutzung, Weitergabe und Veränderung, auch kommerz
 Die Dateien sind gegenüber dem Original verändert:
 
 - umbenannt: aus `emoji_u1f34e.svg` wird `1f34e.svg`
-- mit SVGO 4.1.0 verkleinert (Einstellungen in `tools/svgo.config.js`): Kommentare, Editor-Angaben und überflüssige Genauigkeit entfernt, IDs je Datei mit Präfix versehen. Zusammen 1,0 MB statt 2,3 MB.
+- mit SVGO 4.1.0 verkleinert (Einstellungen in `tools/svgo.config.js`): Kommentare, Editor-Angaben und überflüssige Genauigkeit entfernt, IDs je Datei mit Präfix versehen. Der Ordner wiegt danach rund 1,3 MB statt unverkleinert etwa 2,7 MB.
 
 Das Aussehen ist gleich geblieben; geprüft durch Bildvergleich aller Dateien mit dem Original bei 128 px.
 

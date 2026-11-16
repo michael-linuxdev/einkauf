@@ -16,9 +16,10 @@ const distinct = new Set(T.icons).size;
 console.log(`${T.names.length} Artikel, ${T.CATS.length} Abteilungen, ${Object.keys(T.synBy).length} Synonyme, ${distinct} verschiedene Bildzeichen`);
 const erwartet = { "Äpfel": "🍎", "Vollmilch": "🥛", "Brötchen": "#bun", "Spaghetti": "🍝", "Hammer": "🔨",
   "Thunfisch in Öl": "🐟", "Frischhaltefolie": "#roll", "Windeln": "#diaper", "Backpapier": "#roll", "Passierte Tomaten": "🥫", "Mangold": "🥬", "Tomatensaft": "🧃",
-  "Schneebesen": "🥄", "Fleischklopfer": "🥄", "Pastis": "🥃", "Preiselbeeren Glas": "🫙", "Tapete": "🧰", "Möhrenkuchen": "🍰", "Ventilator": "🌬️", "Tampons normal": "🩸",
+  "Himbeeren": "#raspberry", "Heidelbeeren": "🫐", "Brombeeren": "#blackberry", "Pflaumen": "#plum", "Limetten": "#lime", "Blumenkohl": "#cauliflower", "Lauch": "#leek", "Knoblauch": "🧄", "Schnittlauch frisch": "🌿", "TK-Erbsen": "🫛", "Pizza Spinat": "🍕", "Datteltomaten": "🍅", "Zahnpasta": "#toothpaste", "Wandfarbe weiß": "#paintcan", "Paketaufkleber": "📦", "Kaffirlimettenblätter": "🌿",
+  "Schneebesen": "🥄", "Fleischklopfer": "🥄", "Pastis": "🥃", "Preiselbeeren Glas": "#redberry", "Reis": "🍚", "Tapete": "🧰", "Möhrenkuchen": "🍰", "Ventilator": "🌬️", "Tampons normal": "🩸",
   "Senf": "#sauce", "Rapsöl": "#oil", "Chips": "#chips", "Waschmittel": "#detergent", "Glasreiniger": "#spray", "Blumenerde": "#soil", "Gefrierbeutel 1 l": "#zipbag", "Marmelade": "#jam", "Kondome": "#condom", "Ohrenstöpsel": "#earplug", "Inhalator": "#inhaler", "Insektenspray": "🪰",
-  "Flammkuchen Lachs": "🍕", "Lammkeule TK": "🥩", "Kalklöser Gel": "#detergent", "Zigarillos": "🚬", "Taschenbuch": "📚", "Malbuch": "🖍️", "Kinderbuch": "📚", "Aromat": "#bag", "Geschirrspültabs 30er": "#detergent" };
+  "Flammkuchen Lachs": "🍕", "Lammkeule TK": "🥩", "Kalklöser Gel": "#detergent", "Zigarillos": "🚬", "Taschenbuch": "📚", "Malbuch": "🖍️", "Kinderbuch": "📚", "Aromat": "#bag", "Geschirrspültabs 30er": "#detergent", "Ketchup": "#ketchup", "Gummibärchen": "#gummybear" };
 let ok = true;
 for (const [n, e] of Object.entries(erwartet)) { const i = T.byNorm[T.norm(n)]; if (i === undefined || T.icons[i] !== e) { ok = false; console.log("FEHLER", n, T.icons[i]); } }
 // Zu jedem benutzten Bildzeichen muss die Grafik in emoji/ liegen.

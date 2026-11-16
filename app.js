@@ -201,6 +201,8 @@ function ruleHit(cat, n) {
    (Noto Emoji; nach Änderungen an der Tabelle tools/bildzeichen.py laufen lassen). */
 var EMO = {
   "Obst & Gemüse": ["🥬", [
+    /* Motive, die das Bild genau treffen sollen (eigene Zeichnungen und passendere Noto-Grafiken) */
+    ["sprossen", "🌿"], ["himbeer", "#raspberry"], ["brombeer|maulbeer", "#blackberry"], ["stachelbeer", "#gooseberry"], ["schwarze johannisbeer|holunder|aronia", "🫐"], ["johannisbeer|jostabeer|preiselbeer|cranberr|hagebutte|sanddorn|berberitze|gojibeer", "#redberry"], ["limette(?!nbl)", "#lime"], ["pflaume(?!ntomate)|zwetschge|reneklode|mirabelle", "#plum"], ["aprikose", "#apricot"], ["granatapfel", "#pomegranate"], ["papaya", "#papaya"], ["maracuja|passionsfrucht", "#passionfruit"], ["(^|[\\s-])feige", "#fig"], ["dattel(?!tomate)", "#date"], ["rosine|sultanine|korinthe", "#raisins"], ["walnuss|walnusse|pekan", "#walnut"], ["mandel", "#almond"], ["cashew", "#cashew"], ["pistazie", "#pistachio"], ["radieschen", "#radish"], ["rettich|pastinake|petersilienwurzel|schwarzwurzel|eiszapfen", "#parsnip"], ["(^|[\\s-])bete|steckrube|kohlrube|rubchen|butterrube", "🫜"], ["ingwer|kurkuma|galgant", "🫚"], ["rotkohl", "#redcabbage"], ["weisskohl|spitzkohl|wirsing", "#cabbage"], ["kohlrabi", "#kohlrabi"], ["spargel weiss|bruchspargel|spargel violett", "#asparagusw"], ["spargel", "#asparagus"], ["fenchel", "#fennel"], ["artischocke", "#artichoke"], ["rhabarber", "#rhubarb"], ["(^|[\\s-])lauch|porree|fruhlingszwiebel", "#leek"], ["blumenkohl", "#cauliflower"], ["rosenkohl|sprouts", "#sprouts"], ["knollensellerie|sellerieknolle", "#celeriac"], ["erbse|zuckerschote|kaiserschote|edamame|grune bohnen|stangenbohnen|buschbohnen|prinzessbohnen|bohnen grun|wachsbohnen", "🫛"], ["kopfsalat|eisbergsalat|romana|feldsalat|eichblatt|pflucksalat|salatherzen|salatmix|endivie|lollo|batavia|babyleaf|salat im topf|^salat$", "🥬"],
     ["satsuma", "🍊"], ["^cranberrys$", "🫐"], ["pitahaya|cherimoya", "🥭"], ["paprika orange", "🫑"],
     ["cranberrys frisch", "🫐"], ["wurzelspinat", "🥬"], ["kaktusfeige|jackfruit", "🥭"],
     ["granny", "🍏"], ["pilz|champignon|pfifferling|seitling|shiitake|portobello|enoki|shimeji|morchel|truffel|rohrling", "🍄"], ["tomate", "🍅"],
@@ -226,6 +228,8 @@ var EMO = {
     ["schnecke", "🍰"], ["cookie|macarons|florentiner|nussecken|schweineohren|amerikaner", "🍪"],
     ["kuchen|stollen|strudel|schnecke|tasche|streusel|brownie|biskuit|schecke|donauwelle|bienenstich|eclair|windbeutel|plunder|boden|zopf|kranz|baklava|cannoli|churros|pastel|kalter hund|petit|keulchen|puddingbrezel|osterbrot|weckmann", "🍰"]]],
   "Milch, Käse & Eier": ["🥛", [
+    /* Motive, die das Bild genau treffen sollen (eigene Zeichnungen und passendere Noto-Grafiken) */
+    ["falafel", "🧆"],
     ["chester|leicester|parmigiano|bufala|harzer|scheibletten|sandwichscheiben", "🧀"], ["zaziki", "#cup"], ["taboule", "🥗"], ["bratfett", "🧈"], ["soleier", "🥚"], ["lasagneblatter", "🍝"], ["flammkuchenboden|quark-ol-teig", "#bag"],
     ["ostereier", "🥚"], ["kichererbsen", "🌱"], ["ghanoush|muhammara|tirokafteri", "#cup"], ["pingui|milchschnitte", "🍫"],
     ["kase|gouda|edamer|emmentaler|tilsiter|maasdamer|appenzeller|gruyere|cheddar|parmesan|grana|pecorino|manchego|mozzarella|burrata|feta|halloumi|camembert|brie\\b|gorgonzola|roquefort|limburger|romadur|obazda|provolone|scamorza|taleggio|fontina|havarti|esrom|jarlsberg|paneer|ricotta|mascarpone|babybel|leerdammer|geramont|philadelphia|exquisa|bresso|almette|kiri|raclette|fondue|comte|reblochon|munster|chaumes|cambozola|bavaria blu|stilton|danablu|morbier|vacherin|old amsterdam|mimolette|quargel|weisslacker|tete de moine", "🧀"],
@@ -236,6 +240,8 @@ var EMO = {
     ["maultaschen|knodel|klosse|schupfnudeln|germknodel|dampfnudeln", "🥟"], ["nudeln|tortellini|ravioli|gnocchi|spatzle|pasta|pesto", "🍝"], ["suppe", "🍲"], ["salat", "🥗"],
     ["sushi", "🍣"], ["sandwich|wrap", "🥪"], ["oliven|antipasti", "🫒"], ["pizzateig|flammkuchenteig|teig|hefe", "#bag"], ["kaiserschmarrn|reibekuchen", "🥞"]]],
   "Fleisch, Wurst & Fisch": ["🥩", [
+    /* Motive, die das Bild genau treffen sollen (eigene Zeichnungen und passendere Noto-Grafiken) */
+    ["gyros|doner|kebab", "🥙"],
     ["krainer|kabanos", "#sausage"], ["heilbutt", "🐟"], ["prawns", "🦐"],
     ["sushi|sashimi", "🍣"], ["garnele|krabbe|scampi|gambas|shrimp", "🦐"], ["krebs|hummer|langustinen|kaisergranat", "🦞"], ["muschel|auster", "🦪"], ["tintenfisch|calamari|oktopus|pulpo|sepia", "🦑"],
     ["schinken|prosciutto|coppa|lardo|guanciale|pastrami|haxe|eisbein|keule|schaufele", "🍖"], ["speck|bacon|pancetta", "🥓"], ["(^|[\\s-])burger(?!meister)|lachsburger|patties", "🍔"],
@@ -243,6 +249,8 @@ var EMO = {
     ["wurst|salami|wiener|knacker|krakauer|cabanossi|debreziner|landjager|beisser|mettenden|chorizo|fuet|griller|bifi|lyoner|mortadella|salsiccia|merguez|sucuk|regensburger|braunschweiger|gottinger|pinkel|stracke|feldkieker|rauchenden|aufschnitt|leberkase|fleischkase|sulze|presskopf|saumagen", "#sausage"],
     ["hahnchen|huhn|huhner|pute|ente|gans|ganse|geflugel|wachtel|chicken|kuken|fasan", "🍗"], ["spiess(?!braten)|schaschlik|souvlaki|gyros|doner|kebab", "🍢"]]],
   "Tiefkühl": ["❄️", [
+    /* Motive, die das Bild genau treffen sollen (eigene Zeichnungen und passendere Noto-Grafiken) */
+    ["^(bio-)?tk-.*himbeer", "#raspberry"], ["^(bio-)?tk-.*brombeer", "#blackberry"], ["^(bio-)?tk-.*stachelbeer", "#gooseberry"], ["^(bio-)?tk-.*(johannisbeer|preiselbeer|cranberr)", "#redberry"], ["^(bio-)?tk-.*(pflaume|zwetschge)", "#plum"], ["^(bio-)?tk-.*aprikose", "#apricot"], ["^(bio-)?tk-.*(krauter|petersilie|schnittlauch|dill|basilikum|barlauch|koriander|zitronengras|suppengrun)", "🌿"], ["^(bio-)?tk-.*knoblauch", "🧄"], ["^(bio-)?tk-.*(erbse|bohnen|zuckerschote|edamame)", "🫛"], ["^(bio-)?tk-.*mais", "🌽"], ["^(bio-)?tk-.*mohre", "🥕"], ["^(bio-)?tk-.*(spinat|grunkohl|wirsing)", "🥬"], ["^(bio-)?tk-.*kurbis", "🎃"], ["^(bio-)?tk-.*paprika", "🫑"], ["^(bio-)?tk-.*(zwiebel|schalotte)", "🧅"], ["^(bio-)?tk-.*(pilz|champignon|pfifferling)", "🍄"], ["^(bio-)?tk-.*rosenkohl", "#sprouts"], ["^(bio-)?tk-.*blumenkohl$", "#cauliflower"], ["^(bio-)?tk-.*rotkohl", "#redcabbage"], ["^(bio-)?tk-.*spitzkohl", "#cabbage"], ["^(bio-)?tk-.*kohlrabi", "#kohlrabi"], ["^(bio-)?tk-.*spargel", "#asparagus"], ["^(bio-)?tk-.*(lauch|porree)", "#leek"], ["^(bio-)?tk-.*chili", "🌶️"], ["^(bio-)?tk-.*ingwer", "🫚"], ["^(bio-)?tk-.*rote bete", "🫜"], ["^(bio-)?tk-.*avocado", "🥑"], ["falafel", "🧆"],
     ["frites|golden longs", "🍟"], ["lahmacun|\\bpide|piadina", "🍕"], ["forelle|dorade", "🐟"], ["shrimps", "🦐"], ["fleischballchen|kofte|sauerbraten|\\blamm", "🥩"], ["risotto", "🍛"], ["kohlroulade|kartoffelsuppe", "🍲"], ["blini|quarkkeulchen|reibekuchen|eierkuchen", "🥞"], ["apfeltaschen", "🍰"], ["calippo", "🍦"], ["tropenfruchte|acai|zwetschgen(?!knodel)", "🫐"],
     ["lasagne|gnocchi", "🍝"], ["sushi", "🍣"], ["minipizzen", "🍕"], ["borek|quiche", "🥧"], ["samosa", "🥟"], ["moussaka|gratin|bauernfruhstuck", "🍲"], ["krauterbutter", "🧈"], ["apfelkuchle", "🍰"], ["cranberr", "🫐"],
     ["eiswurfel|crushed", "🧊"], ["pizza|flammkuchen|piccolinis|ristorante|ofenfrische|pinsa|calzone", "🍕"],
@@ -257,6 +265,8 @@ var EMO = {
     ["brotchen", "#bun"], ["baguette|brot|ciabatta|naan", "🥖"],
     ["tk-|gemuse|spinat|vegan|veggie|falafel", "🥦"], ["gyros|doner|frikadellen|kottbullar|hackballchen|cevapcici|bifteki|schnitzel|cordon|hack|pulled|wild|kaninchen|rehkeule|hirsch", "🥩"]]],
   "Nudeln, Reis & Konserven": ["🥫", [
+    /* Motive, die das Bild genau treffen sollen (eigene Zeichnungen und passendere Noto-Grafiken) */
+    ["pflaume(?!nsosse)", "#plum"], ["aprikose", "#apricot"], ["preiselbeer", "#redberry"], ["stachelbeer", "#gooseberry"], ["ketchup", "#ketchup"], ["mayonnaise|mayo\\b|remoulade|miracel|salatcreme", "#mayo"], ["rotkohl", "#redcabbage"], ["spargel(?!creme|suppe)", "#asparagusw"], ["^erbsen (dose|glas|sehr fein|und)|junge erbsen|grune bohnen|brechbohnen|prinzessbohnen|bohnen grun|wachsbohnen|kaiserschoten", "🫛"], ["gluckskekse", "🥠"], ["falafel", "🧆"], ["rote bete|rote-bete", "🫜"], ["feigen", "#fig"], ["datteln", "#date"],
     ["schleifchen|eierteigwaren", "🍝"], ["ebly", "🌾"], ["miracel|vinaigrette", "#sauce"], ["tabasco", "🌶️"], ["tahin", "🫙"], ["pindjur|ljutenica", "🫑"], ["artischocke", "🫙"], ["knoblauch in", "🧄"], ["fischklosse", "🐟"],
     ["gurken", "🥒"], ["getrocknete tomaten", "🍅"], ["sossenbinder", "#bag"], ["krabbenchips", "#chips"], ["zitronensaft|limettensaft", "🍋"], ["lokum|helva|halva", "🍬"], ["crostini|taralli|sushki|prjaniki", "🍪"], ["preiselbeer", "🫙"], ["medjool", "🌰"],
     ["thunfisch|sardine|sardelle|makrele|hering|lachs|dorsch|sprotten|saupiquet|hawesta|appel|muscheln\\b|krabben(?!chips)", "🐟"], ["kapern|rotkohl|meerrettich|weinblatter|pesto", "🫙"],
@@ -274,6 +284,8 @@ var EMO = {
     ["glas|eingelegt|pesto|aufstrich|chutney|kimchi|paste|mus\\b|mark\\b|kompott|meerrettich|sauerkraut|kraut|dip|tahini|creme|antipasti|kapern|ghee|smetana|tworog|salat(?!wurz|kerne)", "🫙"],
     ["fix\\b|binder|pulver|wurfel|panko|mehl|chips|rostzwiebeln|kit\\b|blatter|papier|glucks|kerne|wurzmischung|tute|mix\\b|flocken|zucker|hefe|fett", "#bag"]]],
   "Backen & Gewürze": ["#bag", [
+    /* Motive, die das Bild genau treffen sollen (eigene Zeichnungen und passendere Noto-Grafiken) */
+    ["^mandel", "#almond"], ["^walnuss|^walnusse|^pekan", "#walnut"], ["^pistazie", "#pistachio"], ["^cashew", "#cashew"], ["rosinen|sultaninen|korinthen", "#raisins"],
     ["backmischung", "#bag"], ["dekorbluten|marzipanrosen", "🍬"], ["aromat", "#bag"], ["aroma", "🫙"], ["muskat", "🧂"], ["zitronengras|zitronenthymian", "🌿"], ["zitronenpfeffer|zitronensalz", "🧂"], ["formchen|tortenspitze", "🧁"], ["mokkabohnen", "🍫"],
     ["kerzen", "🕯️"], ["gotterspeise|tortenguss|gelatine", "🍮"], ["puderzucker|zitronensaure", "#bag"], ["lebensmittelfarbe|dekostifte", "🎨"], ["honig|sirup|dicksaft|goldsaft", "🍯"],
     ["kuverture|schoko|kakao|nougat|glasur|callets|cake melts", "🍫"], ["kokos", "🥥"], ["erdnuss|erdnusse", "🥜"],
@@ -293,6 +305,8 @@ var EMO = {
     ["nutella|nudossi|nusspli|schoko|nougat", "🍫"],
     ["marmelade|konfiture|gelee|fruchtaufstrich|pflaumenmus|zwetschgenmus|lemon curd|mark\\b", "#jam"]]],
   "Süßes & Snacks": ["🍬", [
+    /* Motive, die das Bild genau treffen sollen (eigene Zeichnungen und passendere Noto-Grafiken) */
+    ["^gummibar|^fruchtgummi|^weingummi|^gummi-|haribo", "#gummybear"], ["^cashew", "#cashew"], ["^pistazien", "#pistachio"], ["^mandeln|^rauchmandeln|gebrannte mandeln", "#almond"], ["^walnusse|^pekannusse", "#walnut"],
     ["^schokolade|schokokringel|nougatstangen|geleeringe|schoko-sticks", "🍫"], ["mini-muffins|mini-brownies", "🍪"], ["pom-bar|kracker|puffmais", "#chips"], ["nusskernmischung", "🌰"], ["butterringe", "🍪"],
     ["popcorn", "🍿"], ["lutscher|zuckerstange|schleckmuschel", "🍭"], ["salzstangen|brezel|laugen", "🥨"],
     ["keks|cookie|waffel|biskuit|spekulatius|lebkuchen|pfeffernusse|pfefferkuchen|zimtsterne|kipferl|printen|baumkuchen|amarettini|cantuccini|shortbread|soft cake|kuchen|russisch brot|geback|milchschnitte|prinzenrolle|oreo|pick up|makronen|filinchen|knacke|hanuta|knoppers|platzchen|heidesand|hippen|engelsaugen|husarenkrapfen|spitzbuben|barentatzen|magenbrot|fruchtebrot|stollen", "🍪"],
@@ -312,6 +326,8 @@ var EMO = {
     ["\\bgin\\b|wodka|\\brum\\b|whisk|tequila|mezcal|pisco|likor|schnaps|korn\\b|brand\\b|geist\\b|obstler|grappa|ouzo|raki|aquavit|amaretto|sambuca|absinth|cachaca|curacao|triple sec|maraschino|barenfang|bitter|fernet|amaro|pastis|genever|cognac|armagnac|calvados|brandy|bourbon|scotch|limoncello|jagermeister|baileys|ramazzotti|berentzen|angostura|spirituose|saurer apfel|rumtopf|kirschwasser|zwetschgenwasser|williamsbirne", "🥃"],
     ["wein|riesling|thurgau|silvaner|burgunder|chardonnay|sauvignon|pinot|traminer|dornfelder|merlot|shiraz|tempranillo|rioja|chianti|primitivo|montepulciano|bordeaux|lambrusco|sherry|wermut|federweisser|veltliner|zweigelt|blaufrankisch|lemberger|trollinger|portugieser|regent|malbec|syrah|zinfandel|sangiovese|barolo|barbera|valpolicella|amarone|avola|rhone|beaujolais|chablis|sancerre|elbling|kerner|bacchus|scheurebe|gutedel|rivaner|muskateller|verdejo|albarino|vinho|soave|lugana|vermentino|rose\\b|weissherbst|rotling|blanc de|spatlese|auslese|kabinett|madeira|marsala|retsina|jagertee|met\\b|sake", "🍷"]]],
   "Drogerie & Gesundheit": ["🧴", [
+    /* Motive, die das Bild genau treffen sollen (eigene Zeichnungen und passendere Noto-Grafiken) */
+    ["zahnpasta|zahncreme|zahngel", "#toothpaste"], ["taschentucher", "#tissues"], ["wattestabchen", "#cottonswab"], ["wattepads|wattebausche|wattebällchen|^watte", "#cottonpad"], ["fohn(?!spray)|glatteisen|lockenstab|warmluftburste", "#hairdryer"], ["kamm\\b|haarburste|rundburste|paddle|entwirrburste", "🪮"],
     ["kondom", "#condom"], ["ohrenstopsel", "#earplug"], ["inhalator|inhalierstift", "#inhaler"], ["kosmetiktucher|abschminktucher", "🧻"], ["salbe|serum", "🧴"], ["glatteisen|haarturban", "🎀"], ["binden|slipeinlagen|tampon|menstruation|perioden", "🩸"], ["trimmer", "🪒"], ["feuchtes toilettenpapier|feuchte waschlappen", "🧻"], ["leukoplast", "🩹"], ["dragees", "💊"], ["kulturtasche", "👝"], ["abdeckstift|puderpinsel", "💄"], ["handschuhe", "🧤"], ["inkontinenz|bettschutz", "🧻"], ["mundschutz|ffp2", "😷"], ["pinzette|hornhaut|bimsstein|zehentrenner", "💅"], ["duschhaube", "🚿"],
     ["zahn|aufsteckburste|interdental|mundspulung|mundwasser|munddusche|zungenreiniger|colgate|odol|elmex|aronal|blend-a-med|sensodyne|oral-b|listerine", "🪥"],
     ["rasier|bart|epilier|scherkopf|haarschneider|gillette|wilkinson", "🪒"], ["nagellack|nagel|feile|manikure|unterlack|uberlack", "💅"],
@@ -324,6 +340,8 @@ var EMO = {
     ["kamm|burste|haarband|haarreif|haarspange|haarnadel|haargummi|haarklammer|scrunchie|lockenwickler|haarnetz|duttkissen|haarschere|fohn|glatteisen|lockenstab", "🎀"],
     ["parfum|eau de|duftset", "🌸"], ["kulturbeutel|kosmetiktasche", "👝"], ["waage", "⚖️"]]],
   "Haushalt & Putzen": ["📦", [
+    /* Motive, die das Bild genau treffen sollen (eigene Zeichnungen und passendere Noto-Grafiken) */
+    ["pumpel|saugglocke", "🪠"],
     ["geschirrspul|regeneriersalz|abflussfrei|urinsteinloser|glasschutz|kalkloser", "#detergent"], ["topfreiniger", "🧽"], ["fusselburste|kehrgarnitur", "🧹"], ["gelber sack", "🗑️"], ["mausekoder", "🪤"], ["lederfett", "👞"], ["kuchentucher|haushaltstucher", "🧻"],
     ["kohlenmonoxid", "🔔"], ["tischfeuerwerk", "🎉"], ["lampenol", "🔥"], ["kuhlakku", "🧊"], ["schneebesen|fleischklopfer|presse|stampfer|dosenoffner|eierschneider|nudelholz|pizzaschneider|portionierer|apfelteiler|entkerner|backpinsel|kuchenzange|trichter|wetzstahl", "🥄"], ["schuhloffel", "👞"], ["einmach|schraubglaser|vorratsglaser|gewurzglaser", "🫙"], ["spulmaschinen", "#detergent"], ["insektenspray|wespenspray", "🪰"], ["spray|glasreiniger|badreiniger|kuchenreiniger|allzweckreiniger|kalkreiniger|schimmelentferner|fleckenentferner|fettloser", "#spray"], ["spulburste|fugenburste|handburste|kleiderburste|scheuerburste", "🧹"], ["kaffeefilter|handfilter", "☕"], ["teefilter|tee-ei|teesieb", "🫖"], ["entsafter|zerkleinerer|bereiter|vakuumierer|allesschneider|luftbefeuchter|dampfglatter|wassersprudler", "🔌"],
     ["toilettenpapier|kuchenrolle|servietten|papierhandtucher|zewa|hakle", "🧻"], ["schwamm|schwamme|scheuerschwamm|schmutzradierer|stahlwolle", "🧽"],
@@ -352,12 +370,16 @@ var EMO = {
     ["creme|lotion|shampoo|babyol|babybad|waschgel|puder|bubchen|penaten|sonnencreme", "🧴"], ["feuchttucher|tucher|mullwindeln", "🧻"], ["besteck", "🍴"], ["brotdose", "🍱"], ["trinkflasche|trinklern", "🥤"],
     ["saft", "🧃"], ["tee", "🍵"], ["latzchen", "👶"]]],
   "Tierbedarf": ["🐾", [
+    /* Motive, die das Bild genau treffen sollen (eigene Zeichnungen und passendere Noto-Grafiken) */
+    ["papagei|sittich", "🦜"], ["eichhornchen", "🐿️"],
     ["kratzbaum|kratzbrett|kratzmatte", "🐱"], ["welpen", "🐶"], ["futterglocke|erdnussnetz|sepiaschale", "🐦"], ["mause|ratten|chinchilla|degu|knabberholz", "🐹"], ["legekorn|kuken", "🐔"], ["hufkratzer", "🐴"],
     ["pferd", "🐴"],
     ["katze|kitten|whiskas|felix|sheba|kitekat|catsan", "🐱"], ["knochen|kau|ochsenziemer|schweineohren", "🦴"], ["hund|pedigree|frolic|cesar|chappi|leckerli|trainingssnacks", "🐶"],
     ["wellensittich|kanarien|papagei|vogel|meise|kolbenhirse|streufutter|fettfutter", "🐦"], ["fisch|teich|aquarium|filterwatte", "🐟"], ["kaninchen", "🐰"],
     ["hamster|nager|meerschwein|kleintier|heu|stroh|einstreu|salzleckstein", "🐹"], ["huhner|legemehl", "🐔"], ["pferd", "🐴"], ["igel", "🦔"], ["schildkrote", "🐢"], ["zecke|floh", "🦟"]]],
   "Kleidung & Textilien": ["👕", [
+    /* Motive, die das Bild genau treffen sollen (eigene Zeichnungen und passendere Noto-Grafiken) */
+    ["handtuch|handtucher|duschtuch|badetuch|saunatuch|strandtuch|waschlappen|waschhandschuh", "#towel"], ["warnweste", "🦺"],
     ["slip\\b", "🩲"], ["badelatschen", "🩴"], ["huttenschuhe", "🥿"], ["schlafanzug|teppich", "👕"], ["zackenschere", "✂️"], ["einkaufskorb", "🧺"], ["stoffbeutel|jutebeutel", "🛍️"], ["uhr", "⌚"],
     ["wachstuch|tischdecke", "🍽️"], ["sockenwolle", "🧶"], ["stoffschere", "✂️"],
     ["handtuch|handtucher|duschtuch|badetuch|saunatuch|strandtuch|waschlappen|waschhandschuh|badematte|vorleger|duschmatte", "🛁"], ["strickjacke", "🧥"],
@@ -370,6 +392,8 @@ var EMO = {
     ["kleid|rock\\b|nachthemd", "👗"], ["hose|jeans|leggings|chino", "👖"], ["hemd|bluse|krawatte|fliege|einstecktuch", "👔"], ["jacke|mantel|weste|anzug|poncho|kittel|overall", "🧥"],
     ["tischdecke|laufer|servietten|wachstuch|tischset", "🍽️"]]],
   "Baumarkt & Werkzeug": ["🧰", [
+    /* Motive, die das Bild genau treffen sollen (eigene Zeichnungen und passendere Noto-Grafiken) */
+    ["spruh", "🎨"], ["silikon(?!spray|entferner)|acryl|bauschaum|brunnenschaum|dichtmasse|fugenmasse|kartusche", "#cartridge"], ["pinsel", "🖌️"], ["(^|[^f])kleber|leim\\b|holzleim|kleister", "#glue"], ["wandfarbe|deckenfarbe|fassadenfarbe|abtonfarbe|lack(?!ier|stift|reiniger|politur|entferner)|lasur|grundierung|tiefengrund|haftgrund|sperrgrund|bodenfarbe|betonfarbe|volltonfarbe|latexfarbe|silikatfarbe|kalkfarbe|schimmelfarbe|isolierfarbe|tafelfarbe|rostschutzfarbe|wetterschutzfarbe|vorstreichfarbe|kreidefarbe", "#paintcan"], ["isolierband|gewebeband|malerkrepp|panzertape|klebeband|abdeckband|malerband|montageband|teflonband|kreppband|warnband|absperrband|fugenband|dichtband|dichtungsband", "#tape"], ["wasserhahn|armatur|kugelhahn", "🚰"], ["motorol|getriebeol|kettenol|kriechol", "🛢️"], ["kies|splitt|quarzsand|pflastersteine", "🪨"], ["warnweste", "🦺"],
     ["fugenkratzer", "🧰"], ["lochband|klavierband|gipskartonschrauben|porenbetondubel", "🔩"], ["hammerschlaglack", "🎨"], ["andruckroller", "🖌️"], ["gehwegplatte", "🧱"], ["schlusselrohling", "🔑"],
     ["spanplattenschrauben|holzschrauben|schlossschrauben|sicherungsmutter|schraubensicherung", "🔩"], ["schlosserhammer", "🔨"], ["heizstrahler", "🔥"], ["ventilator", "🌬️"], ["maske|gehorschutz", "⛑️"], ["tapete|tapezier|winkelschleifer|trennscheiben|schruppscheiben|facherscheiben|schleifscheiben|multitool", "🧰"], ["rostloser", "🧴"], ["sicherungsautomat", "🔌"], ["absenkautomatik", "🚽"], ["bremsflussigkeit", "🚗"],
     ["fahrrad|sattel|pedale|lenker|gepacktrager|reflektor|rucklicht|bremszug|schaltzug", "🚲"], ["reifen", "🛞"], ["motorol|getriebeol|benzin|adblue", "⛽"],
@@ -388,6 +412,8 @@ var EMO = {
     ["spiegel", "🪞"], ["regal|mobel|stuhl", "🪑"], ["klingel", "🔔"], ["briefkasten", "📫"], ["karre|roller", "🛒"],
     ["kleber|leim|silikon|acryl|kleister|dicht|schaum|harz|ol\\b|wachs|verdunnung|spiritus|aceton|reiniger|spray|fett|paste|pflege|politur", "🧴"], ["band\\b|tape|krepp", "🩹"]]],
   "Garten & Pflanzen": ["🪴", [
+    /* Motive, die das Bild genau treffen sollen (eigene Zeichnungen und passendere Noto-Grafiken) */
+    ["giesskanne", "#wateringcan"], ["spaten|schaufel|grabegabel|mistgabel", "🪏"], ["axt|beil\\b|spalt", "🪓"], ["thuja|konifere", "🌲"], ["seerose", "🪷"], ["hyazinthe|lavendel", "🪻"], ["springbrunnen", "⛲"], ["pavillon|partyzelt", "⛺"], ["rutsche", "🛝"], ["eichhornchen", "🐿️"], ["fledermaus", "🦇"], ["schmetterling", "🦋"], ["marienkafer", "🐞"],
     ["heidelbeerstrauch", "🌳"], ["sandkasten|mehltau|rasenrechen|rasenlufter", "🪴"], ["streugranulat", "❄️"], ["gasregler|gasschlauch|holzkohle|anzundholz|holzpellets|braunkohle|campingkocher|raucherbox|ollampe", "🔥"], ["lichtschlauch", "💡"], ["tagetes(?!-)|vergissmeinnicht|bellis|ranunkel|margerite|mannertreu|zauberglockchen|lieschen|erika|gerbera|lilien|schleierkraut|flieder|forsythie|clematis|schneeglockchen", "🌷"], ["kirschlorbeer|thuja|liguster|hainbuche|saulenobst|weinrebe", "🌳"], ["nordmanntanne", "🎄"], ["hangesessel|hollywoodschaukel|strandkorb|lounge|balkonset|festzeltgarnitur", "🪑"], ["futterhaus|meisenknodelhalter", "🐦"],
     ["schere", "✂️"], ["rasenmaher|rasentrimmer|rasenkante", "🪴"],
     ["grill|feuer|fackel|gasflasche", "🔥"], ["sonnenschirm|sonnensegel", "⛱️"], ["stuhl|bank|liege|tisch|hangematte", "🪑"],
@@ -402,6 +428,8 @@ var EMO = {
     ["schnee|streu|winterschutz", "❄️"], ["handschuhe", "🧤"], ["schere", "✂️"], ["solar|leuchten|lichterkette", "💡"],
 ]],
   "Büro & Schule": ["✏️", [
+    /* Motive, die das Bild genau treffen sollen (eigene Zeichnungen und passendere Noto-Grafiken) */
+    ["klebeband|klebefilm|paketband|washi|kreppband|tesa", "#tape"], ["klebestift|(^|[^f])kleber\\b|uhu|pritt", "#glue"], ["taschenrechner|tischrechner", "#calculator"], ["fuller(?!patronen)", "🖋️"], ["lupe", "🔍"], ["globus", "🌍"], ["klemmbrett", "📋"], ["lesezeichen", "🔖"],
     ["kugelschreiber|fullerpatronen", "🖊️"], ["wachsmal", "🖍️"], ["heftzange", "📎"], ["holzbuchstaben", "🧩"], ["regenhulle", "🎒"], ["papierschneider", "✂️"], ["geschenk", "🎁"], ["versandkarton", "📦"],
     ["klammer|locher|heftgerat|tacker|enthefter", "📎"], ["schultute|federmappe|mappchen", "🎒"],
     ["drucker(?!papier)|toner|patrone", "🖨️"], ["maus\\b|mauspad", "🖱️"], ["tastatur", "⌨️"], ["laptop|monitor|bildschirm|webcam", "💻"], ["usb|sd-karte|festplatte|rohlinge", "💾"], ["rechner", "🧮"], ["headset", "🎧"],
