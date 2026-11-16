@@ -9,7 +9,12 @@ var BILDER = /*BILDER*/;
 
 /* Ohne den Kern läuft die App nicht, deshalb scheitert die Installation, wenn eine Kerndatei fehlt. */
 self.addEventListener("install", function (e) {
-  e.waitUntil(caches.open(CACHE).then(function (c) { return c.addAll(KERN); }).then(function () { return self.skipWaiting(); }));
+  e.waitUntil(caches.open(CACHE).then(function (c) { return c.addAll(KERN); }));
+});
+
+/* Eine neue Version wartet, bis die App sie abruft („Jetzt laden“). So wechselt nichts mitten im Einkauf. */
+self.addEventListener("message", function (e) {
+  if (e.data && e.data.type === "SKIP_WAITING") self.skipWaiting();
 });
 
 /* Alte Caches löschen, dann die Bildzeichen nachladen. Fehlt eines, zeigt die App die Emoji-Schrift des Geräts. */

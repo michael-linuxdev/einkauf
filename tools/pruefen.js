@@ -10,7 +10,7 @@ const ids = {};
 global.document = { createElement: t => new N(t), createElementNS: (n, t) => new N(t), createTextNode: t => { const n = new N("#"); n._t = t; return n; },
   getElementById: i => ids[i] || (ids[i] = new N(i)), addEventListener() {} };
 const store = {}; global.localStorage = { getItem: k => store[k] || null, setItem: (k, v) => { store[k] = v; } };
-(0, eval)(fs.readFileSync(__dirname + "/../katalog.js", "utf8") + fs.readFileSync(__dirname + "/../app.js", "utf8") + ";globalThis.T={names,cats,icons,CATS,byNorm,norm,add,cur,render,catOf,synBy,emoFile,EMO_DEF,EMO,matchScore};");
+(0, eval)(fs.readFileSync(__dirname + "/../katalog.js", "utf8") + fs.readFileSync(__dirname + "/../app.js", "utf8") + ";globalThis.T={names,cats,icons,CATS,byNorm,norm,add,cur,render,catOf,synBy,emoFile,EMO_DEF,EMO,matchScore,parseQty,S,findItem,readShared,b64e};");
 const T = globalThis.T;
 const distinct = new Set(T.icons).size;
 console.log(`${T.names.length} Artikel, ${T.CATS.length} Abteilungen, ${Object.keys(T.synBy).length} Synonyme, ${distinct} verschiedene Bildzeichen`);
@@ -34,6 +34,13 @@ const fehlend = [...dateien].filter(f => !fs.existsSync(__dirname + "/../" + f))
 if (T.emoFile("🛍️") !== "emoji/1f6cd.svg") { ok = false; console.log("FEHLER emoFile", T.emoFile("🛍️")); }
 if (fehlend.length) { ok = false; console.log("FEHLER Grafik fehlt:", fehlend.join(", ")); }
 console.log(`${dateien.size} Bildzeichen-Dateien benutzt`);
+// Mengen beim Eintippen
+const mengen = [["3 Äpfel", "Äpfel", "3×"], ["Milch 2 l", "Milch", "2 l"], ["500g Hackfleisch", "Hackfleisch", "500 g"], ["2 x Butter", "Butter", "2×"], ["Äpfel 3", "Äpfel", "3×"], ["2 Bund Petersilie", "Petersilie", "2 Bund"],
+  ["Eier 10er", "Eier 10er", ""], ["Eier 10", "Eier 10", ""], ["Mineralwasser 1,5 l", "Mineralwasser 1,5 l", ""], ["5 Minuten Terrine", "5 Minuten Terrine", ""], ["2 Xylit", "Xylit", "2×"], ["Sprühfarbe RAL 9010", "Sprühfarbe RAL 9010", ""], ["3 Glasnudeln", "Glasnudeln", "3×"]];
+mengen.forEach(([e, n, m]) => { const r = T.parseQty(e); if (r.name !== n || r.note !== m) { ok = false; console.log("FEHLER Menge", e, JSON.stringify(r)); } });
+T.add("4 Bananen"); if ((T.findItem("Bananen") || {}).note !== "4×") { ok = false; console.log("FEHLER Menge auf der Liste"); }
+// Reihenfolge der Abteilungen und Vorlagen gehören zum Zustand
+if (T.S.order.length !== T.CATS.length || !Array.isArray(T.S.templates)) { ok = false; console.log("FEHLER Zustand"); }
 T.add("karotten"); T.add("Erdbeerkuchen");
 const it = T.cur().items.slice(-2).map(i => i.name + " → " + T.CATS[i.cat]);
 console.log(it.join(" | "));

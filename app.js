@@ -465,7 +465,7 @@ function mk(name, note, done) {
 }
 function seed() {
   return {
-    v: 3, example: true, freq: {}, active: "l1",
+    v: 3, example: true, freq: {}, active: "l1", order: CATS.map(function (c, i) { return i; }), templates: [],
     lists: [
       { id: "l1", name: "Wocheneinkauf", items: [
         mk("Bananen"), mk("Tomaten"), mk("Brötchen", "6 Stück"), mk("Vollmilch", "2 Liter"), mk("Butter"),
@@ -483,6 +483,10 @@ function load() {
     var s = JSON.parse(localStorage.getItem(KEY));
     if (s && Array.isArray(s.lists) && s.lists.length) {
       s.freq = s.freq || {};
+      /* Reihenfolge der Abteilungen: muss jede Abteilung genau einmal enthalten, sonst gilt die Standardfolge */
+      var ok = Array.isArray(s.order) && s.order.length === CATS.length && CATS.every(function (c, i) { return s.order.indexOf(i) >= 0; });
+      if (!ok) s.order = CATS.map(function (c, i) { return i; });
+      s.templates = Array.isArray(s.templates) ? s.templates.filter(function (x) { return x && typeof x.name === "string" && Array.isArray(x.items); }) : [];
       if ((s.v || 1) < 3) {
         /* Abteilungen wurden neu geschnitten: gespeicherte Artikel neu einsortieren */
         s.lists.forEach(function (l) { l.items.forEach(function (it) { it.cat = catOf(it.name); }); });
@@ -634,7 +638,8 @@ function itemTile(it) {
 function render() {
   var L = cur(), open = [], done = [];
   L.items.forEach(function (i) { (i.done ? done : open).push(i); });
-  open.sort(function (a, b) { return a.cat - b.cat; });
+  var rank = []; S.order.forEach(function (ci, pos) { rank[ci] = pos; });
+  open.sort(function (a, b) { return rank[a.cat] - rank[b.cat]; });
   var total = open.length + done.length, pct = total ? Math.round(done.length / total * 100) : 0;
   $("listname").textContent = L.name;
   var cnt = $("count"); cnt.textContent = "";
@@ -670,15 +675,41 @@ function render() {
     main.appendChild(g2);
   }
 }
-function add(name) {
+/* ---------- Mengen beim Eintippen: „3 Äpfel“, „Milch 2 l“, „500 g Hackfleisch“ ----------
+   Steht die Eingabe so im Katalog („Eier 10er“, „Mineralwasser 1,5 l“) oder ist sie der Anfang eines Katalognamens,
+   wird nichts abgetrennt. Eine nackte Zahl am Ende zählt nur als Menge, wenn der Rest ein Katalogartikel ist. */
+var UNIT = "kg|g|mg|l|ml|cl|liter|stück|stk|st|pck|pkg|packung|packungen|päckchen|dose|dosen|flasche|flaschen|glas|gläser|bund|becher|tüte|tüten|kiste|kisten|kasten|beutel|netz|scheiben|paar|rolle|rollen|tafel|tafeln";
+var Q_LEAD = new RegExp("^(\\d+(?:[.,]\\d+)?)\\s*(?:(x|×)\\s+|(" + UNIT + ")\\.?\\s+|\\s+)(.+)$", "i");
+var Q_TAIL = new RegExp("^(.+?)\\s+(?:[x×]\\s*)?(\\d+(?:[.,]\\d+)?)\\s*(x|×|" + UNIT + ")?\\.?$", "i");
+function qtyText(num, unit) {
+  unit = (unit || "").toLowerCase();
+  if (!unit || unit === "x" || unit === "×") return num + "×";
+  if (/^(stk|st)$/.test(unit)) unit = "stück";
+  if (unit === "liter") unit = "l";
+  return num + " " + (unit.length > 2 ? unit.charAt(0).toUpperCase() + unit.slice(1) : unit);
+}
+function parseQty(raw) {
+  var s = raw.trim().replace(/\s+/g, " "), none = { name: s, note: "" }, m, k = norm(s), i;
+  if (!s || !/\d/.test(s) || lookup(s) !== undefined) return none;
+  for (i = 0; i < norms.length; i++) if (norms[i].lastIndexOf(k, 0) === 0) return none;
+  if ((m = Q_LEAD.exec(s)) && /[a-zäöüß]{2}/i.test(m[4])) return { name: m[4], note: qtyText(m[1], m[2] || m[3]) };
+  if ((m = Q_TAIL.exec(s)) && /[a-zäöüß]{2}/i.test(m[1]) && (m[3] || lookup(m[1]) !== undefined)) return { name: m[1], note: qtyText(m[2], m[3]) };
+  return none;
+}
+function add(name, note) {
   name = name.trim().replace(/\s+/g, " ");
   if (!name) return;
+  if (note === undefined) { var pq = parseQty(name); name = pq.name; note = pq.note; }
   var i = byNorm[norm(name)];
   if (i !== undefined) name = names[i]; else name = name.charAt(0).toUpperCase() + name.slice(1);
   var ex = findItem(name), msg;
-  if (ex && !ex.done) return { text: name + " steht schon auf der Liste", changed: false };
-  if (ex) { ex.done = false; msg = name + " wieder auf der Liste"; }
-  else { cur().items.push(mk(name)); msg = name + " hinzugefügt"; }
+  if (ex && !ex.done) {
+    if (!note || ex.note === note) return { text: name + " steht schon auf der Liste", changed: false };
+    ex.note = note; save(); render();
+    return { text: name + ": Menge " + note, changed: true };
+  }
+  if (ex) { ex.done = false; if (note) ex.note = note; msg = name + " wieder auf der Liste"; }
+  else { cur().items.push(mk(name, note)); msg = name + (note ? " (" + note + ")" : "") + " hinzugefügt"; }
   S.freq[name] = (S.freq[name] || 0) + 1;
   save(); render();
   return { text: msg, changed: true };
@@ -692,13 +723,17 @@ function openSearch() {
 function closeSearch() {
   searchOpen = false; sugMsg = null; $("clearq").hidden = true; q.value = ""; main.hidden = false; sug.hidden = true; $("closesearch").hidden = true; q.blur();
 }
-function pick(name) {
-  var u = snap(), r = add(name);
+function pick(name, note) {
+  var u = snap(), r = add(name, note);
   if (r) { buzz(); sugMsg = { text: r.text, undo: r.changed ? u : null }; }
   q.value = ""; $("clearq").hidden = true; renderSug(); q.focus();
 }
-function catTile(i, via) {
+function catTile(i, via, qty) {
   var n = names[i], ex = findItem(n), on = ex && !ex.done;
+  if (qty && !(on && ex.note === qty)) return tile({
+    cls: on ? "on" : "", icon: icons[i], cat: cats[i], name: n, checked: on, note: qty,
+    label: n + ", Menge " + qty + (on ? " setzen" : ". Hinzufügen"), onTap: function () { pick(n, qty); }
+  });
   return tile({
     cls: on ? "on" : "", icon: icons[i], cat: cats[i], name: n, checked: on,
     note: on ? "steht drauf" : (via ? "für " + via : ""),
@@ -724,7 +759,7 @@ function matchScore(text, nq) {
 }
 function renderSug() {
   sug.textContent = "";
-  var raw = q.value.trim(), nq = norm(raw), g = el("div", { class: "grid" });
+  var pq = parseQty(q.value), raw = pq.name, qty = pq.note, nq = norm(raw), g = el("div", { class: "grid" });
   if (sugMsg) {
     var m = sugMsg;
     sug.appendChild(el("div", { class: "status", role: "status" }, el("span", { text: m.text }),
@@ -756,11 +791,11 @@ function renderSug() {
   sug.appendChild(el("h2", {}, el("span", { text: total ? total.toLocaleString("de-DE") + " Treffer" : "Kein Treffer im Katalog" })));
   if (byNorm[nq] === undefined) {
     g.appendChild(tile({
-      cls: "new", icon: "plus", name: "„" + raw + "“", note: "neu anlegen",
-      label: raw + " als eigenen Artikel hinzufügen", onTap: function () { pick(raw); }
+      cls: "new", icon: "plus", name: "„" + raw + "“", note: qty ? qty + " · neu anlegen" : "neu anlegen",
+      label: raw + " als eigenen Artikel hinzufügen", onTap: function () { pick(raw, qty); }
     }));
   }
-  hits.slice(0, 59).forEach(function (h) { g.appendChild(catTile(h[2], via[h[2]])); });
+  hits.slice(0, 59).forEach(function (h) { g.appendChild(catTile(h[2], via[h[2]], qty)); });
   sug.appendChild(g);
   if (total > 59) sug.appendChild(el("p", { class: "foot", text: "Weiter tippen, um die Auswahl einzugrenzen." }));
 }
@@ -827,6 +862,12 @@ function editSheet(it) {
   openSheet("Details zu " + it.name, head, form);
 }
 
+/* ---------- Menü: Listen und alles Weitere ---------- */
+function chev() { return el("span", { class: "chev", "aria-hidden": "true", text: "›" }); }
+function menuRow(text, sub, fn) {
+  return el("li", {}, el("button", { class: "pick", type: "button", on: { click: fn } },
+    el("span", { class: "name", text: text }), sub ? el("span", { class: "n", text: sub }) : null, chev()));
+}
 function listsSheet() {
   var ul = el("ul", { class: "lists" });
   S.lists.forEach(function (l) {
@@ -860,18 +901,355 @@ function listsSheet() {
     el("div", { class: "inline" },
       el("label", { class: "field", for: "f-rename" }, "Aktuelle Liste umbenennen", ren),
       el("button", { class: "btn", type: "submit", text: "Ändern" })));
-  openSheet("Listen", el("h3", { text: "Meine Listen" }), ul, renForm, form);
+  var menu = el("ul", { class: "lists menu" },
+    menuRow("Liste teilen", "", function () { closeSheet(); shareList(); }),
+    menuRow("Vorlagen", S.templates.length ? String(S.templates.length) : "", templatesSheet),
+    menuRow("Reihenfolge im Laden", "", orderSheet),
+    INSTALL && !INSTALL.platform().standalone ? menuRow("Als App installieren", "", INSTALL.sheet) : null);
+  openSheet("Listen", el("h3", { text: "Meine Listen" }), ul, renForm, form, el("h4", { text: "Mehr" }), menu);
 }
 $("listbtn").addEventListener("click", listsSheet);
 
+/* Mehrere Artikel auf die aktuelle Liste setzen (Vorlage, geteilte Liste). Was schon offen draufsteht, bleibt. */
+function applyItems(items, what) {
+  var u = snap(), L = cur(), n = 0;
+  items.forEach(function (x) {
+    var ex = findItem(x.name);
+    if (ex && !ex.done) return;
+    if (ex) { ex.done = false; if (x.note) ex.note = x.note; } else L.items.push(mk(x.name, x.note));
+    n++;
+  });
+  save(); render();
+  notify(n ? n + (n === 1 ? " Artikel" : " Artikel") + " aus " + what + " hinzugefügt" : "Alles aus " + what + " steht schon drauf", n ? u : null);
+}
+
+/* ---------- Vorlagen: wiederkehrende Einkäufe mit einem Tipp auf die Liste ---------- */
+function templatesSheet() {
+  var ul = el("ul", { class: "lists" });
+  S.templates.forEach(function (t) {
+    var armed = false;
+    var del = el("button", { class: "del", type: "button", text: "Löschen", "aria-label": "Vorlage " + t.name + " löschen" });
+    del.addEventListener("click", function () {
+      if (!armed) { armed = true; del.textContent = "Wirklich löschen?"; return; }
+      S.templates = S.templates.filter(function (x) { return x !== t; }); save(); templatesSheet();
+    });
+    ul.appendChild(el("li", {},
+      el("button", { class: "pick", type: "button", "aria-label": "Vorlage " + t.name + " auf die Liste setzen",
+        on: { click: function () { closeSheet(); applyItems(t.items, "„" + t.name + "“"); } } },
+        el("span", { class: "name", text: t.name }),
+        el("span", { class: "n", text: t.items.length + " Artikel" })),
+      del));
+  });
+  var L = cur(), inp = el("input", { id: "f-tpl", type: "text", value: L.name, maxlength: "40" });
+  var form = el("form", { on: { submit: function (e) {
+    e.preventDefault(); var v = inp.value.trim(); if (!v) { inp.focus(); return; }
+    if (!L.items.length) { notify("Die Liste ist leer"); return; }
+    S.templates = S.templates.filter(function (x) { return norm(x.name) !== norm(v); });
+    S.templates.push({ id: uid(), name: v, items: L.items.map(function (i) { return { name: i.name, note: i.note }; }) });
+    save(); templatesSheet();
+  } } },
+    el("div", { class: "inline" },
+      el("label", { class: "field", for: "f-tpl" }, "Aktuelle Liste als Vorlage speichern", inp),
+      el("button", { class: "btn primary", type: "submit", text: "Speichern" })));
+  openSheet("Vorlagen", el("h3", { text: "Vorlagen" }),
+    S.templates.length ? el("p", { class: "lead", text: "Antippen setzt alle Artikel der Vorlage auf „" + L.name + "“." })
+      : el("p", { class: "lead", text: "Noch keine Vorlage. Speichere eine Liste, die du immer wieder brauchst – zum Beispiel den Wocheneinkauf oder alles fürs Grillen." }),
+    S.templates.length ? ul : null, form);
+}
+
+/* ---------- Reihenfolge der Abteilungen wie im eigenen Laden ---------- */
+function orderSheet() {
+  var ul = el("ul", { class: "lists order" });
+  function fill(focus) {
+    ul.textContent = "";
+    S.order.forEach(function (ci, pos) {
+      function move(d) {
+        return function () {
+          var j = pos + d; if (j < 0 || j >= S.order.length) return;
+          S.order.splice(j, 0, S.order.splice(pos, 1)[0]); save(); render(); fill([j, d]);
+        };
+      }
+      var up = el("button", { class: "mv", type: "button", "aria-label": CATS[ci] + " nach oben", disabled: pos === 0, text: "↑", on: { click: move(-1) } });
+      var down = el("button", { class: "mv", type: "button", "aria-label": CATS[ci] + " nach unten", disabled: pos === S.order.length - 1, text: "↓", on: { click: move(1) } });
+      ul.appendChild(el("li", {}, el("span", { class: "oico" }, glyph(EMO_DEF[ci])), el("span", { class: "name", text: CATS[ci] }), up, down));
+      if (focus && focus[0] === pos) { var b = focus[1] < 0 ? up : down; if (b.disabled) b = focus[1] < 0 ? down : up; setTimeout(function () { if (b.focus) b.focus(); }, 0); }
+    });
+  }
+  fill();
+  openSheet("Reihenfolge im Laden", el("h3", { text: "Reihenfolge im Laden" }),
+    el("p", { class: "lead", text: "Bring die Abteilungen in die Reihenfolge, in der du durch deinen Laden gehst. Die Liste sortiert sich danach." }),
+    ul,
+    el("div", { class: "row" },
+      el("button", { class: "btn", type: "button", text: "Zurücksetzen", on: { click: function () { S.order = CATS.map(function (c, i) { return i; }); save(); render(); fill(); } } }),
+      el("button", { class: "btn primary", type: "button", text: "Fertig", on: { click: closeSheet } })));
+}
+
+/* ---------- Teilen ohne Server: die Liste steckt im Link ---------- */
+function b64e(str) {
+  var b = new TextEncoder().encode(str), s = "";
+  for (var i = 0; i < b.length; i++) s += String.fromCharCode(b[i]);
+  return btoa(s).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+function b64d(s) {
+  s = atob(s.replace(/-/g, "+").replace(/_/g, "/"));
+  var b = new Uint8Array(s.length);
+  for (var i = 0; i < s.length; i++) b[i] = s.charCodeAt(i);
+  return new TextDecoder().decode(b);
+}
+function shareList() {
+  var L = cur(), open = L.items.filter(function (i) { return !i.done; });
+  if (!open.length) { notify("Auf der Liste steht nichts Offenes"); return; }
+  var data = { n: L.name, i: open.map(function (i) { return i.note ? [i.name, i.note] : [i.name]; }) };
+  var url = location.origin + location.pathname + "#l=" + b64e(JSON.stringify(data));
+  var text = L.name + "\n" + open.map(function (i) { return "– " + i.name + (i.note ? " (" + i.note + ")" : ""); }).join("\n");
+  function copy() {
+    try {
+      navigator.clipboard.writeText(text + "\n\n" + url).then(function () { notify("Liste mit Link kopiert"); }, function () { notify("Kopieren nicht möglich"); });
+    } catch (e) { notify("Teilen ist in diesem Browser nicht möglich"); }
+  }
+  if (navigator.share) navigator.share({ title: L.name, text: text + "\n\nIn den Einkaufszettel übernehmen:", url: url }).catch(function (e) { if (!e || e.name !== "AbortError") copy(); });
+  else copy();
+}
+/* Geteilte Liste aus dem Link lesen. Übernommen wird nur Text in begrenzter Länge. */
+function readShared() {
+  var m = /^#l=([A-Za-z0-9_-]+)$/.exec(location.hash || "");
+  if (!m) return null;
+  try {
+    var d = JSON.parse(b64d(m[1]));
+    if (!d || typeof d.n !== "string" || !Array.isArray(d.i)) return null;
+    var items = d.i.slice(0, 300).filter(function (x) { return Array.isArray(x) && typeof x[0] === "string" && x[0].trim(); })
+      .map(function (x) { return { name: x[0].trim().slice(0, 80), note: typeof x[1] === "string" ? x[1].trim().slice(0, 40) : "" }; });
+    return items.length ? { name: d.n.trim().slice(0, 40) || "Geteilte Liste", items: items } : null;
+  } catch (e) { return null; }
+}
+function importSheet() {
+  var d = readShared();
+  if (!d) return false;
+  function done() { try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {} }
+  var prev = d.items.slice(0, 8).map(function (x) { return x.name; }).join(", ") + (d.items.length > 8 ? " …" : "");
+  openSheet("Geteilte Liste", el("h3", { text: "Liste übernehmen?" }),
+    el("p", { class: "lead" }, el("b", { text: d.name }), " · " + d.items.length + " Artikel"),
+    el("p", { class: "lead", text: prev }),
+    el("div", { class: "row" },
+      el("button", { class: "btn", type: "button", text: "Zu „" + cur().name + "“", on: { click: function () { done(); closeSheet(); applyItems(d.items, "„" + d.name + "“"); } } }),
+      el("button", { class: "btn primary", type: "button", text: "Als neue Liste", on: { click: function () {
+        done(); var l = { id: uid(), name: d.name, items: [] }; S.lists.push(l); S.active = l.id; S.example = false;
+        d.items.forEach(function (x) { l.items.push(mk(x.name, x.note)); });
+        save(); render(); closeSheet(); notify("Liste „" + d.name + "“ übernommen");
+      } } })));
+  return true;
+}
+
 render();
 
-/* Zoom durch Spreizen in Safari unterbinden (gesturestart gibt es nur dort) */
-["gesturestart", "gesturechange"].forEach(function (ev) {
-  document.addEventListener(ev, function (e) { e.preventDefault(); }, { passive: false });
-});
+/* ---------- Alles ab hier braucht einen echten Browser ---------- */
+var INSTALL = null;
+if (typeof window !== "undefined" && window.matchMedia) (function () {
+  var APP_URL = "einkauf.micana.de", GATE_KEY = "einkaufszettel.gateSkip";
 
-/* Offline-Nutzung: Service Worker anmelden (nur über https oder lokal, nicht bei file://) */
-if (typeof navigator !== "undefined" && "serviceWorker" in navigator && /^https?:$/.test(location.protocol)) {
-  window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); });
-}
+  /* Zoom durch Spreizen in Safari unterbinden (gesturestart gibt es nur dort) */
+  ["gesturestart", "gesturechange"].forEach(function (ev) {
+    document.addEventListener(ev, function (e) { e.preventDefault(); }, { passive: false });
+  });
+
+  /* Bildschirm anlassen, solange die App zu sehen ist. Der Browser gibt die Sperre frei, sobald man wegwechselt. */
+  function wake() {
+    if (!navigator.wakeLock || document.visibilityState !== "visible") return;
+    try { navigator.wakeLock.request("screen").catch(function () {}); } catch (e) {}
+  }
+  document.addEventListener("visibilitychange", wake);
+  wake();
+
+  /* ---- Als App installieren: Hinweise je Gerät, einmaliger Vollbild-Hinweis, danach ein Balken oben ---- */
+  var deferredPrompt = null, appInstalled = false;
+  function platform() {
+    var ua = navigator.userAgent;
+    var standalone = matchMedia("(display-mode: standalone)").matches || matchMedia("(display-mode: fullscreen)").matches || navigator.standalone === true;
+    var ios = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    var android = /Android/.test(ua);
+    var inapp = /Instagram|FBAN|FBAV|Line\/|Telegram|WhatsApp|TikTok|; wv\)/i.test(ua);
+    var browser = "other";
+    if (inapp) browser = "inapp";
+    else if (ios) browser = /CriOS/.test(ua) ? "chrome" : /FxiOS/.test(ua) ? "firefox" : /EdgiOS/.test(ua) ? "edge" : /Safari/.test(ua) ? "safari" : "other";
+    else if (android) browser = /SamsungBrowser/.test(ua) ? "samsung" : /Firefox/.test(ua) ? "firefox" : /EdgA/.test(ua) ? "edge" : /OPR|Opera/.test(ua) ? "opera" : /Chrome/.test(ua) ? "chrome" : "other";
+    else browser = /Edg\//.test(ua) ? "edge" : /Chrome/.test(ua) ? "chrome" : /Firefox/.test(ua) ? "firefox" : /Safari/.test(ua) ? "safari" : "other";
+    return { os: ios ? "ios" : android ? "android" : "desktop", browser: browser, standalone: standalone };
+  }
+  /* Schritte je Gerät; {S} steht für das Teilen-Symbol */
+  function installSteps(os, browser) {
+    var add = "Auf „Hinzufügen“ tippen.", menu = "Auf das Menü ⋮ tippen.", ok = "Bestätigen.";
+    var I = {
+      "ios-safari": ["Unten (iPhone) bzw. oben (iPad) auf das Teilen-Symbol {S} tippen.", "Nach unten scrollen und „Zum Home-Bildschirm“ wählen.", "Oben rechts auf „Hinzufügen“ tippen."],
+      "ios-chrome": ["Oben rechts in der Adresszeile auf das Teilen-Symbol {S} tippen.", "„Zum Home-Bildschirm“ wählen (eventuell erst „Mehr“ antippen).", add],
+      "ios-firefox": ["Unten rechts auf das Menü ☰ tippen.", "„Teilen“ wählen, dann „Zum Home-Bildschirm“.", add],
+      "ios-edge": ["Unten auf das Menü ⋯ tippen, dann auf „Teilen“ {S}.", "„Zum Home-Bildschirm“ wählen.", add],
+      "ios-other": ["Öffne diese Seite in Safari (Adresse kopieren und in Safari einfügen).", "Dann Teilen {S} → „Zum Home-Bildschirm“ → „Hinzufügen“."],
+      "android-chrome": ["Oben rechts auf das Menü ⋮ tippen.", "„App installieren“ oder „Zum Startbildschirm hinzufügen“ wählen.", "Mit „Installieren“ bestätigen."],
+      "android-samsung": ["Unten rechts auf das Menü ☰ tippen.", "„Seite hinzufügen zu“ wählen, dann „Startbildschirm“.", "Mit „Hinzufügen“ bestätigen."],
+      "android-firefox": [menu, "„Installieren“ bzw. „Zum Startbildschirm hinzufügen“ wählen.", "Mit „Hinzufügen“ bestätigen."],
+      "android-edge": ["Unten auf das Menü ⋯ tippen.", "„Zum Telefon hinzufügen“ bzw. „App installieren“ wählen.", ok],
+      "android-opera": [menu, "„Zum Startbildschirm hinzufügen“ wählen.", ok],
+      "android-other": ["Öffne diese Seite am besten in Chrome.", "Menü ⋮ → „App installieren“."],
+      "inapp": ["Du hast die Seite aus einer App (z. B. WhatsApp oder Telegram) geöffnet. Von dort kann man nichts installieren.", "Tippe oben rechts auf ⋯ bzw. ⋮ und wähle „Im Browser öffnen“.", "Dann erscheint die passende Anleitung."],
+      "desktop-chrome": ["Rechts in der Adresszeile auf das Installieren-Symbol (Bildschirm mit Pfeil) klicken.", "„Installieren“ bestätigen.", "Noch praktischer: diese Seite am Handy öffnen."],
+      "desktop-edge": ["Rechts in der Adresszeile auf „App verfügbar“ klicken.", "„Installieren“ bestätigen."],
+      "desktop-safari": ["Im Menü „Ablage“ → „Zum Dock hinzufügen“ wählen."],
+      "desktop-other": ["Am besten öffnest du die Seite auf deinem Smartphone: " + APP_URL]
+    };
+    return I[browser === "inapp" ? "inapp" : os + "-" + browser] || I[os + "-other"] || I["desktop-other"];
+  }
+  function shareIcon() {
+    var s = document.createElementNS(SVGNS, "svg"), p = document.createElementNS(SVGNS, "path");
+    s.setAttribute("class", "shareic"); s.setAttribute("viewBox", "0 0 24 24"); s.setAttribute("aria-label", "Teilen");
+    p.setAttribute("d", "M12 3v12M8 7l4-4 4 4M5 12v8h14v-8"); s.appendChild(p);
+    return s;
+  }
+  function stepList(steps) {
+    var ol = el("ol", { class: "steps" });
+    steps.forEach(function (t) {
+      var li = el("li", {}), parts = t.split("{S}");
+      parts.forEach(function (x, i) { if (i) li.appendChild(shareIcon()); li.appendChild(document.createTextNode(x)); });
+      ol.appendChild(li);
+    });
+    return ol;
+  }
+  var OS_NAME = { ios: "iPhone / iPad", android: "Android", desktop: "Computer" };
+  var BR_NAME = { safari: "Safari", chrome: "Chrome", firefox: "Firefox", edge: "Edge", samsung: "Samsung Internet", opera: "Opera", inapp: "In-App-Browser", other: "Browser" };
+  function nativeBtn() {
+    return el("button", { class: "btn primary block", type: "button", "data-native": "", hidden: !deferredPrompt, text: "Jetzt installieren", on: { click: nativeInstall } });
+  }
+  function installGuide(os, browser, compact) {
+    return el("div", { class: "guide" },
+      el("p", { class: "det", text: "Erkannt: " + OS_NAME[os] + " · " + BR_NAME[browser] }),
+      nativeBtn(), stepList(installSteps(os, browser)),
+      compact ? null : el("p", { class: "lead", text: "Danach findest du „Einkauf“ als Symbol auf dem Startbildschirm. Die App startet ohne Adresszeile und funktioniert auch ohne Netz." }));
+  }
+  function installed() {
+    appInstalled = true; S.installSeen = true; save();
+    if (!veil.hidden && sheet.getAttribute("aria-label") === "Als App installieren") closeSheet();
+    if ($g("gate")) gate(true);
+  }
+  function nativeInstall() {
+    if (!deferredPrompt) return;
+    var p = deferredPrompt; deferredPrompt = null; p.prompt();
+    p.userChoice.then(function (r) { if (r.outcome === "accepted") installed(); });
+  }
+  function $g(id) { return document.getElementById(id); }
+  function rm(id) { var e = $g(id); if (e) e.remove(); }
+  window.addEventListener("beforeinstallprompt", function (e) {
+    e.preventDefault(); deferredPrompt = e;
+    Array.prototype.forEach.call(document.querySelectorAll("[data-native]"), function (b) { b.hidden = false; });
+  });
+  window.addEventListener("appinstalled", function () { installed(); notify("App installiert"); });
+  function gateSkipped() { try { return !!localStorage.getItem(GATE_KEY); } catch (e) { return false; } }
+  /* Prüft (Chrome auf Android), ob die App schon installiert ist – dann soll man sie öffnen statt im Browser weiterzumachen */
+  function detectInstalled() {
+    try {
+      if (!navigator.getInstalledRelatedApps) return Promise.resolve(appInstalled);
+      return navigator.getInstalledRelatedApps().then(function (a) { if (a && a.length) appInstalled = true; return appInstalled; }, function () { return appInstalled; });
+    } catch (e) { return Promise.resolve(appInstalled); }
+  }
+  /* Seite „Als App installieren“ aus dem Menü: eigenes Gerät, darunter die anderen */
+  function installSheet() {
+    var p = platform();
+    var others = el("div", { class: "others" });
+    [["ios", "safari"], ["ios", "chrome"], ["android", "chrome"], ["android", "samsung"], ["android", "firefox"]].forEach(function (x) {
+      if (x[0] === p.os && x[1] === p.browser) return;
+      others.appendChild(el("details", {}, el("summary", { text: OS_NAME[x[0]] + " · " + BR_NAME[x[1]] }), stepList(installSteps(x[0], x[1]))));
+    });
+    openSheet("Als App installieren", el("h3", { text: "Als App installieren" }),
+      p.standalone ? el("p", { class: "notice ok", text: "Die App ist bereits installiert." }) : null,
+      el("div", { class: "card" }, el("h4", { text: "Dein Gerät" }), installGuide(p.os, p.browser)),
+      el("h4", { text: "Andere Geräte" }), others);
+  }
+  /* Handy oder Tablet im Browser: beim ersten Mal ein Vollbild-Hinweis, danach nur der Balken oben */
+  function gate(force) {
+    var p = platform(), mobile = p.os !== "desktop";
+    rm("nag"); document.body.classList.remove("nagged");
+    if (p.standalone) { rm("gate"); document.body.classList.remove("gated"); return; }
+    if (!mobile) return desktopSheet(p);
+    if (!force && gateSkipped()) { rm("gate"); return nag(); }
+    function draw() {
+      var g = $g("gate");
+      if (!g) { g = el("div", { id: "gate", class: "gate", role: "dialog", "aria-modal": "true", "aria-labelledby": "gate-h" }); document.body.appendChild(g); }
+      g.textContent = "";
+      var inner = el("div", { class: "gate-in" },
+        el("div", { class: "gate-top" }, el("img", { src: "icons/icon.svg", alt: "", width: "32", height: "32" }), el("b", { text: "Einkaufszettel" })));
+      if (appInstalled) {
+        inner.appendChild(el("h1", { id: "gate-h", tabindex: "-1", text: "Die App ist installiert" }));
+        inner.appendChild(el("p", { class: "notice ok", text: "Öffne sie jetzt über das Symbol „Einkauf“ auf deinem Startbildschirm. Dieses Browserfenster kannst du schließen." }));
+      } else {
+        inner.appendChild(el("h1", { id: "gate-h", tabindex: "-1", text: "Zuerst die App installieren" }));
+        var card = el("div", { class: "card gate-card" }, el("h4", { text: "So geht's" }), installGuide(p.os, p.browser, true));
+        if (p.browser === "inapp" || p.browser === "other") card.appendChild(el("button", { class: "btn", type: "button", text: "Adresse kopieren", on: { click: function () {
+          try { navigator.clipboard.writeText("https://" + APP_URL).then(function () { notify("Adresse kopiert – im Browser einfügen"); }, function () { notify(APP_URL); }); } catch (e) { notify(APP_URL); }
+        } } }));
+        inner.appendChild(card);
+        inner.appendChild(el("ul", { class: "gate-why" },
+          el("li", {}, el("b", { text: "Immer auf dem Startbildschirm" }), " – wie eine richtige App."),
+          el("li", {}, el("b", { text: "Funktioniert ohne Internet" }), " – auch im Laden."),
+          el("li", {}, el("b", { text: "Deine Listen sind sicherer" }), " – der Browser löscht sie nicht so leicht.")));
+        if (p.os === "ios" && p.browser !== "inapp") inner.appendChild(el("p", { class: "notice" }, "Wichtig auf iPhone und iPad: Was du hier im Browser einträgst, wird ", el("b", { text: "nicht" }), " in die installierte App übernommen. Installiere deshalb zuerst."));
+      }
+      inner.appendChild(el("button", { class: "gate-skip", type: "button", text: appInstalled ? "Trotzdem im Browser weiter" : "Ohne Installation im Browser weiter", on: { click: function () {
+        try { localStorage.setItem(GATE_KEY, String(Date.now())); } catch (e) {}
+        rm("gate"); document.body.classList.remove("gated"); nag();
+      } } }));
+      g.appendChild(inner);
+    }
+    draw();
+    document.body.classList.add("gated");
+    if (!force && !appInstalled) detectInstalled().then(function (x) { if (x && $g("gate")) draw(); });
+    var h = $g("gate-h"); if (h && h.focus) h.focus();
+  }
+  /* Balken oben, solange die App im Browser läuft */
+  function nag() {
+    if ($g("nag")) return;
+    var b = el("button", { id: "nag", class: "nag", type: "button", on: { click: function () { gate(true); } } },
+      el("b", { text: "App nicht installiert" }), el("span", { class: "go", text: "Installieren ›" }));
+    document.body.insertBefore(b, document.body.firstChild); document.body.classList.add("nagged");
+    document.documentElement.style.setProperty("--nag-h", b.offsetHeight + "px");
+  }
+  /* Computer: nur ein Hinweis, einmal */
+  function desktopSheet(p) {
+    var later = false; try { later = !!sessionStorage.getItem("einkaufszettel.sheetLater"); } catch (e) {}
+    if (S.installSeen || later || !veil.hidden) return;
+    openSheet("Als App speichern", el("h3", { text: "Als App speichern" }),
+      el("p", { class: "lead", text: "So hast du den Einkaufszettel immer griffbereit – auch ohne Internet. Am bequemsten ist er am Handy." }),
+      installGuide(p.os, p.browser, true),
+      el("div", { class: "row" },
+        el("button", { class: "btn", type: "button", text: "Später", on: { click: function () { try { sessionStorage.setItem("einkaufszettel.sheetLater", "1"); } catch (e) {} closeSheet(); } } }),
+        el("button", { class: "btn primary", type: "button", text: "Verstanden", on: { click: function () { S.installSeen = true; save(); closeSheet(); } } })));
+  }
+  INSTALL = { platform: platform, sheet: installSheet };
+
+  /* Geteilte Liste aus dem Link anbieten; am Computer erst danach der Installationshinweis */
+  var shared = importSheet();
+  window.addEventListener("hashchange", importSheet);
+  if (!(shared && platform().os === "desktop")) gate();
+
+  /* ---- Offline-Nutzung und Hinweis auf eine neue Version (nur über https oder lokal, nicht bei file://) ---- */
+  function showUpdate(worker) {
+    if ($g("update")) return;
+    var btn = el("button", { type: "button", text: "Jetzt laden" });
+    btn.addEventListener("click", function () { reloading = true; save(); btn.textContent = "Lädt …"; worker.postMessage({ type: "SKIP_WAITING" }); });
+    document.body.appendChild(el("div", { id: "update", class: "update", role: "status" }, el("b", { text: "Neue Version verfügbar" }), btn));
+  }
+  var reloading = false;
+  if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) {
+    /* Neu geladen wird nur nach dem Tipp auf „Jetzt laden“, nie von selbst mitten im Einkauf */
+    navigator.serviceWorker.addEventListener("controllerchange", function () { if (reloading) { reloading = false; location.reload(); } });
+    window.addEventListener("load", function () {
+      navigator.serviceWorker.register("sw.js").then(function (reg) {
+        function offer(w) { if (w && navigator.serviceWorker.controller) showUpdate(w); }
+        if (reg.waiting) offer(reg.waiting);
+        reg.addEventListener("updatefound", function () {
+          var w = reg.installing;
+          if (w) w.addEventListener("statechange", function () { if (w.state === "installed") offer(w); });
+        });
+        /* beim Zurückkehren in die App nach einer neuen Version schauen */
+        document.addEventListener("visibilitychange", function () { if (document.visibilityState === "visible") reg.update().catch(function () {}); });
+      }).catch(function () {});
+    });
+  }
+})();
