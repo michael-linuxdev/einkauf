@@ -686,6 +686,7 @@ function load() {
       /* eine Liste kann ihre eigene Reihenfolge haben (anderer Laden) */
       s.lists.forEach(function (l) { if (l.order && !validOrder(l.order)) delete l.order; });
       s.templates = Array.isArray(s.templates) ? s.templates.filter(function (x) { return x && typeof x.name === "string" && Array.isArray(x.items); }) : [];
+      if (s.theme !== "light" && s.theme !== "dark") s.theme = "auto";
       if ((s.v || 1) < 3) {
         /* Abteilungen wurden neu geschnitten: gespeicherte Artikel neu einsortieren */
         s.lists.forEach(function (l) { l.items.forEach(function (it) { it.cat = catOf(it.name); }); });
@@ -881,15 +882,21 @@ function render() {
     main.appendChild(g);
   }
   if (done.length) {
-    main.appendChild(el("h2", {}, el("span", { text: "Erledigt · " + done.length }),
+    var open2 = S.doneOpen !== false, fold = el("button", { class: "fold", type: "button", "aria-expanded": String(open2),
+      "aria-label": "Erledigt, " + done.length + (open2 ? ", einklappen" : ", ausklappen"),
+      on: { click: function () { S.doneOpen = !open2; save(); render(); var f = main.querySelector && main.querySelector(".fold"); if (f) f.focus(); } } },
+      el("span", { text: "Erledigt · " + done.length }), chevDown());
+    main.appendChild(el("h2", {}, fold,
       el("button", { class: "link danger", type: "button", text: "Entfernen", on: { click: function () {
         var u = snap(), n = done.length;
         L.items = L.items.filter(function (i) { return !i.done; }); save(); render();
         notify(n + (n === 1 ? " erledigter Artikel entfernt" : " erledigte Artikel entfernt"), u);
       } } })));
-    var g2 = el("div", { class: "grid" });
-    done.forEach(function (i) { g2.appendChild(itemTile(i)); });
-    main.appendChild(g2);
+    if (open2) {
+      var g2 = el("div", { class: "grid" });
+      done.forEach(function (i) { g2.appendChild(itemTile(i)); });
+      main.appendChild(g2);
+    }
   }
 }
 /* ---------- Mengen beim Eintippen: „3 Äpfel“, „Milch 2 l“, „500 g Hackfleisch“ ----------
@@ -912,6 +919,20 @@ function parseQty(raw) {
   if ((m = Q_LEAD.exec(s)) && /[a-zäöüß]{2}/i.test(m[4])) return { name: m[4], note: qtyText(m[1], m[2] || m[3]) };
   if ((m = Q_TAIL.exec(s)) && /[a-zäöüß]{2}/i.test(m[1]) && (m[3] || lookup(m[1]) !== undefined)) return { name: m[1], note: qtyText(m[2], m[3]) };
   return none;
+}
+/* Menge schrittweise ändern. Ohne Angabe gilt 1; „2ד, „3 Packungen“ zählen in Einerschritten,
+   Gramm und Milliliter in 50er- bzw. 100er-Schritten, Kilo und Liter in halben. Freitext ohne Zahl bleibt. */
+function stepQty(note, dir) {
+  note = (note || "").trim();
+  if (!note) return dir > 0 ? "2×" : "";
+  var m = /^(\d+(?:[.,]\d+)?)\s*(?:×|x(?![a-zäöü]))?\s*(.*)$/i.exec(note);
+  if (!m) return note;
+  var v = parseFloat(m[1].replace(",", ".")), unit = m[2].trim(), u = unit.toLowerCase(), step;
+  step = /^(g|ml)\b/.test(u) ? ((dir > 0 ? v : v - 1) < 200 ? 50 : 100) : /^(kg|l|liter)\b/.test(u) ? 0.5 : 1;
+  v = Math.round((v + dir * step) * 100) / 100;
+  if (v <= 0) return note;
+  if (!unit) return v === 1 ? "" : String(v).replace(".", ",") + "×";
+  return String(v).replace(".", ",") + " " + unit;
 }
 function add(name, note) {
   name = name.trim().replace(/\s+/g, " ");
@@ -1020,6 +1041,55 @@ function catTile(i, via, qty) {
 }
 /* Güte eines Treffers: 0 gleich, 1 Namensanfang, 2 Wortanfang, 3 Wortende (Grundwort wie „milch“ in „Vollmilch“),
    4 irgendwo mitten im Wort. Stufe 4 steht immer hinter allen anderen, egal wie gängig der Artikel ist. */
+/* ---------- Unscharfe Suche ----------
+   Verglichen wird mit den Wortanfängen aller Katalognamen; erlaubt ist ein Tippfehler, ab acht Buchstaben zwei.
+   Vertauschte Nachbarbuchstaben zählen als ein Fehler. */
+var WORDS = null;
+function wordIndex() {
+  if (WORDS) return WORDS;
+  var m = {}, i, j, w;
+  for (i = 0; i < norms.length; i++) {
+    w = norms[i].split(/[\s-]+/);
+    for (j = 0; j < w.length; j++) if (w[j].length >= 4) (m[w[j]] = m[w[j]] || []).push(i);
+  }
+  WORDS = Object.keys(m).map(function (k) { return [k, m[k]]; });
+  return WORDS;
+}
+function editDist(a, b, max) {
+  if (Math.abs(a.length - b.length) > max) return max + 1;
+  var prev2 = null, prev = [], cur, i, j, c, low;
+  for (j = 0; j <= b.length; j++) prev[j] = j;
+  for (i = 1; i <= a.length; i++) {
+    cur = [i]; low = i;
+    for (j = 1; j <= b.length; j++) {
+      c = a.charCodeAt(i - 1) === b.charCodeAt(j - 1) ? 0 : 1;
+      cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + c);
+      if (prev2 && j > 1 && a.charCodeAt(i - 1) === b.charCodeAt(j - 2) && a.charCodeAt(i - 2) === b.charCodeAt(j - 1)) cur[j] = Math.min(cur[j], prev2[j - 2] + 1);
+      if (cur[j] < low) low = cur[j];
+    }
+    if (low > max) return max + 1;
+    prev2 = prev; prev = cur;
+  }
+  return prev[b.length];
+}
+function fuzzyHits(nq) {
+  var max = nq.length >= 8 ? 2 : 1, out = {}, W = wordIndex(), i, k, w, d, len, low, ids;
+  for (i = 0; i < W.length; i++) {
+    w = W[i][0];
+    /* Vorfilter: der erste oder der zweite Buchstabe muss stimmen */
+    if (w.charCodeAt(0) !== nq.charCodeAt(0) && w.charCodeAt(1) !== nq.charCodeAt(1)) continue;
+    low = max + 1;
+    for (len = nq.length - 1; len <= nq.length + 1; len++) {
+      if (len > w.length || len < 3) continue;
+      d = editDist(nq, w.slice(0, len), max);
+      if (d < low) low = d;
+    }
+    if (low > max) continue;
+    ids = W[i][1];
+    for (k = 0; k < ids.length; k++) if (out[ids[k]] === undefined || low < out[ids[k]]) out[ids[k]] = low;
+  }
+  return out;
+}
 function matchScore(text, nq) {
   var best = -1, at = text.indexOf(nq), sc, end;
   if (at < 0) return -1;
@@ -1058,14 +1128,17 @@ function renderSug() {
     if (sc < 0 || sc > 2 || nq.length < 3) continue;
     if (best[synIdx[i]] === undefined || sc < best[synIdx[i]]) { best[synIdx[i]] = sc; via[synIdx[i]] = synName[i]; }
   }
+  /* Wenig oder nichts gefunden: Tippfehler zulassen („Jogurt“, „Brokoli“). Solche Treffer stehen hinter den genauen. */
+  var exact = Object.keys(best).length, fk, fz;
+  if (nq.length >= 4 && exact < 8) { fz = fuzzyHits(nq); for (fk in fz) if (best[fk] === undefined) best[fk] = 5 + fz[fk]; }
   var hits = Object.keys(best).map(function (k) {
     k = Number(k);
-    var s = best[k] - (staple[k] ? 2.1 : 0) - Math.min(S.freq[names[k]] || 0, 5) * 0.6 - (best[k] === 0 ? 5 : 0) + (best[k] === 4 ? 100 : 0);
+    var s = best[k] - (staple[k] ? 2.1 : 0) - Math.min(S.freq[names[k]] || 0, 5) * 0.6 - (best[k] === 0 ? 5 : 0) + (best[k] === 4 ? 100 : best[k] >= 5 ? 50 : 0);
     return [s, names[k].length, k];
   });
   hits.sort(function (a, b) { return a[0] - b[0] || a[1] - b[1] || a[2] - b[2]; });
   var total = hits.length;
-  sug.appendChild(el("h2", {}, el("span", { text: total ? total.toLocaleString("de-DE") + " Treffer" : "Kein Treffer im Katalog" })));
+  sug.appendChild(el("h2", {}, el("span", { text: !total ? "Kein Treffer im Katalog" : exact ? total.toLocaleString("de-DE") + " Treffer" : "Kein genauer Treffer – ähnlich:" })));
   if (byNorm[nq] === undefined) {
     g.appendChild(tile({
       cls: "new", icon: "plus", name: "„" + raw + "“", note: qty ? qty + " · neu anlegen" : "neu anlegen",
@@ -1105,11 +1178,16 @@ function openSheet(label) {
   xs.setAttribute("viewBox", "0 0 24 24"); xs.setAttribute("aria-hidden", "true"); xp.setAttribute("d", "M6 6l12 12M18 6L6 18"); xs.appendChild(xp); x.appendChild(xs);
   for (var i = 1; i < arguments.length; i++) if (arguments[i]) sheet.appendChild(arguments[i]);
   sheet.appendChild(x);
+  if (sheet.style) { sheet.style.transform = ""; sheet.style.transition = ""; }
   veil.hidden = false;
+  /* Die Seite hinter dem Blatt ist weder bedienbar noch für Screenreader sichtbar */
+  $("app").inert = true;
+  if (sheet.scrollTop) sheet.scrollTop = 0;
   if (sheet.focus) sheet.focus();
 }
 function closeSheet() {
   veil.hidden = true; sheet.textContent = "";
+  $("app").inert = !!document.getElementById("gate") && !!document.body;
   try { if (opener && opener.isConnected && opener.focus) opener.focus(); } catch (e) {}
   opener = null;
 }
@@ -1119,6 +1197,20 @@ var veilDown = false;
 veil.addEventListener("pointerdown", function (e) { veilDown = e.target === veil; });
 veil.addEventListener("click", function (e) { if (e.target === veil && veilDown) closeSheet(); veilDown = false; });
 document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !veil.hidden) closeSheet(); });
+/* Tab bleibt im offenen Blatt */
+document.addEventListener("keydown", function (e) {
+  if (e.key !== "Tab" || veil.hidden) return;
+  var f = Array.prototype.filter.call(sheet.querySelectorAll("button,[href],input,select,textarea"), function (x) { return !x.disabled && !x.hidden && x.offsetParent !== null; });
+  if (!f.length) { e.preventDefault(); return; }
+  var a = document.activeElement;
+  if (e.shiftKey && (a === f[0] || a === sheet)) { e.preventDefault(); f[f.length - 1].focus(); }
+  else if (!e.shiftKey && (a === f[f.length - 1] || !sheet.contains(a))) { e.preventDefault(); f[0].focus(); }
+});
+function chevDown() {
+  var s = document.createElementNS(SVGNS, "svg"), p = document.createElementNS(SVGNS, "path");
+  s.setAttribute("viewBox", "0 0 24 24"); s.setAttribute("aria-hidden", "true"); p.setAttribute("d", "M6 9l6 6 6-6"); s.appendChild(p);
+  return s;
+}
 
 function editSheet(it) {
   var note = el("input", { id: "f-note", type: "text", value: it.note, placeholder: "z. B. 2 Stück, die große Packung", maxlength: "40" });
@@ -1147,7 +1239,10 @@ function editSheet(it) {
     it.name = nn; it.note = note.value.trim(); it.cat = Number(sel.value); save(); render(); closeSheet();
   } } },
     el("label", { class: "field", for: "f-name" }, "Name", nameIn), err,
-    el("label", { class: "field", for: "f-note" }, "Menge oder Notiz", note),
+    el("div", { class: "inline" },
+      el("label", { class: "field", for: "f-note" }, "Menge oder Notiz", note),
+      el("button", { class: "btn step", type: "button", "aria-label": "Menge verringern", text: "−", on: { click: function () { note.value = stepQty(note.value, -1); } } }),
+      el("button", { class: "btn step", type: "button", "aria-label": "Menge erhöhen", text: "+", on: { click: function () { note.value = stepQty(note.value, 1); } } })),
     chips,
     el("label", { class: "field", for: "f-cat" }, "Abteilung", sel),
     el("div", { class: "row" },
@@ -1203,8 +1298,116 @@ function listsSheet() {
     menuRow("Geteilte Liste einfügen", "", pasteSheet),
     menuRow("Vorlagen", S.templates.length ? String(S.templates.length) : "", templatesSheet),
     menuRow("Reihenfolge im Laden", "", orderSheet),
+    menuRow("Sicherung", "", backupSheet),
     INSTALL && !INSTALL.platform().standalone ? menuRow("Als App installieren", "", INSTALL.sheet) : null);
-  openSheet("Listen", el("h3", { text: "Meine Listen" }), ul, renForm, form, el("h4", { text: "Mehr" }), menu);
+  var seg = el("div", { class: "seg", role: "group", "aria-label": "Darstellung" });
+  [["auto", "System"], ["light", "Hell"], ["dark", "Dunkel"]].forEach(function (o) {
+    seg.appendChild(el("button", { type: "button", text: o[1], "aria-pressed": String(S.theme === o[0]), on: { click: function () {
+      S.theme = o[0]; save(); applyTheme();
+      Array.prototype.forEach.call(seg.children, function (b) { b.setAttribute("aria-pressed", String(b.textContent === o[1])); });
+    } } }));
+  });
+  openSheet("Listen", el("h3", { text: "Meine Listen" }), ul, renForm, form, el("h4", { text: "Mehr" }), menu, el("h4", { text: "Darstellung" }), seg);
+}
+
+/* ---------- Hell, Dunkel oder wie das System ---------- */
+function applyTheme() {
+  var th = S.theme === "light" || S.theme === "dark" ? S.theme : "";
+  try { localStorage.setItem("einkaufszettel.theme", th); } catch (e) {}
+  var root = document.documentElement;
+  if (!root) return;
+  if (th) root.setAttribute("data-theme", th); else root.removeAttribute("data-theme");
+  /* Farbe der Browserleiste mitziehen */
+  Array.prototype.forEach.call(document.querySelectorAll('meta[name="theme-color"]'), function (m) {
+    var dark = th ? th === "dark" : /dark/.test(m.getAttribute("media") || "");
+    m.setAttribute("content", dark ? "#0e1411" : "#edf0ea");
+  });
+}
+
+/* ---------- Sicherung als Datei ---------- */
+function backupData() {
+  return { app: "einkaufszettel", version: 1, exported: new Date().toISOString(), lists: S.lists, templates: S.templates, order: S.order, freq: S.freq };
+}
+/* Liest eine Sicherung und übernimmt nur, was die App kennt: Text in begrenzter Länge, gültige Abteilungen, neue Kennungen. */
+function readBackup(text) {
+  var d;
+  try { d = JSON.parse(text); } catch (e) { return null; }
+  if (!d || d.app !== "einkaufszettel" || !Array.isArray(d.lists)) return null;
+  function str(x, n) { return typeof x === "string" ? x.trim().slice(0, n) : ""; }
+  function items(a) {
+    return (Array.isArray(a) ? a : []).slice(0, 2000).filter(function (i) { return i && str(i.name, 80); }).map(function (i) {
+      var n = str(i.name, 80);
+      return { id: uid(), name: n, cat: i.cat >= 0 && i.cat < CATS.length && i.cat === Math.floor(i.cat) ? i.cat : catOf(n), note: str(i.note, 40), done: !!i.done };
+    });
+  }
+  var out = { lists: [], templates: [], order: validOrder(d.order) ? d.order.slice() : null, freq: {} };
+  d.lists.slice(0, 100).forEach(function (l) {
+    if (!l || !Array.isArray(l.items)) return;
+    var x = { id: uid(), name: str(l.name, 40) || "Liste", items: items(l.items) };
+    if (validOrder(l.order)) x.order = l.order.slice();
+    out.lists.push(x);
+  });
+  (Array.isArray(d.templates) ? d.templates : []).slice(0, 100).forEach(function (t) {
+    if (!t || !Array.isArray(t.items) || !str(t.name, 40)) return;
+    out.templates.push({ id: uid(), name: str(t.name, 40), items: items(t.items).map(function (i) { return { name: i.name, note: i.note }; }) });
+  });
+  if (d.freq && typeof d.freq === "object") Object.keys(d.freq).slice(0, 5000).forEach(function (k) {
+    if (typeof d.freq[k] === "number" && d.freq[k] > 0) out.freq[k.slice(0, 80)] = Math.min(Math.floor(d.freq[k]), 9999);
+  });
+  return out.lists.length || out.templates.length ? out : null;
+}
+function restoreBackup(b, replace) {
+  if (replace) {
+    if (b.lists.length) { S.lists = b.lists; S.active = b.lists[0].id; }
+    S.templates = b.templates; S.freq = b.freq;
+    if (b.order) S.order = b.order;
+  } else {
+    b.lists.forEach(function (l) { S.lists.push(l); });
+    b.templates.forEach(function (t) {
+      S.templates = S.templates.filter(function (x) { return norm(x.name) !== norm(t.name); });
+      S.templates.push(t);
+    });
+    Object.keys(b.freq).forEach(function (k) { S.freq[k] = Math.max(S.freq[k] || 0, b.freq[k]); });
+  }
+  S.example = false; save(); render();
+}
+function backupSheet() {
+  var err = el("p", { class: "notice", role: "alert", hidden: true, text: "Das ist keine Sicherung des Einkaufszettels." });
+  var file = el("input", { type: "file", accept: "application/json,.json", "aria-label": "Sicherung laden" });
+  file.addEventListener("change", function () {
+    var f = file.files && file.files[0];
+    if (!f) return;
+    var r = new FileReader();
+    r.onload = function () {
+      var b = readBackup(String(r.result));
+      if (!b) { err.hidden = false; file.value = ""; return; }
+      var armed = false;
+      var rep = el("button", { class: "btn danger", type: "button", text: "Alles ersetzen" });
+      rep.addEventListener("click", function () {
+        if (!armed) { armed = true; rep.textContent = "Wirklich ersetzen?"; return; }
+        restoreBackup(b, true); closeSheet(); notify("Sicherung geladen");
+      });
+      openSheet("Sicherung laden", el("h3", { text: "Sicherung laden?" }),
+        el("p", { class: "lead", text: b.lists.length + (b.lists.length === 1 ? " Liste" : " Listen") + " und " + b.templates.length + (b.templates.length === 1 ? " Vorlage" : " Vorlagen") + " in der Datei." }),
+        el("p", { class: "lead", text: "„Dazunehmen“ behält deine jetzigen Listen. „Alles ersetzen“ löscht sie." }),
+        el("div", { class: "row" }, rep,
+          el("button", { class: "btn primary", type: "button", text: "Dazunehmen", on: { click: function () { restoreBackup(b, false); closeSheet(); notify("Sicherung dazugenommen"); } } })));
+    };
+    r.onerror = function () { err.hidden = false; };
+    r.readAsText(f);
+  });
+  openSheet("Sicherung", el("h3", { text: "Sicherung" }),
+    el("p", { class: "lead", text: "Deine Listen liegen nur auf diesem Gerät. Eine Sicherung ist eine Datei mit allen Listen, Vorlagen und der Reihenfolge – zum Aufheben oder für ein anderes Gerät." }),
+    el("button", { class: "btn primary block", type: "button", text: "Sicherung speichern", on: { click: function () {
+      try {
+        var url = URL.createObjectURL(new Blob([JSON.stringify(backupData(), null, 1)], { type: "application/json" }));
+        var a = el("a", { href: url, download: "einkaufszettel-" + new Date().toISOString().slice(0, 10) + ".json" });
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+        notify("Sicherung gespeichert");
+      } catch (e) { notify("Speichern nicht möglich"); }
+    } } }),
+    el("label", { class: "btn block filebtn" }, "Sicherung laden", file), err);
 }
 $("listbtn").addEventListener("click", listsSheet);
 
@@ -1366,6 +1569,7 @@ function pasteSheet() {
 }
 
 checkTidy();
+applyTheme();
 render();
 
 /* ---------- Alles ab hier braucht einen echten Browser ---------- */
@@ -1520,7 +1724,7 @@ if (typeof window !== "undefined" && window.matchMedia) (function () {
   function gate(force) {
     var p = platform(), mobile = p.os !== "desktop";
     rm("nag"); document.body.classList.remove("nagged");
-    if (p.standalone) { rm("gate"); document.body.classList.remove("gated"); return; }
+    if (p.standalone) { rm("gate"); document.body.classList.remove("gated"); $("app").inert = !veil.hidden; return; }
     if (!mobile) return desktopSheet(p);
     if (!force && gateSkipped()) { rm("gate"); return nag(); }
     function draw() {
@@ -1547,12 +1751,12 @@ if (typeof window !== "undefined" && window.matchMedia) (function () {
       }
       inner.appendChild(el("button", { class: "gate-skip", type: "button", text: appInstalled ? "Trotzdem im Browser weiter" : "Ohne Installation im Browser weiter", on: { click: function () {
         try { localStorage.setItem(GATE_KEY, String(Date.now())); } catch (e) {}
-        rm("gate"); document.body.classList.remove("gated"); nag();
+        rm("gate"); document.body.classList.remove("gated"); $("app").inert = !veil.hidden; nag();
       } } }));
       g.appendChild(inner);
     }
     draw();
-    document.body.classList.add("gated");
+    document.body.classList.add("gated"); $("app").inert = true;
     if (!force && !appInstalled) detectInstalled().then(function (x) { if (x && $g("gate")) draw(); });
     var h = $g("gate-h"); if (h && h.focus) h.focus();
   }
@@ -1576,6 +1780,46 @@ if (typeof window !== "undefined" && window.matchMedia) (function () {
         el("button", { class: "btn primary", type: "button", text: "Verstanden", on: { click: function () { S.installSeen = true; save(); closeSheet(); } } })));
   }
   INSTALL = { platform: platform, sheet: installSheet };
+
+  /* ---- Blatt nach unten wegwischen: Es wandert mit dem Finger mit. Nach genug Weg oder Schwung schließt es,
+     sonst federt es zurück. Gilt nur, wenn das Blatt oben steht, damit lange Blätter weiter rollen. ---- */
+  (function () {
+    var y0 = 0, x0 = 0, t0 = 0, dy = 0, drag = false, track = false;
+    var calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    function reset() { sheet.style.transition = ""; sheet.style.transform = ""; sheet.style.animation = ""; veil.style.backgroundColor = ""; }
+    sheet.addEventListener("touchstart", function (e) {
+      var tg = e.target;
+      track = e.touches.length === 1 && sheet.scrollTop <= 0 && !(tg.closest && tg.closest("input,select,textarea"));
+      drag = false; dy = 0; y0 = e.touches[0].clientY; x0 = e.touches[0].clientX; t0 = Date.now();
+    }, { passive: true });
+    sheet.addEventListener("touchmove", function (e) {
+      if (!track) return;
+      var d = e.touches[0].clientY - y0, dx = e.touches[0].clientX - x0;
+      if (!drag) {
+        if (d > 8 && d > Math.abs(dx) * 1.5) { drag = true; sheet.style.transition = "none"; sheet.style.animation = "none"; }
+        else { if (d < -8 || Math.abs(dx) > 12) track = false; return; }
+      }
+      if (e.cancelable) e.preventDefault();
+      dy = Math.max(0, d);
+      sheet.style.transform = "translateY(" + dy + "px)";
+      veil.style.backgroundColor = "rgba(8,14,10," + (0.55 * Math.max(0, 1 - dy / 420)).toFixed(3) + ")";
+    }, { passive: false });
+    function end() {
+      if (!drag) { track = false; return; }
+      drag = false; track = false;
+      var speed = dy / Math.max(1, Date.now() - t0), close = dy > 120 || (dy > 40 && speed > 0.5);
+      sheet.style.transition = calm ? "none" : "transform .18s ease-out";
+      if (close) {
+        sheet.style.transform = "translateY(100%)";
+        setTimeout(function () { reset(); closeSheet(); }, calm ? 0 : 180);
+      } else {
+        sheet.style.transform = ""; veil.style.backgroundColor = "";
+        setTimeout(reset, 200);
+      }
+    }
+    sheet.addEventListener("touchend", end);
+    sheet.addEventListener("touchcancel", end);
+  })();
 
   /* Geteilte Liste aus dem Link anbieten; am Computer erst danach der Installationshinweis */
   var shared = importSheet();

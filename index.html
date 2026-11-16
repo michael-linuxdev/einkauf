@@ -14,6 +14,7 @@
 <link rel="preload" href="fonts/figtree.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/bricolage-grotesque.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="app.css">
+<script>try{var t=localStorage.getItem("einkaufszettel.theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
 </head>
 <body>
 <svg class="sprite" aria-hidden="true">
@@ -181,13 +182,13 @@
 <symbol id="x-bag" viewBox="0 0 24 24"><defs><linearGradient id="g-bag" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#f8efda"/><stop offset="1" stop-color="#dcc596"/></linearGradient><linearGradient id="g-bagl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d9a556"/><stop offset="1" stop-color="#b77f33"/></linearGradient></defs><path d="M6.800 3.500h10.400l-1.100 3.200 2.200 3.300v9a2.300 2.300 0 0 1-2.300 2.300H8a2.300 2.300 0 0 1-2.300-2.300v-9l2.200-3.300z" fill="url(#g-bag)"/><path d="M6.800 3.500h10.400l-1.100 3.200H7.900z" fill="#cdb585"/><path d="M7.900 6.700h8.200" fill="none" stroke="#b79d6c" stroke-width=".7"/><rect x="8.300" y="11.200" width="7.400" height="6.200" rx="1.300" fill="url(#g-bagl)"/><path d="M12 12.300v4M12 13.300c-.9-.1-1.400-.6-1.500-1.300M12 13.300c.9-.1 1.400-.6 1.500-1.300M12 14.900c-.9-.1-1.400-.6-1.500-1.300M12 14.900c.9-.1 1.400-.6 1.500-1.300" fill="none" stroke="#fff3d6" stroke-width=".7" stroke-linecap="round"/><path d="M7.200 10.500v8.300" fill="none" stroke="#fff" stroke-width=".9" stroke-linecap="round" opacity=".7"/></symbol>
 </svg>
 
-<div class="app">
+<div class="app" id="app">
   <header class="top">
     <div class="bar">
-      <button class="listbtn" id="listbtn" type="button" aria-haspopup="dialog">
+      <h1 class="bar-h"><button class="listbtn" id="listbtn" type="button" aria-haspopup="dialog" aria-label="Listen und Einstellungen">
         <span id="listname"></span>
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg>
-      </button>
+      </button></h1>
       <span class="count" id="count"></span>
     </div>
   </header>
