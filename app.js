@@ -197,7 +197,7 @@ function ruleIcon(cat, n) {
 }
 /* ---------- Farbige Bildzeichen (Stil E) ----------
    Je Abteilung: Regeln (erste passende gewinnt), danach das Standardzeichen.
-   Ein Wert mit "#" ist eine eigene Zeichnung aus dem Sprite, alles andere ein Emoji-Zeichen, zu dem emoji/<Codepunkte>.svg gehört
+   Ein Wert mit "#" ist eine eigene Zeichnung (Symbol x-<name> in index.html), alles andere ein Emoji-Zeichen, zu dem emoji/<Codepunkte>.svg gehört
    (Noto Emoji; nach Änderungen an der Tabelle tools/bildzeichen.py laufen lassen). */
 var EMO = {
   "Obst & Gemüse": ["🥬", [
@@ -252,16 +252,16 @@ var EMO = {
     ["brotchen", "#bun"], ["baguette|brot|ciabatta|naan", "🥖"],
     ["tk-|gemuse|spinat|vegan|veggie|falafel", "🥦"], ["gyros|doner|frikadellen|kottbullar|hackballchen|cevapcici|bifteki|schnitzel|cordon|hack|pulled|wild|kaninchen|rehkeule|hirsch", "🥩"]]],
   "Nudeln, Reis & Konserven": ["🥫", [
-    ["gurken", "🥒"], ["getrocknete tomaten", "🍅"], ["sossenbinder", "#bag"], ["zitronensaft|limettensaft", "🍋"], ["lokum|helva|halva", "🍬"], ["crostini|taralli|sushki|prjaniki", "🍪"], ["preiselbeer", "🫙"], ["medjool", "🌰"],
+    ["gurken", "🥒"], ["getrocknete tomaten", "🍅"], ["sossenbinder", "#bag"], ["krabbenchips", "#chips"], ["zitronensaft|limettensaft", "🍋"], ["lokum|helva|halva", "🍬"], ["crostini|taralli|sushki|prjaniki", "🍪"], ["preiselbeer", "🫙"], ["medjool", "🌰"],
     ["thunfisch|sardine|sardelle|makrele|hering|lachs|dorsch|sprotten|saupiquet|hawesta|appel|muscheln\\b|krabben(?!chips)", "🐟"], ["kapern|rotkohl|meerrettich|weinblatter|pesto", "🫙"],
-    ["passiert|passata|polpa|pelati|geschalt|gehackte tomaten|stuckige tomaten|tomatenstucke|tomaten dose|dosentomaten|san-marzano", "🥫"], ["ketchup", "🍅"], ["senf", "🍶"],
-    ["olivenol", "🫒"], ["sojasosse|ketjap|tamari|ponzu|fischsosse|teriyaki|mirin|reiswein|essig|balsamico|ol\\b|verjus|condimento", "🍶"], ["honig", "🍯"],
+    ["passiert|passata|polpa|pelati|geschalt|gehackte tomaten|stuckige tomaten|tomatenstucke|tomaten dose|dosentomaten|san-marzano", "🥫"], ["ketchup", "🍅"], ["senf", "#sauce"],
+    ["olivenol", "🫒"], ["sojasosse|ketjap|tamari|ponzu|fischsosse|teriyaki|mirin|reiswein", "🍶"], ["essig|balsamico|ol\\b|verjus|condimento", "#oil"], ["honig", "🍯"],
     ["ramen|instantnudel|mie-|udon|soba|pho|glasnudel|reisnudel|wok-nudeln|chow|somen|pad-thai|yum yum|asia-snack", "🍜"],
     ["nudel|spaghetti|linguine|tagliatelle|fettuccine|pappardelle|penne|rigatoni|fusilli|spirelli|farfalle|makkaroni|tortiglioni|conchiglie|orecchiette|cannelloni|lasagne|spatzle|knopfle|tortell|ravioli|gnocchi|barilla|buitoni|miracoli|pasta|orzo|risoni|bucatini|capellini|vermicelli|paccheri|trofie|gemelli|kritharaki|maccheroni|girandole|casarecce|strozzapreti|radiatori|rotelle|ditalini|anelli|stelline|mafaldine|tagliolini", "🍝"],
     ["curry|dal\\b|masala|korma|vindaloo|tandoori|butter-chicken|palak", "🍛"], ["sushi|nori", "🍣"], ["taco", "🌮"], ["tortillas|papadam|naan|yufka", "🫓"],
     ["reis|risotto", "🍚"], ["couscous|bulgur|quinoa|hirse|polenta|griess|buchweizen|amaranth|grunkern|graupen|dinkel|weizen|gerste|roggen|emmer|einkorn|kamut|freekeh|teff|hafergrutze|tapioka|sago", "🌾"],
     ["suppe|eintopf|bruhe|bouillon|fond|topf|terrine|gulasch|soljanka|borschtsch|minestrone|labskaus|bigos|zurek|jus\\b|suppeneinlage|backerbsen", "🍲"],
-    ["tomate|ketchup|passata|sugo|polpa|pelati|datterini|salca", "🍅"], ["senf|mayo|remoulade|sosse|sauce|dressing|sriracha|sambal|wurze\\b|sirup|kwas", "🍶"],
+    ["tomate|ketchup|passata|sugo|polpa|pelati|datterini|salca", "🍅"], ["senf|mayo|remoulade|sosse|sauce|dressing|sriracha|sambal|wurze\\b|sirup|kwas", "#sauce"],
     ["oliven|tapenade", "🫒"], ["mais", "🌽"], ["bohne|linse|kichererbse|erbse|refried|baked beans", "🫘"], ["pilz|champignon|pfifferling|truffel|shiitake|morchel", "🍄"], ["kokos", "🥥"],
     ["chili|peperoni|jalapeno|harissa|pul biber|chipotle|gochu|adschika", "🌶️"], ["paprika|ajvar|letscho", "🫑"], ["knoblauch", "🧄"], ["zwiebel", "🧅"], ["gurke|cornichon|pickle", "🥒"],
     ["kartoffel|\\brosti", "🥔"], ["knodel|klosse", "🥟"], ["ananas", "🍍"], ["pfirsich|aprikose|pflaume", "🍑"], ["kirsch|schattenmorelle", "🍒"], ["mandarine", "🍊"], ["apfel", "🍎"], ["birne", "🍐"],
@@ -283,13 +283,14 @@ var EMO = {
     ["flocken|musli|porridge|granola|cornflakes|cerealien|pops|kissen|ringe|flakes|kleie|frosties|smacks|krispies|oats|crunch|haferbrei|puffreis|gepufft|biscuits|weizenkeime|hafermark|\\bchia", "🥣"],
     ["kakao|trinkschokolade|nesquik|kaba|ovomaltine", "🍫"], ["teekanne", "🫖"], ["tee\\b|teemischung|teekapseln|earl grey|darjeeling|sencha|matcha|chai|heisse zitrone|kandis|golden-milk", "🍵"],
     ["honig", "🍯"], ["erdnuss", "🥜"],
-    ["nutella|nudossi|nusspli|schoko|nougat", "🍫"]]],
+    ["nutella|nudossi|nusspli|schoko|nougat", "🍫"],
+    ["marmelade|konfiture|gelee|fruchtaufstrich|pflaumenmus|zwetschgenmus|lemon curd|mark\\b", "#jam"]]],
   "Süßes & Snacks": ["🍬", [
     ["^schokolade|schokokringel|nougatstangen|geleeringe", "🍫"], ["butterringe", "🍪"],
     ["popcorn", "🍿"], ["lutscher|zuckerstange|schleckmuschel", "🍭"], ["salzstangen|brezel|laugen", "🥨"],
     ["keks|cookie|waffel|biskuit|spekulatius|lebkuchen|pfeffernusse|pfefferkuchen|zimtsterne|kipferl|printen|baumkuchen|amarettini|cantuccini|shortbread|soft cake|kuchen|russisch brot|geback|milchschnitte|prinzenrolle|oreo|pick up|makronen|filinchen|knacke|hanuta|knoppers|platzchen|heidesand|hippen|engelsaugen|husarenkrapfen|spitzbuben|barentatzen|magenbrot|fruchtebrot|stollen", "🍪"],
     ["erdnuss|erdnusse", "🥜"], ["cashew|pistazie|mandeln|macadamia|nussmix|nuss-frucht|studentenfutter|pekannusse|walnusse|kerne|wasabi-nusse", "🌰"],
-    ["cracker|reisgeback|reis-chips", "🍘"], ["saure |fruchtgummi|weingummi|lakritz|gummibar", "🍬"], ["wasabi-erbsen|chips|flips|nachos|sticks|stangen|ringe|ballchen|knabber|party-mix|snack|pringles|erdnusslocken|nicnac|grissini|kichererbsen|edamame|mais geroste", "#bag"],
+    ["cracker|reisgeback|reis-chips", "🍘"], ["saure |fruchtgummi|weingummi|lakritz|gummibar", "🍬"], ["wasabi-erbsen|chips|flips|nachos|sticks|stangen|ringe|ballchen|knabber|party-mix|snack|pringles|erdnusslocken|nicnac|grissini|kichererbsen|edamame|mais geroste", "#chips"],
     ["jerky|biltong|trockenfleisch|salami", "🥩"],
     ["schoko|praline|marzipan|nougat|riegel|mozartkugel|domino|advent|milka|ritter sport|kinder |duplo|toffifee|merci|ferrero|raffaello|mon cheri|lindt|after eight|snickers|\\bmars\\b|twix|bounty|milky way|kitkat|\\blion\\b|m&m|smarties|halloren|knusperflocken|bambina|minztafelchen|uberraschungsei|weinbrandbohnen|rumkugeln|krokant|ostereier|-eier", "🍫"]]],
   "Getränke": ["🥤", [
@@ -303,7 +304,7 @@ var EMO = {
     ["\\bgin\\b|wodka|\\brum\\b|whisk|tequila|mezcal|pisco|likor|schnaps|korn\\b|brand\\b|geist\\b|obstler|grappa|ouzo|raki|aquavit|amaretto|sambuca|absinth|cachaca|curacao|triple sec|maraschino|barenfang|bitter|fernet|amaro|pastis|genever|cognac|armagnac|calvados|brandy|bourbon|scotch|limoncello|jagermeister|baileys|ramazzotti|berentzen|angostura|spirituose|saurer apfel|rumtopf|kirschwasser|zwetschgenwasser|williamsbirne", "🥃"],
     ["wein|riesling|thurgau|silvaner|burgunder|chardonnay|sauvignon|pinot|traminer|dornfelder|merlot|shiraz|tempranillo|rioja|chianti|primitivo|montepulciano|bordeaux|lambrusco|sherry|wermut|federweisser|veltliner|zweigelt|blaufrankisch|lemberger|trollinger|portugieser|regent|malbec|syrah|zinfandel|sangiovese|barolo|barbera|valpolicella|amarone|avola|rhone|beaujolais|chablis|sancerre|elbling|kerner|bacchus|scheurebe|gutedel|rivaner|muskateller|verdejo|albarino|vinho|soave|lugana|vermentino|rose\\b|weissherbst|rotling|blanc de|spatlese|auslese|kabinett|madeira|marsala|retsina|jagertee|met\\b|sake", "🍷"]]],
   "Drogerie & Gesundheit": ["🧴", [
-    ["kosmetiktucher|abschminktucher", "🧻"], ["salbe|serum", "🧴"], ["glatteisen|haarturban", "🎀"], ["binden|slipeinlagen|tampon|menstruation|periodenunter", "🩸"], ["handschuhe", "🧤"], ["inkontinenz|bettschutz", "🧻"], ["mundschutz|ffp2", "😷"], ["pinzette|hornhaut|bimsstein|zehentrenner", "💅"], ["duschhaube", "🚿"],
+    ["kondom", "#condom"], ["ohrenstopsel", "#earplug"], ["inhalator|inhalierstift", "#inhaler"], ["kosmetiktucher|abschminktucher", "🧻"], ["salbe|serum", "🧴"], ["glatteisen|haarturban", "🎀"], ["binden|slipeinlagen|tampon|menstruation|periodenunter", "🩸"], ["handschuhe", "🧤"], ["inkontinenz|bettschutz", "🧻"], ["mundschutz|ffp2", "😷"], ["pinzette|hornhaut|bimsstein|zehentrenner", "💅"], ["duschhaube", "🚿"],
     ["zahn|aufsteckburste|interdental|mundspulung|mundwasser|munddusche|zungenreiniger|colgate|odol|elmex|aronal|blend-a-med|sensodyne|oral-b|listerine", "🪥"],
     ["rasier|bart|epilier|scherkopf|haarschneider|gillette|wilkinson", "🪒"], ["nagellack|nagel|feile|manikure|unterlack|uberlack", "💅"],
     ["lippenstift|lipgloss|lipliner|mascara|eyeliner|kajal|lidschatten|make-up|foundation|concealer|rouge|\\bpuder\\b|kompaktpuder|loser puder|bronzer|highlighter|primer|wimpern|augenbrauen|kosmetik|schmink|bb-cream|cc-cream", "💄"],
@@ -315,7 +316,7 @@ var EMO = {
     ["kamm|burste|haarband|haarreif|haarspange|haarnadel|haargummi|haarklammer|scrunchie|lockenwickler|haarnetz|duttkissen|haarschere|fohn|glatteisen|lockenstab", "🎀"],
     ["parfum|eau de|duftset", "🌸"], ["kulturbeutel|kosmetiktasche", "👝"], ["waage", "⚖️"]]],
   "Haushalt & Putzen": ["📦", [
-    ["kohlenmonoxid", "🔔"], ["tischfeuerwerk", "🎉"], ["lampenol", "🔥"], ["kuhlakku", "🧊"], ["schneebesen|fleischklopfer|presse|stampfer|dosenoffner|eierschneider|nudelholz|pizzaschneider|portionierer|apfelteiler|entkerner|backpinsel|kuchenzange|trichter|wetzstahl", "🥄"], ["schuhloffel", "👞"], ["einmach|schraubglaser|vorratsglaser|gewurzglaser", "🫙"], ["spulmaschinen", "🧴"], ["spulburste|fugenburste|handburste|kleiderburste|scheuerburste", "🧹"], ["kaffeefilter|handfilter", "☕"], ["teefilter|tee-ei|teesieb", "🫖"], ["entsafter|zerkleinerer|bereiter|vakuumierer|allesschneider|luftbefeuchter|dampfglatter|wassersprudler", "🔌"],
+    ["kohlenmonoxid", "🔔"], ["tischfeuerwerk", "🎉"], ["lampenol", "🔥"], ["kuhlakku", "🧊"], ["schneebesen|fleischklopfer|presse|stampfer|dosenoffner|eierschneider|nudelholz|pizzaschneider|portionierer|apfelteiler|entkerner|backpinsel|kuchenzange|trichter|wetzstahl", "🥄"], ["schuhloffel", "👞"], ["einmach|schraubglaser|vorratsglaser|gewurzglaser", "🫙"], ["spulmaschinen", "#detergent"], ["insektenspray|wespenspray", "🪰"], ["spray|glasreiniger|badreiniger|kuchenreiniger|allzweckreiniger|kalkreiniger|schimmelentferner|fleckenentferner|fettloser", "#spray"], ["spulburste|fugenburste|handburste|kleiderburste|scheuerburste", "🧹"], ["kaffeefilter|handfilter", "☕"], ["teefilter|tee-ei|teesieb", "🫖"], ["entsafter|zerkleinerer|bereiter|vakuumierer|allesschneider|luftbefeuchter|dampfglatter|wassersprudler", "🔌"],
     ["toilettenpapier|kuchenrolle|servietten|papierhandtucher|zewa|hakle", "🧻"], ["schwamm|schwamme|scheuerschwamm|schmutzradierer|stahlwolle", "🧽"],
     ["besen|handfeger|kehrschaufel|schrubber|wischmopp|wischer|staubwedel", "🧹"], ["eimer", "🪣"], ["mull|sacke", "🗑️"], ["waschekorb|waschesammler|korb", "🧺"],
     ["batterie|knopfzelle|akku(?!sauger)|powerbank", "🔋"], ["taschenlampe|stirnlampe|campinglampe", "🔦"], ["gluhbirne|lampe|leuchtstoff|leuchtmittel|led-|lichterkette|nachtlicht|laterne|windlicht", "💡"],
@@ -332,11 +333,11 @@ var EMO = {
     ["kuchenform|springform|kastenform|gugelhupf|muffinform|tarteform|backblech|ausstech|tortenring|spritzbeutel|tortenplatte|tortenhaube|backmatte", "🧁"],
     ["wecker|wanduhr|eieruhr|timer", "⏰"], ["bilderrahmen|fotoalbum", "🖼️"], ["vase", "🏺"], ["thermometer|hygrometer", "🌡️"], ["waage", "⚖️"], ["mausefalle", "🪤"],
     ["dusch|badvorleger", "🚿"], ["wc-|klo|toiletten|pumpel", "🚽"], ["handschuh|topflappen", "🧤"], ["schuh", "👞"], ["kleiderbugel|hosenbugel|kleidersack|bugel|wasche|textil", "👕"], ["schere", "✂️"],
-    ["insekt|fliegen|ameisen|motten|wespen|mucken|silberfisch|schaben", "🪰"], ["folie|backpapier|butterbrotpapier|bratschlauch", "#roll"], ["beutel", "#bag"], ["tuch\\b|tucher|lappen", "🧽"],
-    ["seife", "🧼"], ["mittel|spuler|reiniger|entferner|spray|politur|pflege|entkalker|scheuer|soda|starke|bleich|erfrischer|fleck|schimmel|persil|ariel|spee|weisser riese|lenor|perwoll|pril|fairy|frosch|ajax|meister proper|domestos|bref|cillit|viss|sagrotan|vanish|febreze|tabs|duft|pods|klarspuler", "🧴"],
+    ["insekt|fliegen|ameisen|motten|wespen|mucken|silberfisch|schaben", "🪰"], ["folie|backpapier|butterbrotpapier|bratschlauch", "#roll"], ["beutel", "#zipbag"], ["tuch\\b|tucher|lappen", "🧽"],
+    ["seife", "🧼"], ["mittel|spuler|reiniger|entferner|spray|politur|pflege|entkalker|scheuer|soda|starke|bleich|erfrischer|fleck|schimmel|persil|ariel|spee|weisser riese|lenor|perwoll|pril|fairy|frosch|ajax|meister proper|domestos|bref|cillit|viss|sagrotan|vanish|febreze|tabs|duft|pods|klarspuler", "#detergent"],
     ["maschine|mixer|ruhrgerat|kocher|maker|waffeleisen|fritteuse|mikrowelle|backofen|kochplatte|automat|toaster|sauger|saugroboter|dampfreiniger", "🔌"]]],
   "Baby & Kind": ["🍼", [
-    ["windel|pants|wickel|pampers", "👶"], ["glaschen|quetschie|alete|bebivita", "🫙"], ["brei|flocken|musli", "🥣"], ["keks|stangen|kringel|waffel|riegel", "🍪"],
+    ["windel|pants|wickel|pampers", "#diaper"], ["glaschen|quetschie|alete|bebivita", "🫙"], ["brei|flocken|musli", "🥣"], ["keks|stangen|kringel|waffel|riegel", "🍪"],
     ["malbuch|kreide|farben|knete", "🖍️"], ["puzzle", "🧩"], ["sticker|sammelkarten|zeitschrift", "📰"], ["seifenblasen", "🫧"], ["sandspielzeug|spielzeug|beissring", "🧸"],
     ["creme|lotion|shampoo|babyol|babybad|waschgel|puder|bubchen|penaten|sonnencreme", "🧴"], ["feuchttucher|tucher|mullwindeln", "🧻"], ["besteck", "🍴"], ["brotdose", "🍱"], ["trinkflasche|trinklern", "🥤"],
     ["saft", "🧃"], ["tee", "🍵"], ["latzchen", "👶"]]],
@@ -377,7 +378,7 @@ var EMO = {
     ["schere", "✂️"], ["rasenmaher|rasentrimmer|rasenkante", "🪴"],
     ["grill|feuer|fackel|gasflasche", "🔥"], ["sonnenschirm|sonnensegel", "⛱️"], ["stuhl|bank|liege|tisch|hangematte", "🪑"],
     ["giess|schlauch|brause|sprenger|bewasser|regentonne|hahnanschluss|pool|planschbecken|teich", "💧"],
-    ["erde\\b|dunger|kalk|sand|mulch|kompost|blaukorn|mehl|spane|granulat|blahton|perlite|sack", "#bag"],
+    ["erde\\b|dunger|kalk|sand|mulch|kompost|blaukorn|mehl|spane|granulat|blahton|perlite|sack", "#soil"],
     ["weihnachtsbaum|tannengrun|adventskranz", "🎄"], ["sonnenblume", "🌻"], ["rose", "🌹"], ["strauss|schnittblumen|gesteck|trockenblumen|kunstblumen", "💐"],
     ["blume|tulpe|orchidee|geranie|petunie|stiefmutterchen|primel|veilchen|begonie|fuchsie|lavendel|chrysantheme|heide|hortensie|amaryllis|narzisse|krokus|hyazinthe|dahlie|gladiole|stauden|christrose|weihnachtsstern", "🌷"],
     ["kaktus|sukkulent", "🌵"], ["palme", "🌴"], ["baum|strauch|hecke|bambus|ficus|buchs|efeu|mistel", "🌳"],

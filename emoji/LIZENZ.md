@@ -24,4 +24,4 @@ Das Aussehen ist gleich geblieben; geprüft durch Bildvergleich aller Dateien mi
 
 Es liegen nur die Zeichen im Repo, die die Tabelle `EMO` in `app.js` benutzt. `tools/bildzeichen.py <Pfad zu noto-emoji/2D/svg>` gleicht den Ordner mit der Tabelle ab; neu kopierte Dateien danach mit `npx svgo@4 --config tools/svgo.config.js -f emoji` verkleinern.
 
-Die fünf eigenen Zeichnungen (Brötchen, Becher, Wurst, Tüte, Folienrolle) in `index.html` gehören nicht zu Noto Emoji.
+Die eigenen Zeichnungen (Symbole `x-…` in `index.html`) gehören nicht zu Noto Emoji; sie sind für dieses Projekt entstanden.

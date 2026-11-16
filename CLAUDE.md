@@ -8,7 +8,7 @@ Statische Seite ohne Backend, als PWA installierbar und ohne Netz nutzbar. Daten
 
 Von Hand bearbeitet:
 
-- `index.html` – Gerüst der Seite, Plus- und Haken-Symbol, fünf eigene farbige Zeichnungen (`x-bun`, `x-cup`, `x-sausage`, `x-bag`, `x-roll`).
+- `index.html` – Gerüst der Seite, Plus- und Haken-Symbol, 17 eigene farbige Zeichnungen als Symbole `x-<name>` (Brötchen, Becher, Wurst, Tüte, Folienrolle, Windel, Chipstüte, Soßenflasche, Ölflasche, Waschmittel, Sprühflasche, Erdsack, Gefrierbeutel, Marmeladenglas, Kondom, Ohrenstöpsel, Inhalator).
 - `app.css` – gesamtes Aussehen, heller und dunkler Modus, Einbindung der Schriften.
 - `app.js` – gesamte Logik: Abteilungen und Wortregeln (`META`), Bildzeichen-Tabelle (`EMO`), Zustand, Liste, Suche, Blätter, Anmeldung des Service Workers.
 - `manifest.webmanifest`, `icons/` – PWA-Angaben und App-Symbole (`icons/icon.svg` ist die Vorlage der PNGs).
@@ -58,8 +58,8 @@ Werkzeuge:
 
 1. **Teilen und Live-Abgleich.** Gewünscht: geteilte Listen in Echtzeit ohne Konto, per Link oder Code. Backend noch nicht entschieden (Firestore: Offline-Abgleich eingebaut; Supabase: EU-Region, Offline selbst bauen). Braucht ein Projekt beim gewählten Anbieter.
 2. **Echte Geräte.** Geprüft ist nur im Desktop-Browser und in der Handy-Emulation von Chromium (Touch, langes Drücken, Offline). Auf iPhone und Android noch ausprobieren: langes Drücken, Vibration, Installation zum Startbildschirm.
-3. **Zuordnung der Bildzeichen.** Alle 8550 Artikel sind einmal vollständig durchgesehen (Liste je Abteilung und Motiv gelesen), rund 420 korrigiert. Offen bleibt, wo es kein passendes Motiv gibt: Viele Artikel teilen sich die Pflegeflasche (Drogerie), den Karton (Haushalt), den Werkzeugkasten (Baumarkt) oder die Flasche für Soßen und Senf. Kondome, Ohrenstöpsel oder Inhalator zeigen deshalb die Pflegeflasche.
-4. **Eigene Zeichnungen.** Die vorhandenen wirken flacher als das Set. Kandidaten für neue: Windel (zeigt jetzt ein Babygesicht), Chipstüte, Konservenglas mit Inhalt, Waschmittel, Blumenerde, Gefrierbeutel.
+3. **Zuordnung der Bildzeichen.** Alle 8550 Artikel sind einmal vollständig durchgesehen (Liste je Abteilung und Motiv gelesen), rund 420 korrigiert. Offen bleibt, wo es kein passendes Motiv gibt: Viele Artikel teilen sich die Pflegeflasche (Drogerie), den Karton (Haushalt) oder den Werkzeugkasten (Baumarkt).
+4. **Eigene Zeichnungen.** Die vier ersten (Brötchen, Becher, Wurst, Tüte) wirken flacher als das Set und als die neueren mit Verlauf und Glanzlicht; bei Gelegenheit angleichen. Neue Zeichnung: Symbol in `index.html` anlegen (24er-Raster, Verlaufs-IDs eindeutig benennen) und in `EMO` als `"#name"` eintragen; der Logiktest prüft, dass das Symbol existiert.
 5. **Aufräumen.** In `META` steht je Abteilung und je Regel noch der Name eines früheren Linien-Symbols; ausgewertet wird er nicht mehr.
 6. **Katalog.** Ziel waren 10.000 Artikel. Der Katalog ist von Hand zusammengestellt und nicht gegen echte Sortimente geprüft.
 
