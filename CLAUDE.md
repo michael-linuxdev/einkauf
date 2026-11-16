@@ -49,6 +49,11 @@ Werkzeuge:
 - Der Bildschirm bleibt an, solange die App zu sehen ist.
 - Installationshinweis wie in der App `einbuergerung`: im Handy-Browser beim ersten Mal ein Vollbild-Hinweis mit Anleitung je Gerät, danach ein Balken oben; am Computer einmal ein Blatt.
 - Hinweis „Neue Version verfügbar“ mit Knopf „Jetzt laden“.
+- Mehrere Artikel auf einmal: eine eingefügte Liste (Zeilen, Kommas, Aufzählungszeichen) oder „Salz, Pfeffer, 2 Zitronen“ im Suchfeld.
+- Spracheingabe über das Mikrofon im Suchfeld, wo der Browser sie anbietet: „Milch Butter drei Äpfel“ wird zu drei Artikeln.
+- Geteilten Link einfügen (Menü), damit er auch in der installierten App ankommt.
+- Liegt das letzte Abhaken über drei Stunden zurück, bietet die Liste an, Erledigtes zu entfernen.
+- Die Reihenfolge der Abteilungen gilt für alle Listen oder nur für eine (anderer Laden).
 
 ## Getroffene Entscheidungen
 
@@ -63,22 +68,26 @@ Werkzeuge:
 - Menü: Alles Weitere hängt am Listennamen oben (ein Blatt), damit der Hauptbildschirm bei einem Bildschirm und zwei Gesten bleibt.
 - Reihenfolge im Laden: Pfeiltasten statt Ziehen, weil das auf jedem Gerät und mit Bedienungshilfen sicher funktioniert.
 - Teilen: nur offene Artikel, als Link ohne Server. Es gibt keinen Abgleich; jede Seite hat danach ihre eigene Kopie.
+- Spracheingabe: Die Erkennung macht der Browser, bei Chrome und Safari auf den Servern von Google bzw. Apple. Das ist die einzige Stelle, an der Daten das Gerät verlassen, und nur nach Tipp auf das Mikrofon. Die App selbst lädt und sendet weiter nichts.
+- Erledigtes wird nie von selbst gelöscht; die App fragt nur.
+- Eigene Artikel: Die Abteilung kommt zuerst aus dem Katalog (ein Katalogname steckt als Wort im Namen oder ein Wort endet darauf), erst danach aus den Wortregeln.
 
 ## Offene Punkte
 
 1. **Live-Abgleich.** Teilen per Link gibt es; gewünscht sind darüber hinaus geteilte Listen in Echtzeit ohne Konto, per Link oder Code. Backend noch nicht entschieden (Firestore: Offline-Abgleich eingebaut; Supabase: EU-Region, Offline selbst bauen). Braucht ein Projekt beim gewählten Anbieter.
-2. **Echte Geräte.** Geprüft ist nur im Desktop-Browser und in der Handy-Emulation von Chromium (Touch, langes Drücken, Offline). Auf iPhone und Android noch ausprobieren: langes Drücken, Vibration, Installation zum Startbildschirm, Zoom-Sperre, Bildschirm-an, Teilen-Menü. Auf dem iPhone öffnet ein geteilter Link Safari, nicht die installierte App; die beiden haben getrennte Daten.
+2. **Echte Geräte.** Geprüft ist nur im Desktop-Browser und in der Handy-Emulation von Chromium (Touch, langes Drücken, Offline). Auf iPhone und Android noch ausprobieren: langes Drücken, Vibration, Installation zum Startbildschirm, Zoom-Sperre, Bildschirm-an, Teilen-Menü. Die Spracheingabe ist nur mit nachgestellter Erkennung geprüft. Auf dem iPhone öffnet ein geteilter Link Safari, nicht die installierte App; dafür gibt es „Geteilte Liste einfügen“.
 3. **Zuordnung der Bildzeichen.** Alle 8550 Artikel sind einmal vollständig durchgesehen (Liste je Abteilung und Motiv gelesen), rund 420 korrigiert. Offen bleibt, wo es kein passendes Motiv gibt: Viele Artikel teilen sich die Pflegeflasche (Drogerie), den Karton (Haushalt) oder den Werkzeugkasten (Baumarkt).
 4. **Eigene Zeichnungen.** Alle 17 haben Verlauf und Glanzlicht. Neue Zeichnung: Symbol in `index.html` anlegen (24er-Raster, Verlaufs-IDs eindeutig benennen) und in `EMO` als `"#name"` eintragen; der Logiktest prüft, dass das Symbol existiert.
-5. **Aufräumen.** In `META` steht je Abteilung und je Regel noch der Name eines früheren Linien-Symbols; ausgewertet wird er nicht mehr.
-6. **Katalog.** Ziel waren 10.000 Artikel. Der Katalog ist von Hand zusammengestellt und nicht gegen echte Sortimente geprüft.
+5. **Katalog.** Ziel waren 10.000 Artikel. Der Katalog ist von Hand zusammengestellt und nicht gegen echte Sortimente geprüft.
 
 ## Technische Hinweise
 
-- Zustand: `localStorage`-Schlüssel `einkaufszettel.v1`, Feld `v: 3`. Dazu `order` (Reihenfolge der Abteilungen als Liste ihrer Indizes), `templates` und `installSeen`; `load()` ergänzt fehlende oder ungültige Werte. Der Schlüssel `einkaufszettel.gateSkip` merkt sich, dass der Vollbild-Hinweis übersprungen wurde. Artikel speichern den Index ihrer Abteilung; wenn sich die Abteilungen ändern, `v` erhöhen und in `load()` neu einsortieren.
+- Zustand: `localStorage`-Schlüssel `einkaufszettel.v1`, Feld `v: 3`. Dazu `order` (Reihenfolge der Abteilungen als Liste ihrer Indizes; eine Liste kann ein eigenes `order` haben), `templates`, `installSeen` und `doneAt` (Zeitpunkt des letzten Abhakens); `load()` ergänzt fehlende oder ungültige Werte. Der Schlüssel `einkaufszettel.gateSkip` merkt sich, dass der Vollbild-Hinweis übersprungen wurde. Artikel speichern den Index ihrer Abteilung; wenn sich die Abteilungen ändern, `v` erhöhen und in `load()` neu einsortieren.
 - Suche vergleicht ohne Umlaute und Groß-/Kleinschreibung (`norm()`). Die Wortregeln in `META` und `EMO` laufen auf dem so vereinfachten Namen; die erste passende Regel gewinnt, die Reihenfolge ist also Teil der Logik. Kurze Muster treffen leicht mitten im Wort („mate“ in „Tomatensaft“, „leiter“ in „Filzgleiter“, „klo“ in „Fleischklopfer“, „reis“ in „Preiselbeeren“, „tape“ in „Tapete“) und brauchen dann eine Wortgrenze. Ausnahmen stehen als eigene Regel am Anfang der Abteilung. Nach Änderungen an den Regeln die ganze Liste gegenlesen, nicht nur Stichproben: Die Fehlgriffe zeigen sich erst im Zusammenhang.
 - Das Blatt mit den Details schließt beim Tippen auf den Schleier nur, wenn die Berührung dort auch begonnen hat. Sonst schließt das Loslassen nach langem Drücken es sofort wieder.
 - Der Service Worker lädt beim Aktivieren alle Bildzeichen nach (1 MB). Kerndateien sind Pflicht, Bildzeichen nicht.
 - Mengen (`parseQty`): Abgetrennt wird nur, wenn die Eingabe weder im Katalog steht noch der Anfang eines Katalognamens ist („Eier 10“ bleibt wegen „Eier 10er“ ganz). Eine nackte Zahl am Ende zählt nur, wenn der Rest ein Katalogartikel ist.
 - Service Worker: Die neue Version ruft `skipWaiting` erst auf die Nachricht `SKIP_WAITING` hin. Neu geladen wird nur, wenn der Nutzer den Knopf getippt hat (`reloading`), nicht bei jedem `controllerchange`.
 - Der Logiktest läuft ohne `window`; alles, was Browser-Schnittstellen braucht, steht deshalb im Block am Ende von `app.js` und ist nur im Browser geprüft.
+- `META` enthält je Abteilung nur noch Farbe und Muster. Die Tiefkühl-Muster nennen fast jedes Lebensmittel und zählen in `guess()` nur, wenn der Name nach Tiefkühlware klingt („TK“, „gefroren“, „Eis“).
+- Mehrere Artikel (`splitItems`): Getrennt wird an Zeilenumbruch, Semikolon und Komma, nicht an einem Komma zwischen Ziffern („3,5 %“). Gesprochenes wird von links in die längsten Katalognamen zerlegt; geht das nicht auf, bleibt der Text ganz und wird nur an „und“ getrennt.
