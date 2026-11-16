@@ -22,7 +22,7 @@ Erzeugt, nicht von Hand bearbeiten:
 
 Fremdes Material:
 
-- `emoji/` – 283 Noto-Emoji-Grafiken als SVG, mit SVGO verkleinert (Apache-Lizenz 2.0; Herkunft, Änderungen und Lizenz in `emoji/LIZENZ.md`). Dateiname = Codepunkte in Hex ohne FE0F, z. B. `1f34e.svg`.
+- `emoji/` – 285 Noto-Emoji-Grafiken als SVG, mit SVGO verkleinert (Apache-Lizenz 2.0; Herkunft, Änderungen und Lizenz in `emoji/LIZENZ.md`). Dateiname = Codepunkte in Hex ohne FE0F, z. B. `1f34e.svg`.
 - `fonts/` – Figtree und Bricolage Grotesque als variable WOFF2-Dateien (SIL Open Font License, siehe `fonts/LIZENZ.md`).
 
 Werkzeuge:
@@ -58,7 +58,7 @@ Werkzeuge:
 
 1. **Teilen und Live-Abgleich.** Gewünscht: geteilte Listen in Echtzeit ohne Konto, per Link oder Code. Backend noch nicht entschieden (Firestore: Offline-Abgleich eingebaut; Supabase: EU-Region, Offline selbst bauen). Braucht ein Projekt beim gewählten Anbieter.
 2. **Echte Geräte.** Geprüft ist nur im Desktop-Browser und in der Handy-Emulation von Chromium (Touch, langes Drücken, Offline). Auf iPhone und Android noch ausprobieren: langes Drücken, Vibration, Installation zum Startbildschirm.
-3. **Zuordnung der Bildzeichen.** Eine Durchsicht mit Stichproben je Motiv hat rund 160 Artikel korrigiert. Vollständig geprüft sind die 8550 Artikel nicht. 287 Motive; viele Artikel teilen sich eines (Pflegeflasche, Tüte, Karton).
+3. **Zuordnung der Bildzeichen.** Alle 8550 Artikel sind einmal vollständig durchgesehen (Liste je Abteilung und Motiv gelesen), rund 420 korrigiert. Offen bleibt, wo es kein passendes Motiv gibt: Viele Artikel teilen sich die Pflegeflasche (Drogerie), den Karton (Haushalt), den Werkzeugkasten (Baumarkt) oder die Flasche für Soßen und Senf. Kondome, Ohrenstöpsel oder Inhalator zeigen deshalb die Pflegeflasche.
 4. **Eigene Zeichnungen.** Die vorhandenen wirken flacher als das Set. Kandidaten für neue: Windel (zeigt jetzt ein Babygesicht), Chipstüte, Konservenglas mit Inhalt, Waschmittel, Blumenerde, Gefrierbeutel.
 5. **Aufräumen.** In `META` steht je Abteilung und je Regel noch der Name eines früheren Linien-Symbols; ausgewertet wird er nicht mehr.
 6. **Katalog.** Ziel waren 10.000 Artikel. Der Katalog ist von Hand zusammengestellt und nicht gegen echte Sortimente geprüft.
@@ -66,6 +66,6 @@ Werkzeuge:
 ## Technische Hinweise
 
 - Zustand: `localStorage`-Schlüssel `einkaufszettel.v1`, Feld `v: 3`. Artikel speichern den Index ihrer Abteilung; wenn sich die Abteilungen ändern, `v` erhöhen und in `load()` neu einsortieren.
-- Suche vergleicht ohne Umlaute und Groß-/Kleinschreibung (`norm()`). Die Wortregeln in `META` und `EMO` laufen auf dem so vereinfachten Namen; die erste passende Regel gewinnt, die Reihenfolge ist also Teil der Logik. Kurze Muster treffen leicht mitten im Wort („mate“ in „Tomatensaft“, „leiter“ in „Filzgleiter“) und brauchen dann eine Wortgrenze.
+- Suche vergleicht ohne Umlaute und Groß-/Kleinschreibung (`norm()`). Die Wortregeln in `META` und `EMO` laufen auf dem so vereinfachten Namen; die erste passende Regel gewinnt, die Reihenfolge ist also Teil der Logik. Kurze Muster treffen leicht mitten im Wort („mate“ in „Tomatensaft“, „leiter“ in „Filzgleiter“, „klo“ in „Fleischklopfer“, „reis“ in „Preiselbeeren“, „tape“ in „Tapete“) und brauchen dann eine Wortgrenze. Ausnahmen stehen als eigene Regel am Anfang der Abteilung. Nach Änderungen an den Regeln die ganze Liste gegenlesen, nicht nur Stichproben: Die Fehlgriffe zeigen sich erst im Zusammenhang.
 - Das Blatt mit den Details schließt beim Tippen auf den Schleier nur, wenn die Berührung dort auch begonnen hat. Sonst schließt das Loslassen nach langem Drücken es sofort wieder.
 - Der Service Worker lädt beim Aktivieren alle Bildzeichen nach (1 MB). Kerndateien sind Pflicht, Bildzeichen nicht.

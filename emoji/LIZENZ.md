@@ -18,7 +18,7 @@ Die Dateien sind gegenüber dem Original verändert:
 - umbenannt: aus `emoji_u1f34e.svg` wird `1f34e.svg`
 - mit SVGO 4.1.0 verkleinert (Einstellungen in `tools/svgo.config.js`): Kommentare, Editor-Angaben und überflüssige Genauigkeit entfernt, IDs je Datei mit Präfix versehen. Zusammen 1,0 MB statt 2,3 MB.
 
-Das Aussehen ist gleich geblieben; geprüft durch Bildvergleich aller 283 Dateien mit dem Original bei 128 px.
+Das Aussehen ist gleich geblieben; geprüft durch Bildvergleich aller Dateien mit dem Original bei 128 px.
 
 ## Auswahl
 
