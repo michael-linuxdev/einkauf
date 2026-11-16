@@ -4,7 +4,7 @@
 /* Layout: eine schmale Spalte. Kopf mit Fortschritt und Eingabe, darunter weiße Karten im Dreierraster.
    Die Farbe trägt allein das Piktogramm: jede Abteilung hat ihren Ton, alles andere bleibt ruhig. */
 :root{
-  --bg:#edf0ea; --surface:#ffffff; --ink:#14201a; --muted:#647268; --line:#d5ddd3;
+  --bg:#edf0ea; --surface:#ffffff; --ink:#14201a; --muted:#566359; --line:#d5ddd3;
   --accent:#15663f; --accent-ink:#ffffff; --soft:#dfeae1; --danger:#b3372c;
   --shadow:0 1px 0 rgba(20,32,26,.04),0 8px 18px -12px rgba(20,32,26,.28);
   --tint:13%; --inkmix:0%;
@@ -45,6 +45,7 @@ symbol{overflow:visible}
 .stick{position:sticky;top:0;z-index:5;background:var(--bg);padding:8px 0 12px;display:flex;flex-direction:column;gap:12px}
 .bar{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
 .listbtn{display:flex;align-items:center;gap:8px;background:none;border:0;padding:2px 0;min-height:44px;font-family:var(--display);font-weight:800;font-size:31px;line-height:1.05;letter-spacing:-.025em;text-align:left;min-width:0}
+.bar-h{margin:0;min-width:0;font:inherit}
 .listbtn span{overflow-wrap:anywhere}
 .listbtn svg{flex:none;color:var(--muted);margin-top:4px}
 .count{flex:none;padding-bottom:8px;font-size:14px;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
@@ -146,6 +147,17 @@ h2 .link{text-transform:none;letter-spacing:0;font-size:14px;padding:0}
 /* Inhalte behalten ihre Höhe; wird es zu viel, rollt das Blatt */
 .sheet>*{flex-shrink:0}
 .sheet:focus{outline:none}
+/* Blatt lässt sich nach unten wegwischen; kein Durchrollen auf die Seite dahinter */
+.sheet{overscroll-behavior:contain}
+/* Erledigt-Block ein- und ausklappen */
+.fold{display:flex;align-items:center;gap:6px;background:none;border:0;padding:6px 0;min-height:36px;font:inherit;letter-spacing:inherit;text-transform:inherit;color:inherit}
+.fold svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;transition:transform .15s}
+.fold[aria-expanded="false"] svg{transform:rotate(-90deg)}
+/* Menge schrittweise ändern */
+.inline .btn.step{width:50px;padding:0;font-size:24px;line-height:1}
+.btn:disabled{opacity:.4;cursor:default}
+.filebtn{position:relative;overflow:hidden;display:grid;place-items:center}
+.filebtn input{position:absolute;inset:0;opacity:0;cursor:pointer;font-size:0}
 .sheet::before{content:"";align-self:center;width:40px;height:4px;border-radius:99px;background:var(--line)}
 .sheet-head{display:flex;align-items:center;gap:14px}
 .sheet-head,.sheet>h3{padding-right:48px}

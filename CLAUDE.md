@@ -8,7 +8,7 @@ Statische Seite ohne Backend, als PWA installierbar und ohne Netz nutzbar. Daten
 
 Von Hand bearbeitet:
 
-- `index.html` – Gerüst der Seite, Plus- und Haken-Symbol, 63 eigene farbige Zeichnungen als Symbole `x-<name>` (Obst, Gemüse und Nüsse ohne passendes Emoji wie Himbeere, Pflaume, Blumenkohl, Lauch, Walnuss; dazu Haushalt und Baumarkt wie Zahnpasta, Taschentücher, Farbeimer, Klebeband, Gießkanne).
+- `index.html` – Gerüst der Seite, Plus- und Haken-Symbol, 159 eigene farbige Zeichnungen als Symbole `x-<name>` (Obst, Gemüse und Nüsse ohne passendes Emoji wie Himbeere, Pflaume, Blumenkohl, Lauch, Walnuss; dazu Haushalt und Baumarkt wie Zahnpasta, Taschentücher, Farbeimer, Klebeband, Gießkanne).
 - `app.css` – gesamtes Aussehen, heller und dunkler Modus, Einbindung der Schriften.
 - `app.js` – gesamte Logik: Abteilungen und Wortregeln (`META`), Bildzeichen-Tabelle (`EMO`), Zustand, Liste, Suche mit Mengen-Erkennung, Blätter, Menü (Teilen, Vorlagen, Reihenfolge im Laden). Der Block am Ende braucht einen echten Browser: Bildschirm anlassen, Installationshinweis, Service Worker mit Update-Hinweis.
 - `manifest.webmanifest`, `icons/` – PWA-Angaben und App-Symbole (`icons/icon.svg` ist die Vorlage der PNGs).
@@ -22,7 +22,7 @@ Erzeugt, nicht von Hand bearbeiten:
 
 Fremdes Material:
 
-- `emoji/` – 315 Noto-Emoji-Grafiken als SVG, mit SVGO verkleinert (Apache-Lizenz 2.0; Herkunft, Änderungen und Lizenz in `emoji/LIZENZ.md`). Dateiname = Codepunkte in Hex ohne FE0F, z. B. `1f34e.svg`.
+- `emoji/` – 316 Noto-Emoji-Grafiken als SVG, mit SVGO verkleinert (Apache-Lizenz 2.0; Herkunft, Änderungen und Lizenz in `emoji/LIZENZ.md`). Dateiname = Codepunkte in Hex ohne FE0F, z. B. `1f34e.svg`.
 - `fonts/` – Figtree und Bricolage Grotesque als variable WOFF2-Dateien (SIL Open Font License, siehe `fonts/LIZENZ.md`).
 
 Werkzeuge:
@@ -53,6 +53,13 @@ Werkzeuge:
 - Spracheingabe über das Mikrofon im Suchfeld, wo der Browser sie anbietet: „Milch Butter drei Äpfel“ wird zu drei Artikeln.
 - Geteilten Link einfügen (Menü), damit er auch in der installierten App ankommt.
 - Liegt das letzte Abhaken über drei Stunden zurück, bietet die Liste an, Erledigtes zu entfernen.
+- Suche verzeiht Tippfehler („Jogurt“, „Brokoli“, „Zuchini“); ähnliche Treffer stehen hinter den genauen.
+- Menge mit Plus und Minus im Detailblatt, neben dem Freitextfeld.
+- Der Block „Erledigt“ lässt sich einklappen; die App merkt sich das.
+- Darstellung von Hand: System, Hell oder Dunkel (Menü).
+- Sicherung als Datei (Menü): Listen, Vorlagen und Reihenfolge speichern und wieder laden, dazunehmen oder alles ersetzen.
+- Blätter lassen sich nach unten wegwischen und wandern dabei mit dem Finger mit.
+- Farbvarianten haben eigene Bildzeichen: Weintrauben hell/dunkel, Paprika rot/gelb/grün, rote Zwiebeln, Rot-, Weiß- und Roséwein.
 - Die Reihenfolge der Abteilungen gilt für alle Listen oder nur für eine (anderer Laden).
 
 ## Getroffene Entscheidungen
@@ -70,19 +77,23 @@ Werkzeuge:
 - Teilen: nur offene Artikel, als Link ohne Server. Es gibt keinen Abgleich; jede Seite hat danach ihre eigene Kopie.
 - Spracheingabe: Die Erkennung macht der Browser, bei Chrome und Safari auf den Servern von Google bzw. Apple. Das ist die einzige Stelle, an der Daten das Gerät verlassen, und nur nach Tipp auf das Mikrofon. Die App selbst lädt und sendet weiter nichts.
 - Erledigtes wird nie von selbst gelöscht; die App fragt nur.
+- Unscharfe Suche: nur ab vier Buchstaben und nur, wenn es weniger als acht genaue Treffer gibt; ein Fehler erlaubt, ab acht Buchstaben zwei.
+- Sicherung laden übernimmt nur bekannte Felder in begrenzter Länge und vergibt neue Kennungen; „Alles ersetzen“ braucht einen zweiten Tipp.
+- Wischen zum Schließen greift nur, wenn das Blatt ganz oben steht und die Berührung nicht in einem Eingabefeld beginnt.
+- Bedienungshilfen: Ein offenes Blatt hält den Fokus (Tab läuft im Kreis), die Seite dahinter ist `inert`, beim Schließen kehrt der Fokus zurück. Textfarben halten mindestens 4,5:1.
 - Eigene Artikel: Die Abteilung kommt zuerst aus dem Katalog (ein Katalogname steckt als Wort im Namen oder ein Wort endet darauf), erst danach aus den Wortregeln.
 
 ## Offene Punkte
 
 1. **Live-Abgleich.** Teilen per Link gibt es; gewünscht sind darüber hinaus geteilte Listen in Echtzeit ohne Konto, per Link oder Code. Backend noch nicht entschieden (Firestore: Offline-Abgleich eingebaut; Supabase: EU-Region, Offline selbst bauen). Braucht ein Projekt beim gewählten Anbieter.
-2. **Echte Geräte.** Geprüft ist nur im Desktop-Browser und in der Handy-Emulation von Chromium (Touch, langes Drücken, Offline). Auf iPhone und Android noch ausprobieren: langes Drücken, Vibration, Installation zum Startbildschirm, Zoom-Sperre, Bildschirm-an, Teilen-Menü. Die Spracheingabe ist nur mit nachgestellter Erkennung geprüft. Auf dem iPhone öffnet ein geteilter Link Safari, nicht die installierte App; dafür gibt es „Geteilte Liste einfügen“.
-3. **Zuordnung der Bildzeichen.** Alle 10.988 Artikel sind durchgesehen, zuletzt mit der Frage, ob das Bild den Artikel selbst zeigt. Dabei sind 46 Motive neu gezeichnet und 30 passendere Noto-Grafiken ergänzt worden. Bewusst beim nächsten Verwandten geblieben sind seltene Exoten (Kaki, Sternfrucht, Drachenfrucht, Guave, Physalis, Litschi zeigen Mango bzw. Blaubeere), Grapefruit und Pomelo (Orange), Zucchini (Gurke), Haselnüsse und Nussmischungen (Kastanie) sowie Sammelmotive wie Pflegeflasche, Karton und Werkzeugkasten.
-4. **Eigene Zeichnungen.** Alle 17 haben Verlauf und Glanzlicht. Neue Zeichnung: Symbol in `index.html` anlegen (24er-Raster, Verlaufs-IDs eindeutig benennen) und in `EMO` als `"#name"` eintragen; der Logiktest prüft, dass das Symbol existiert.
+2. **Echte Geräte.** Geprüft ist nur im Desktop-Browser und in der Handy-Emulation von Chromium (Touch, langes Drücken, Offline). Auf iPhone und Android noch ausprobieren: Wischen zum Schließen, Sicherung speichern und laden, Screenreader (VoiceOver, TalkBack), langes Drücken, Vibration, Installation zum Startbildschirm, Zoom-Sperre, Bildschirm-an, Teilen-Menü. Die Spracheingabe ist nur mit nachgestellter Erkennung geprüft. Auf dem iPhone öffnet ein geteilter Link Safari, nicht die installierte App; dafür gibt es „Geteilte Liste einfügen“.
+3. **Zuordnung der Bildzeichen.** Alle 10.988 Artikel sind durchgesehen mit der Frage, ob das Bild den Artikel selbst zeigt. Alltagsartikel, die früheren Näherungen (Exoten, Grapefruit, Zucchini, Haselnüsse, Schinken, Salami, Deo, Shampoo, Parfüm) und die großen Sammelmotive (Pflegeflasche, Karton, Werkzeugkasten, Babyflasche) haben eigene Zeichnungen bekommen. Sammelmotive gibt es weiter in Garten (Topfpflanze, rund 170 Artikel) und Büro (Stift, rund 160) sowie bei den Resten in Baumarkt, Haushalt und Baby.
+4. **Eigene Zeichnungen.** Alle haben Verlauf und Glanzlicht. Weiße Motive (Wattepads, Mozzarella) heben sich im hellen Modus nur schwach von der Kachel ab. Neue Zeichnung: Symbol in `index.html` anlegen (24er-Raster, Verlaufs-IDs eindeutig benennen) und in `EMO` als `"#name"` eintragen; der Logiktest prüft, dass das Symbol existiert.
 5. **Katalog.** Das Ziel von 10.000 Artikeln ist erreicht; die früher dünnen Abteilungen (Baby, Tier, Sonstiges, Büro, Garten, Kleidung) sind aufgefüllt. Geprüft ist der Katalog auf Dubletten und Schreibvarianten. Gegen ein echtes Sortiment ist er weiterhin nicht geprüft: Er ist von Hand zusammengestellt, und eine Datenquelle wie Open Food Facts war aus der Arbeitsumgebung nicht erreichbar.
 
 ## Technische Hinweise
 
-- Zustand: `localStorage`-Schlüssel `einkaufszettel.v1`, Feld `v: 3`. Dazu `order` (Reihenfolge der Abteilungen als Liste ihrer Indizes; eine Liste kann ein eigenes `order` haben), `templates`, `installSeen` und `doneAt` (Zeitpunkt des letzten Abhakens); `load()` ergänzt fehlende oder ungültige Werte. Der Schlüssel `einkaufszettel.gateSkip` merkt sich, dass der Vollbild-Hinweis übersprungen wurde. Artikel speichern den Index ihrer Abteilung; wenn sich die Abteilungen ändern, `v` erhöhen und in `load()` neu einsortieren.
+- Zustand: `localStorage`-Schlüssel `einkaufszettel.v1`, Feld `v: 3`. Dazu `order` (Reihenfolge der Abteilungen als Liste ihrer Indizes; eine Liste kann ein eigenes `order` haben), `templates`, `installSeen`, `doneAt` (Zeitpunkt des letzten Abhakens), `doneOpen` (Erledigt-Block offen) und `theme` (`auto`, `light`, `dark`); `load()` ergänzt fehlende oder ungültige Werte. Der Schlüssel `einkaufszettel.theme` spiegelt die Darstellung, damit ein kleines Skript im Kopf von `index.html` sie vor dem ersten Zeichnen setzt. Der Schlüssel `einkaufszettel.gateSkip` merkt sich, dass der Vollbild-Hinweis übersprungen wurde. Artikel speichern den Index ihrer Abteilung; wenn sich die Abteilungen ändern, `v` erhöhen und in `load()` neu einsortieren.
 - Suche vergleicht ohne Umlaute und Groß-/Kleinschreibung (`norm()`). Die Wortregeln in `META` und `EMO` laufen auf dem so vereinfachten Namen; die erste passende Regel gewinnt, die Reihenfolge ist also Teil der Logik. Kurze Muster treffen leicht mitten im Wort („mate“ in „Tomatensaft“, „leiter“ in „Filzgleiter“, „klo“ in „Fleischklopfer“, „reis“ in „Preiselbeeren“, „tape“ in „Tapete“) und brauchen dann eine Wortgrenze. Ausnahmen stehen als eigene Regel am Anfang der Abteilung. Nach Änderungen an den Regeln die ganze Liste gegenlesen, nicht nur Stichproben: Die Fehlgriffe zeigen sich erst im Zusammenhang.
 - Das Blatt mit den Details schließt beim Tippen auf den Schleier nur, wenn die Berührung dort auch begonnen hat. Sonst schließt das Loslassen nach langem Drücken es sofort wieder.
 - Der Service Worker lädt beim Aktivieren alle Bildzeichen nach (1 MB). Kerndateien sind Pflicht, Bildzeichen nicht.
