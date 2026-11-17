@@ -4,7 +4,7 @@
 /* Layout: eine schmale Spalte. Kopf mit Fortschritt und Eingabe, darunter weiße Karten im Dreierraster.
    Die Farbe trägt allein das Piktogramm: jede Abteilung hat ihren Ton, alles andere bleibt ruhig. */
 :root{
-  --bg:#edf0ea; --surface:#ffffff; --ink:#14201a; --muted:#566359; --line:#d5ddd3;
+  --bg:#edf0ea; --surface:#ffffff; --ink:#14201a; --muted:#566359; --edge:drop-shadow(0 0 .6px rgba(20,32,26,.6)) drop-shadow(0 1px 1.2px rgba(20,32,26,.14)); --line:#d5ddd3;
   --accent:#15663f; --accent-ink:#ffffff; --soft:#dfeae1; --danger:#b3372c;
   --shadow:0 1px 0 rgba(20,32,26,.04),0 8px 18px -12px rgba(20,32,26,.28);
   --tint:13%; --inkmix:0%;
@@ -14,7 +14,7 @@
 }
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
-    --bg:#0e1411; --surface:#1a221d; --ink:#e8efe9; --muted:#93a399; --line:#2b362f;
+    --bg:#0e1411; --surface:#1a221d; --ink:#e8efe9; --muted:#93a399; --edge:none; --line:#2b362f;
     --accent:#62d199; --accent-ink:#0a1810; --soft:#1f2d25; --danger:#ff8a7d;
     --shadow:0 1px 0 rgba(255,255,255,.03),0 10px 20px -14px rgba(0,0,0,.8);
     --tint:24%; --inkmix:45%;
@@ -22,7 +22,7 @@
   }
 }
 :root[data-theme="dark"]{
-  --bg:#0e1411; --surface:#1a221d; --ink:#e8efe9; --muted:#93a399; --line:#2b362f;
+  --bg:#0e1411; --surface:#1a221d; --ink:#e8efe9; --muted:#93a399; --edge:none; --line:#2b362f;
   --accent:#62d199; --accent-ink:#0a1810; --soft:#1f2d25; --danger:#ff8a7d;
   --shadow:0 1px 0 rgba(255,255,255,.03),0 10px 20px -14px rgba(0,0,0,.8);
   --tint:24%; --inkmix:45%;
@@ -92,6 +92,8 @@ h2 .link{text-transform:none;letter-spacing:0;font-size:14px;padding:0}
 /* Bildzeichen sind Noto-Emoji-Grafiken aus emoji/ (Lizenz: emoji/LIZENZ.md).
    Lässt sich eine Datei nicht laden, springt die Emoji-Schrift des Geräts ein (.emot). */
 .emo{width:40px;height:40px;display:block;pointer-events:none;-webkit-user-drag:none}
+/* Feiner Rand im hellen Modus, damit weiße Motive (Wattepads, Mozzarella, Mehl) sich von der weißen Kachel abheben */
+.emo,.ex{filter:var(--edge)}
 .emot{font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji","Segoe UI Symbol",sans-serif;font-size:37px;line-height:1.15;font-weight:400}
 .ex{width:44px;height:44px}
 .tile.done .badge.pic{background:none}
