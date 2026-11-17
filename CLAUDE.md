@@ -8,11 +8,11 @@ Statische Seite ohne Backend, als PWA installierbar und ohne Netz nutzbar. Daten
 
 Von Hand bearbeitet:
 
-- `index.html` – Gerüst der Seite, Plus- und Haken-Symbol, 159 eigene farbige Zeichnungen als Symbole `x-<name>` (Obst, Gemüse und Nüsse ohne passendes Emoji wie Himbeere, Pflaume, Blumenkohl, Lauch, Walnuss; dazu Haushalt und Baumarkt wie Zahnpasta, Taschentücher, Farbeimer, Klebeband, Gießkanne).
+- `index.html` – Gerüst der Seite, Plus- und Haken-Symbol, 190 eigene farbige Zeichnungen als Symbole `x-<name>` (Obst, Gemüse und Nüsse ohne passendes Emoji wie Himbeere, Pflaume, Blumenkohl, Lauch, Walnuss; dazu Haushalt und Baumarkt wie Zahnpasta, Taschentücher, Farbeimer, Klebeband, Gießkanne).
 - `app.css` – gesamtes Aussehen, heller und dunkler Modus, Einbindung der Schriften.
 - `app.js` – gesamte Logik: Abteilungen und Wortregeln (`META`), Bildzeichen-Tabelle (`EMO`), Zustand, Liste, Suche mit Mengen-Erkennung, Blätter, Menü (Teilen, Vorlagen, Reihenfolge im Laden). Der Block am Ende braucht einen echten Browser: Bildschirm anlassen, Installationshinweis, Service Worker mit Update-Hinweis.
 - `manifest.webmanifest`, `icons/` – PWA-Angaben und App-Symbole (`icons/icon.svg` ist die Vorlage der PNGs).
-- `src/gen.py` mit `src/add1.py` bis `add4.py` – Katalog-Generator: Artikellisten je Abteilung, Marken, Alltagsartikel (Rangfolge), Synonyme. `add4.py` ist die jüngste Ergänzung; `DROP` in `gen.py` nimmt einzelne Artikel wieder heraus.
+- `src/gen.py` mit `src/add1.py` bis `add5.py` – Katalog-Generator: Artikellisten je Abteilung, Marken, Alltagsartikel (Rangfolge), Synonyme. `add5.py` ist die jüngste Ergänzung (Abgleich mit Open Food Facts); `DROP` in `gen.py` nimmt einzelne Artikel wieder heraus.
 - `src/sw.js` – Vorlage des Service Workers.
 
 Erzeugt, nicht von Hand bearbeiten:
@@ -22,13 +22,14 @@ Erzeugt, nicht von Hand bearbeiten:
 
 Fremdes Material:
 
-- `emoji/` – 316 Noto-Emoji-Grafiken als SVG, mit SVGO verkleinert (Apache-Lizenz 2.0; Herkunft, Änderungen und Lizenz in `emoji/LIZENZ.md`). Dateiname = Codepunkte in Hex ohne FE0F, z. B. `1f34e.svg`.
+- `emoji/` – 322 Noto-Emoji-Grafiken als SVG, mit SVGO verkleinert (Apache-Lizenz 2.0; Herkunft, Änderungen und Lizenz in `emoji/LIZENZ.md`). Dateiname = Codepunkte in Hex ohne FE0F, z. B. `1f34e.svg`.
 - `fonts/` – Figtree und Bricolage Grotesque als variable WOFF2-Dateien (SIL Open Font License, siehe `fonts/LIZENZ.md`).
 
 Werkzeuge:
 
 - `build.sh` – erzeugt `katalog.js` und `sw.js`, prüft die Skripte und startet den Logiktest. Braucht Python 3 und Node.
 - `tools/pruefen.js` – Logiktest ohne Browser: Katalog, Bildzeichen (Datei oder Zeichnung zu jedem Zeichen vorhanden), Suchreihenfolge, Stand von `sw.js`.
+- `tools/abgleich_off.py` – lädt die deutschen Kategorienamen von Open Food Facts (Taxonomie aus dem öffentlichen Quelltext auf GitHub) und listet, was im Katalog in keiner Schreibweise vorkommt. Die Liste ist ein Vorschlag zum Durchsehen; Aufnahmen kommen von Hand in `src/add5.py`.
 - `tools/bildzeichen.py` – gleicht `emoji/` mit der Tabelle `EMO` ab: mit `<Pfad zu noto-emoji/2D/svg>` kopiert es fehlende Dateien und entfernt nicht mehr benutzte, ohne Pfad prüft es nur. Neue Dateien danach verkleinern: `npx svgo@4 --config tools/svgo.config.js -f emoji`.
 
 **Nach jeder Änderung `./build.sh` laufen lassen.** Sonst behält `sw.js` die alte Version, und installierte Apps laden die Änderung nicht.
@@ -36,7 +37,7 @@ Werkzeuge:
 ## Stand der Funktionen
 
 - Mehrere Listen, anlegen, umbenennen, löschen.
-- Suche über 10.988 Artikel in 19 Abteilungen, 249 Synonyme, Rangfolge mit rund 180 Alltagsartikeln, 339 Markennamen (nur Namen, keine Logos).
+- Suche über 11.278 Artikel in 19 Abteilungen, 249 Synonyme, Rangfolge mit rund 180 Alltagsartikeln, 339 Markennamen (nur Namen, keine Logos).
 - Dreispaltiges Kachelraster; tippen hakt ab, lange drücken öffnet Name, Menge und Abteilung.
 - Rückgängig für Abhaken, Löschen und Hinzufügen.
 - Eigene Artikel bekommen Abteilung und Bildzeichen über Wortregeln.
@@ -69,6 +70,7 @@ Werkzeuge:
 - Kein Hinweistext am Seitenende.
 - Bildzeichen: Noto-Emoji-Grafiken als SVG-Dateien aus `emoji/`, nicht aus einer Schrift; nur wenn eine Datei nicht lädt, springt die Emoji-Schrift des Geräts ein. Keine Kombinationen aus Grundform und Zusatzzeichen.
 - Lücken im Set werden durch eigene Zeichnungen im gleichen Look gefüllt. Ein Bildzeichen soll den Artikel zeigen, nicht einen ähnlichen: Himbeeren zeigen keine Blaubeere, Pflaumen keinen Pfirsich. Gibt es kein passendes Noto-Emoji, wird gezeichnet.
+- Im hellen Modus bekommen alle Bildzeichen einen feinen dunklen Rand (`--edge`, ein `drop-shadow`), damit weiße Motive auf der weißen Kachel zu sehen sind; im dunklen Modus entfällt er.
 - Nichts wird von fremden Servern geladen (keine Google-Schriften, kein CDN).
 - Suche: Treffer am Namens- oder Wortanfang und am Wortende („milch“ in „Vollmilch“) stehen vor Treffern mitten im Wort („ap“ in „Rapsöl“); Alltagsartikel und oft Gekauftes rücken nur innerhalb dieser Gruppen nach vorn.
 - Offline: erst der Cache, dann das Netz. Eine neue Version wird im Hintergrund geladen und wartet, bis man „Jetzt laden“ tippt; von selbst lädt die App nie neu.
@@ -87,9 +89,9 @@ Werkzeuge:
 
 1. **Live-Abgleich.** Teilen per Link gibt es; gewünscht sind darüber hinaus geteilte Listen in Echtzeit ohne Konto, per Link oder Code. Backend noch nicht entschieden (Firestore: Offline-Abgleich eingebaut; Supabase: EU-Region, Offline selbst bauen). Braucht ein Projekt beim gewählten Anbieter.
 2. **Echte Geräte.** Geprüft ist nur im Desktop-Browser und in der Handy-Emulation von Chromium (Touch, langes Drücken, Offline). Auf iPhone und Android noch ausprobieren: Wischen zum Schließen, Sicherung speichern und laden, Screenreader (VoiceOver, TalkBack), langes Drücken, Vibration, Installation zum Startbildschirm, Zoom-Sperre, Bildschirm-an, Teilen-Menü. Die Spracheingabe ist nur mit nachgestellter Erkennung geprüft. Auf dem iPhone öffnet ein geteilter Link Safari, nicht die installierte App; dafür gibt es „Geteilte Liste einfügen“.
-3. **Zuordnung der Bildzeichen.** Alle 10.988 Artikel sind durchgesehen mit der Frage, ob das Bild den Artikel selbst zeigt. Alltagsartikel, die früheren Näherungen (Exoten, Grapefruit, Zucchini, Haselnüsse, Schinken, Salami, Deo, Shampoo, Parfüm) und die großen Sammelmotive (Pflegeflasche, Karton, Werkzeugkasten, Babyflasche) haben eigene Zeichnungen bekommen. Sammelmotive gibt es weiter in Garten (Topfpflanze, rund 170 Artikel) und Büro (Stift, rund 160) sowie bei den Resten in Baumarkt, Haushalt und Baby.
-4. **Eigene Zeichnungen.** Alle haben Verlauf und Glanzlicht. Weiße Motive (Wattepads, Mozzarella) heben sich im hellen Modus nur schwach von der Kachel ab. Neue Zeichnung: Symbol in `index.html` anlegen (24er-Raster, Verlaufs-IDs eindeutig benennen) und in `EMO` als `"#name"` eintragen; der Logiktest prüft, dass das Symbol existiert.
-5. **Katalog.** Das Ziel von 10.000 Artikeln ist erreicht; die früher dünnen Abteilungen (Baby, Tier, Sonstiges, Büro, Garten, Kleidung) sind aufgefüllt. Geprüft ist der Katalog auf Dubletten und Schreibvarianten. Gegen ein echtes Sortiment ist er weiterhin nicht geprüft: Er ist von Hand zusammengestellt, und eine Datenquelle wie Open Food Facts war aus der Arbeitsumgebung nicht erreichbar.
+3. **Zuordnung der Bildzeichen.** Alle Artikel sind durchgesehen mit der Frage, ob das Bild den Artikel selbst zeigt. Die Sammelmotive sind aufgelöst: Topfpflanze, Stift, Werkzeugkasten, Karton und Babyflasche stehen nur noch bei Artikeln, die genau das sind (Zimmerpflanzen, Bleistifte, Werkzeugkoffer, Umzugskartons, Babyflaschen und Sauger). Ohne eigenes Motiv geblieben sind Kniekissen und Drahtbürste. Einige Gruppen teilen sich bewusst ein Bild der Warenform: Sprühflasche für Pflanzenschutz- und Reinigungsmittel, Sack für Dünger und Substrate, Dose für Farben und Grundierungen.
+4. **Eigene Zeichnungen.** Alle haben Verlauf und Glanzlicht. Neue Zeichnung: Symbol in `index.html` anlegen (24er-Raster, Verlaufs-IDs eindeutig benennen) und in `EMO` als `"#name"` eintragen; der Logiktest prüft, dass das Symbol existiert.
+5. **Katalog.** 11.278 Artikel. Abgeglichen mit den deutschen Kategorienamen von Open Food Facts, Open Beauty Facts und Open Pet Food Facts (rund 3.900 Warengruppen, `tools/abgleich_off.py`): Von 738 daraus gezogenen konkreten Artikeln fehlten 292 und sind in `src/add5.py` ergänzt; der Rest war vorhanden oder ist Sammelbegriff, Herkunftsangabe oder Schreibvariante. Nicht abgeglichen sind die Non-Food-Liste (Google-Produktkategorien, überwiegend kein Supermarktsortiment) und Verkaufszahlen: Die Produktdatenbank selbst (welche Artikel wie oft im Handel stehen) ist aus der Arbeitsumgebung gesperrt, nur die Taxonomie auf GitHub war erreichbar. Die Rangfolge der Alltagsartikel bleibt deshalb von Hand gesetzt.
 
 ## Technische Hinweise
 

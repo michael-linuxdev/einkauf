@@ -258,8 +258,8 @@ C["Baumarkt & Werkzeug"] = _cut("Schrauben", "Blumenerde")
 C["Garten & Pflanzen"] = _cut("Blumenerde", "Socken")
 C["Büro & Schule"] = _cut("Kugelschreiber", "Schrauben")
 C["Sonstiges"] = _cut("Einkaufstasche")
-import add1, add2, add3, add4
-for _m in (add1, add2, add3, add4):
+import add1, add2, add3, add4, add5
+for _m in (add1, add2, add3, add4, add5):
     for cat, txt in _m.A.items():
         C[cat] += L(txt)
 BR["Büro & Schule"] = BR.pop("Sonstiges")
