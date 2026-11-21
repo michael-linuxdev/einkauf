@@ -36,5 +36,5 @@ A["Drogerie & Gesundheit"] = """
 Körperpuder;Shampoo gegen Haarausfall;Enthaarungswachs;Kajalstift;Foundation flüssig;Fixierpuder;Künstliche Nägel;Nagellackverdünner;Kölnisch Wasser;Duftseife;Seife unparfümiert;Händedesinfektionsgel;Reinigungswasser;Massagekerze;Kinderzahnpasta;Eisenpräparat;Krillölkapseln;Lebertrankapseln;Fischölkapseln;Molkenprotein;Glutamin;Mahlzeitersatz-Shake;Nahrungsergänzungsmittel
 """
 A["Baby & Kind"] = """
-Babysuppe;Fruchtdessert Baby
+Babysuppe;Fruchtdessert Baby;Pre-Nahrung;Pre-Nahrung Bio
 """
