@@ -247,7 +247,7 @@ var EMO = {
     /* Alltagsartikel, Farbvarianten und aufgeteilte Sammelmotive */
     ["vollkornbrot(?!chen)|roggenbrot(?!chen)|schwarzbrot|pumpernickel|roggenvollkorn|kommissbrot|roggenschrot|vollkornschrot|malzbrot|malzkornbrot", "#darkbread"],
     ["teilchen|kopenhagener|datschi|osterlamm|stutenkerl", "🍰"], ["quarkini", "🍩"],
-    ["pizza", "🍕"], ["reiswaffel|maiswaffel|dinkelwaffel", "🍘"],
+    ["pizza", "🍕"], ["reiswaffel|maiswaffel|dinkelwaffel", "#ricecake"],
     ["croissant|hornchen|franzbrotchen", "🥐"], ["brezel|laugen", "🥨"], ["bagel", "🥯"], ["donut|berliner(?! landbrot)|krapfen|quarkballchen|mutzen|schmalzkuchen", "🍩"],
     ["brotchen|semmel|schrippe|wecken|seelen|schusterjungen|knuppel|buns|toasties|brioche", "#bun"],
     ["baguette|ciabatta|grissini|brotsticks|stange|panini", "🥖"], ["fladenbrot|pita|naan|wrap|tortilla|lavash|yufka|durum|pide|simit|matzen", "🫓"],
@@ -396,7 +396,7 @@ var EMO = {
     ["nuss-nougat|nutella|nudossi|nusspli|schokocreme|haselnusscreme", "#nutcream"],
     ["keks(?!creme)", "🍪"],
     ["kaffee|espresso|crema|cappuccino|latte\\b|nescafe|jacobs|dallmayr|lavazza|senseo|nespresso|tassimo|mokka|ristretto|cold brew(?!-tee)", "☕"],
-    ["riegel|flapjack|fruchtschnitte|brotbelag", "🍫"], ["erdnussbutter|erdnussmus", "🥜"],
+    ["proteinriegel|brotbelag", "🍫"], ["riegel|flapjack|fruchtschnitte", "#bar"], ["erdnussbutter|erdnussmus", "🥜"],
     ["flocken|musli|porridge|granola|cornflakes|cerealien|pops|kissen|ringe|flakes|kleie|frosties|smacks|krispies|oats|crunch|haferbrei|puffreis|gepufft|biscuits|weizenkeime|hafermark|\\bchia", "🥣"],
     ["kakao|trinkschokolade|nesquik|kaba|ovomaltine", "🍫"], ["teekanne", "🫖"], ["tee\\b|teemischung|teekapseln|earl grey|darjeeling|sencha|matcha|chai|heisse zitrone|kandis|golden-milk", "🍵"],
     ["honig", "🍯"], ["erdnuss", "🥜"],
@@ -404,7 +404,7 @@ var EMO = {
     ["marmelade|konfiture|gelee|fruchtaufstrich|pflaumenmus|zwetschgenmus|lemon curd|mark\\b", "#jam"]]],
   "Süßes & Snacks": ["🍬", [
     /* Ergänzungen aus dem Abgleich mit Open Food Facts */
-    ["katzenzungen|cashew-riegel", "🍫"],
+    ["katzenzungen", "🍫"], ["cashew-riegel|musliriegel|haferriegel|fruchtriegel|nussriegel|dattelriegel", "#bar"], ["bio-reiswaffel|linsenwaffel|haferwaffel", "#ricecake"],
     /* Alltagsartikel, Farbvarianten und aufgeteilte Sammelmotive */
     ["nussmix|nuss-frucht|studentenfutter|nussmischung|nusskernmischung", "#nutmix"],
     /* Motive, die das Bild genau treffen sollen (eigene Zeichnungen und passendere Noto-Grafiken) */
@@ -474,7 +474,7 @@ var EMO = {
     ["always", "🩸"],
     /* Motive, die das Bild genau treffen sollen (eigene Zeichnungen und passendere Noto-Grafiken) */
     ["zahnpasta|zahncreme|zahngel", "#toothpaste"], ["taschentucher", "#tissues"], ["wattestabchen", "#cottonswab"], ["wattepads|wattebausche|wattebällchen|^watte", "#cottonpad"], ["fohn(?!spray)|glatteisen|lockenstab|warmluftburste", "#hairdryer"], ["kamm\\b|haarburste|rundburste|paddle|entwirrburste", "🪮"],
-    ["kondom", "#condom"], ["ohrenstopsel", "#earplug"], ["inhalator|inhalierstift", "#inhaler"], ["kosmetiktucher|abschminktucher", "🧻"], ["salbe|serum", "🧴"], ["glatteisen|haarturban", "🎀"], ["binden|slipeinlagen|tampon|menstruation|perioden", "🩸"], ["trimmer", "🪒"], ["feuchtes toilettenpapier|feuchte waschlappen", "🧻"], ["leukoplast", "🩹"], ["dragees", "💊"], ["kulturtasche", "👝"], ["abdeckstift|puderpinsel", "💄"], ["handschuhe", "🧤"], ["inkontinenz|bettschutz", "🧻"], ["mundschutz|ffp2", "😷"], ["pinzette|hornhaut|bimsstein|zehentrenner", "💅"], ["duschhaube", "🚿"],
+    ["kondom", "#condom"], ["ohrenstopsel", "#earplug"], ["inhalator|inhalierstift", "#inhaler"], ["kosmetiktucher", "#tissues"], ["feuchttucher|feuchte |feuchtes |abschminktucher|reinigungstucher|intimtucher|intimpflegetucher|deo-tucher|erfrischungstucher", "#wetwipes"], ["salbe|serum", "🧴"], ["glatteisen|haarturban", "🎀"], ["binden|slipeinlagen|tampon|menstruation|perioden", "🩸"], ["trimmer", "🪒"], ["leukoplast", "🩹"], ["dragees", "💊"], ["kulturtasche", "👝"], ["abdeckstift|puderpinsel", "💄"], ["handschuhe", "🧤"], ["inkontinenz|bettschutz", "🧻"], ["mundschutz|ffp2", "😷"], ["pinzette|hornhaut|bimsstein|zehentrenner", "💅"], ["duschhaube", "🚿"],
     ["zahn|aufsteckburste|interdental|mundspulung|mundwasser|munddusche|zungenreiniger|colgate|odol|elmex|aronal|blend-a-med|sensodyne|oral-b|listerine", "🪥"],
     ["rasier|bart|epilier|scherkopf|haarschneider|gillette|wilkinson", "🪒"], ["nagellack|nagel|feile|manikure|unterlack|uberlack", "💅"],
     ["lippenstift|lipgloss|lipliner|mascara|eyeliner|kajal|lidschatten|make-up|foundation|concealer|rouge|\\bpuder\\b|kompaktpuder|loser puder|bronzer|highlighter|primer|wimpern|augenbrauen|kosmetik|schmink|bb-cream|cc-cream", "💄"],
@@ -551,17 +551,29 @@ var EMO = {
     ["seife", "🧼"], ["mittel|spuler|reiniger|entferner|spray|politur|pflege|entkalker|scheuer|soda|starke|bleich|erfrischer|fleck|schimmel|persil|ariel|spee|weisser riese|lenor|perwoll|pril|fairy|frosch|ajax|meister proper|domestos|bref|cillit|viss|sagrotan|vanish|febreze|tabs|duft|pods|klarspuler", "#detergent"],
     ["maschine|mixer|ruhrgerat|kocher|maker|waffeleisen|fritteuse|mikrowelle|backofen|kochplatte|automat|toaster|sauger|saugroboter|dampfreiniger", "🔌"]]],
   "Baby & Kind": ["🍼", [
-    /* Ergänzungen aus dem Abgleich mit Open Food Facts */
-    ["babysuppe|fruchtdessert baby", "🫙"],
-    /* Geräte, Zubehör und Mittel statt der Topfpflanze bzw. des Stifts für alles */
+    /* Eigene Zeichnungen für Baby-Bedarf: das Bild zeigt den Artikel selbst (Feuchttücher kein Klopapier, Gläschen kein Einmachglas) */
+    ["feuchttucher|olpflegetucher", "#wetwipes"], ["spucktucher|mulltucher|mullwindeln|molton", "#muslin"],
+    ["quetschie", "#pouch"], ["glaschen|babysuppe|fruchtdessert baby|fruchtpuree|obstmus|alete|bebivita", "#babyjar"],
+    ["latzchen", "#bib"], ["body\\b|schlafanzug baby", "#onesie"], ["krabbelschuhe", "#babyshoe"],
+    ["nasensauger", "#nasalspray"], ["flaschensauger|trinksauger", "#teat"], ["flaschenburste", "#bottlebrush"], ["flaschenwarmer", "#bottlewarmer"],
+    ["sterilisator|sterilisationsbeutel", "#sterilizer"], ["milchpulverportionierer", "#dispenser"], ["trinklern", "#sippycup"], ["topfchen", "#potty"],
+    ["wickelunterlage|wickelauflage|bettschutz", "#changingmat"], ["wickeltasche", "#diaperbag"], ["windeleimer", "#diaperpail"], ["windelbeutel", "#trashbag"],
+    ["beissring", "#teether"], ["rassel|greifling", "#rattle"], ["badeente|badespielzeug", "#rubberduck"], ["sandspielzeug|sandformchen|sandschaufel|sandeimer", "#sandbucket"],
+    ["schwimmflugel", "#armbands"], ["schwimmring", "#swimring"], ["schwimmbrille", "🥽"], ["wasserball", "#beachball"], ["hupfball", "#hopper"],
+    ["wurfelspiel", "#dice"], ["memo-spiel|kartenspiel|quartett", "#cards"], ["spielzeugauto", "🚗"], ["wasserbomben", "🎈"], ["springseil", "#jumprope"],
+    ["stapelbecher", "#stackcups"], ["mobile", "#mobile"],
+    ["kochsalz", "#ampoule"], ["zapfchen", "#suppository"], ["fiebersaft", "#syrup"], ["zahnungsgel", "#creamtube"], ["entschaumer", "#dropper"],
+    ["badewanne", "🛁"], ["babypuder", "#powder"], ["babyshampoo", "#shampoo"], ["babybad|waschgel|waschlotion", "#showergel"], ["lippenpflege", "#lipbalm"],
+    ["penaten", "#creamjar"], ["wundschutzcreme|babycreme", "#creamtube"], ["salbe", "#ointment"],
+    ["stillkissen", "#nursingpillow"], ["kirschkernkissen", "#cherrypillow"],
+    ["stangen|maisflips", "#sticks"], ["kringel", "#kringel"], ["reiswaffel", "#ricecake"], ["riegel", "#bar"],
+    ["sonnenhut", "👒"], ["sockchen|strumpfhose", "🧦"], ["kratzhandschuhe", "🧤"], ["halstuch", "🧣"], ["schlafanzug", "👕"], ["babyloffel", "🥄"],
+    /* Ergänzungen aus dem Abgleich mit Open Food Facts und Geräte, Zubehör und Mittel */
     ["milchpumpe|muttermilchbeutel|stillhutchen", "#breastpump"],
     ["stilleinlagen", "#cottonpad"],
-    ["stillkissen", "🛏️"],
     ["stillkugeln", "🍪"],
     ["nagelknipser", "💅"],
     ["haarburste", "🪮"],
-    ["nasensauger", "#nasalspray"],
-    ["kirschkernkissen", "🍒"],
     ["snackbox", "#storagebox"],
     ["kapuzenhandtuch", "#towel"],
     ["tritthocker", "🪑"],
@@ -571,15 +583,15 @@ var EMO = {
     ["uberraschungstute", "🛍️"],
     ["zahnputzbecher", "🪥"],
     ["namensaufkleber|bugeletiketten", "🏷️"],
-    /* Alltagsartikel, Farbvarianten und aufgeteilte Sammelmotive */
+    /* Alltagsartikel und übrige Gruppen */
     ["schnuller", "#pacifier"],
     ["anfangsmilch|folgemilch|kindermilch|ha-nahrung|-nahrung|milchnahrung|aptamil|milupa|babynahrung|reisschleim|haferschleim", "#formula"],
     ["babywasser", "#waterbottle"],
-    ["bettschutz", "#diaper"], ["fiebersaft|zapfchen|zahnungs|entschaumer|vitamin|kochsalz", "💊"], ["thermometer", "🌡️"], ["zahnburste|zahnpasta", "🪥"], ["schere", "✂️"], ["kinder-nudeln", "🍝"], ["tomatensosse|ketchup", "🍅"], ["kinderwurst", "#sausage"], ["pudding", "🍮"], ["fruchtpuree|obstmus", "🫙"], ["fruchtgummi", "🍬"], ["maisflips|zwieback", "🍪"], ["body\\b|schlafanzug|sockchen|strumpfhose|krabbelschuhe|sonnenhut|kratzhandschuhe|halstuch", "👶"], ["sonnenbrille", "🕶️"], ["rucksack|kindergartentasche", "🎒"], ["topfchen|toilettensitz", "🚽"], ["badewanne", "🛁"], ["(^|[^l])buch\\b|malblock", "📚"], ["spieluhr|mobile|greifling|rassel|stapelbecher|badeente|kuschel|schmusetuch|hupfball|wasserball|springseil|schwimm(?!windel)|wasserbomben|sand|horspiel|spiel\\b|quartett", "🧸"], ["loffel", "🍴"], ["kinderteller|geschirr", "🍽️"], ["kinderbecher|trinkbecher", "🥤"], ["wundschutzspray|salbe|pflege|sonnenmilch|bauchleinol|schwangerschaftsol", "🧴"],
-    ["windel|pants|wickel|pampers", "#diaper"], ["glaschen|quetschie|alete|bebivita", "🫙"], ["brei|flocken|musli", "🥣"], ["keks|stangen|kringel|waffel|riegel", "🍪"],
-    ["malbuch|kreide|farben|knete", "🖍️"], ["puzzle", "🧩"], ["sticker|sammelkarten|zeitschrift", "📰"], ["seifenblasen", "🫧"], ["sandspielzeug|spielzeug|beissring", "🧸"],
-    ["creme|lotion|shampoo|babyol|babybad|waschgel|puder|bubchen|penaten|sonnencreme", "🧴"], ["feuchttucher|tucher|mullwindeln", "🧻"], ["besteck", "🍴"], ["brotdose", "🍱"], ["trinkflasche|trinklern", "🥤"],
-    ["saft", "🧃"], ["tee", "🍵"], ["latzchen", "👶"]]],
+    ["vitamin|zahnungskugelchen", "💊"], ["thermometer", "🌡️"], ["zahnburste|zahnpasta", "🪥"], ["schere", "✂️"], ["kinder-nudeln", "🍝"], ["tomatensosse|ketchup", "🍅"], ["kinderwurst", "#sausage"], ["pudding", "🍮"], ["fruchtgummi", "🍬"], ["zwieback", "🍪"], ["sonnenbrille", "🕶️"], ["rucksack|kindergartentasche", "🎒"], ["toilettensitz", "🚽"], ["(^|[^l])buch\\b|malblock", "📚"], ["spieluhr|kuschel|schmusetuch|horspiel|spiel\\b", "🧸"], ["kinderteller|geschirr", "🍽️"], ["kinderbecher|trinkbecher", "🥤"], ["wundschutzspray|pflege|sonnenmilch|bauchleinol|schwangerschaftsol", "🧴"],
+    ["windel|pants|wickel|pampers", "#diaper"], ["brei|flocken|musli", "🥣"], ["keks|waffel", "🍪"],
+    ["malbuch|kreide|farben|knete", "🖍️"], ["puzzle", "🧩"], ["sticker|sammelkarten|zeitschrift", "📰"], ["seifenblasen", "🫧"], ["spielzeug", "🧸"],
+    ["creme|lotion|shampoo|babyol|puder|bubchen|sonnencreme", "🧴"], ["besteck", "🍴"], ["brotdose", "🍱"], ["trinkflasche", "🥤"],
+    ["saft", "🧃"], ["tee", "🍵"]]],
   "Tierbedarf": ["🐾", [
     /* Motive, die das Bild genau treffen sollen (eigene Zeichnungen und passendere Noto-Grafiken) */
     ["papagei|sittich", "🦜"], ["eichhornchen", "🐿️"],
@@ -605,6 +617,7 @@ var EMO = {
   "Baumarkt & Werkzeug": ["🧰", [
     /* Geräte, Zubehör und Mittel statt der Topfpflanze bzw. des Stifts für alles */
     ["filzgleiter", "🪑"],
+    ["drahtburste", "#wirebrush"],
     ["zeitschaltuhr", "⏰"],
     ["streusalz", "#bag"],
     ["fuchsschwanz", "🪚"],
@@ -683,7 +696,7 @@ var EMO = {
     ["kleber|leim|silikon|acryl|kleister|dicht|schaum|harz|ol\\b|wachs|verdunnung|spiritus|aceton|reiniger|spray|fett|paste|pflege|politur", "🧴"], ["band\\b|tape|krepp", "🩹"]]],
   "Garten & Pflanzen": ["🪴", [
     /* Geräte, Zubehör und Mittel statt der Topfpflanze bzw. des Stifts für alles */
-    ["rasendunger", "#soil"], ["rasenmaher-ol|kettensagenol", "🛢️"],
+    ["kniekissen", "#kneepad"], ["rasendunger", "#soil"], ["rasenmaher-ol|kettensagenol", "🛢️"],
     ["rasenmaher|vertikutierer|mahroboter|rasentrimmer|freischneider|mahfaden|rasenlufter", "#mower"],
     ["kettensage|sagekette|kettenscharfer|hochentaster|hacksler", "#chainsaw"],
     ["astsage|sagebock", "🪚"],
